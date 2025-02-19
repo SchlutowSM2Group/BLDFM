@@ -4,7 +4,7 @@ import time
 from .most import vertical_profiles
 #import logging
 
-def ivp_solver( fftp0, fftq0, u ,v ,K ,z ,Lx ,Ly ):
+def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly ):
 
     fftp, fftq = np.copy(fftp0), np.copy(fftq0)
 
@@ -70,7 +70,7 @@ def steady_state_transport_solver( u, v, K, z, nx, ny, dx, dy, p000=0.0, q0=np.a
     fftp1, fftq1 = ivp_solver(one, zero,     u,v,K,z,Lx[msk],Ly[msk])
     fftp2, fftq2 = ivp_solver(zero,fftq[msk],u,v,K,z,Lx[msk],Ly[msk])
 
-    eigval = np.sqrt(Lx**2 + Ly**2 - 1j*u[nz]/K[nz]*Lx - 1j*v[nz]/K[nz]*Ly) 
+    eigval = np.sqrt( Lx[msk]**2 + Ly[msk]**2 - 1j*u[nz]/K[nz]*Lx[msk] - 1j*v[nz]/K[nz]*Ly[msk] ) 
 
     fftp[msk] = fftp1 * ( K[nz]*eigval*fftp2 - fftq2 ) / ( fftq1 - K[nz]*eigval*fftp1 )
     fftq[msk] = fftq2
