@@ -2,6 +2,7 @@ import numpy as np
 import scipy.fft as fft
 import time
 from .most import vertical_profiles
+from scipy.linalg import expm
 #import logging
 
 def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly ):
@@ -11,16 +12,16 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly ):
     nz = len(z)
     dz = np.diff(z,axis=0)
 
-    # explicit forward Euler method
+    # exponential integrator method
     for i in range(nz-1):
 
         Ti = np.sqrt( -K[i]*(Lx**2 + Ly**2) + 1j*u[i]*Lx + 1j*v[i]*Ly ) 
+        print('Timn,Timx',np.min(Ti),np.max(Ti))
+        print('Ti.shape',Ti.shape)
 
-        fftp = fftp - fftq / K[i] * dz[i]
-        fftq = fftq + fftp * Ti * dz[i]
-
-    # exponential integrator method
-    # to be continued...
+        eig = np.sqrt(Ti/K[i])
+        fftp = np.cos(eig*dz[i])*fftp-1.0/K[i]/eig*np.sin(eig*dz[i])*fftq
+        fftq = Ti[i]/eig*np.sin(eig*dz[i])*fftp+np.cos(eig*dz[i])*fftq
 
     return fftp, fftq
 
@@ -63,16 +64,16 @@ def steady_state_transport_solver( u, v, K, z, nx, ny, dx, dy, p000=0.0, q0=np.a
     msk = np.ones((ny,nx),dtype=bool) # all n and m not equal 0
     msk[0,0] = False
 
-    one  = np.ones( (ny-1,nx-1),dtype=complex)
-    zero = np.zeros((ny-1,nx-1),dtype=complex)
+    one  = np.ones( (ny,nx),dtype=complex)[msk]
+    zero = np.zeros((ny,nx),dtype=complex)[msk]
 
     # solve auxillary initial value problem
-    fftp1, fftq1 = ivp_solver(one, zero,     u,v,K,z,Lx[msk],Ly[msk])
+    fftp1, fftq1 = ivp_solver(one, zero,u,v,K,z,Lx[msk],Ly[msk])
     fftp2, fftq2 = ivp_solver(zero,fftq[msk],u,v,K,z,Lx[msk],Ly[msk])
 
-    eigval = np.sqrt( Lx[msk]**2 + Ly[msk]**2 - 1j*u[nz]/K[nz]*Lx[msk] - 1j*v[nz]/K[nz]*Ly[msk] ) 
+    eigval = np.sqrt( Lx[msk]**2 + Ly[msk]**2 - 1j*u[nz-1]/K[nz-1]*Lx[msk] - 1j*v[nz-1]/K[nz-1]*Ly[msk] ) 
 
-    fftp[msk] = fftp1 * ( K[nz]*eigval*fftp2 - fftq2 ) / ( fftq1 - K[nz]*eigval*fftp1 )
+    fftp[msk] = fftp1 * ( K[nz-1]*eigval*fftp2 - fftq2 ) / ( fftq1 - K[nz-1]*eigval*fftp1 )
     fftq[msk] = fftq2
 
     # solve degenarated problem for (n,m) = (0,0)
@@ -99,11 +100,11 @@ if __name__=='__main__':
 
     import matplotlib.pyplot as plt
 
-    nx, ny, nz    = 512, 256, 100
-    xmx, ymx, zmx = 2000.0, 1000.0, 5.0
+    nx, ny, nz    = 512, 256, 10
+    xmx, ymx, zmx = 2000.0, 1000.0, 10.0
     um, vm, Km    = 1.0, -2.0, 2.0
     ix, iy        = 300, 128 
-    ustar, mol    = 0.25, 100.0
+    ustar, mol    = 0.25, 1e9
 
     R0  = xmx/12
 
@@ -164,8 +165,5 @@ if __name__=='__main__':
     plt.colorbar()
     plt.show()
 
-
-
-    
 
 

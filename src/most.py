@@ -52,6 +52,9 @@ def vertical_profiles(nz,zmx,um,vm,ustar,mol=1000.0,prsc=0.8):
 
     K = kap * ustar * z / phi( z/mol ) / prsc
 
+    print('umax, vmax, Kmax', max(u), max(v), max(K))
+    print('umin, vmin, Kmin', min(u), min(v), min(K))
+
     # we do the transpose here to make the time series the first axis
     return z.T, u.T, v.T, K.T
 
