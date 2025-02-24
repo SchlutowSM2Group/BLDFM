@@ -12,20 +12,41 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly ):
     nz = len(z)
     dz = np.diff(z,axis=0)
 
-    # exponential integrator method
     for i in range(nz-1):
 
-        Ti = np.sqrt( -K[i]*(Lx**2 + Ly**2) + 1j*u[i]*Lx + 1j*v[i]*Ly ) 
-        print('Timn,Timx',np.min(Ti),np.max(Ti))
-        print('Ti.shape',Ti.shape)
+        Ti =  -K[i]*(Lx**2 + Ly**2) - 1j*u[i]*Lx - 1j*v[i]*Ly
+        Kinv = 1.0/K[i]
+        dzi = dz[i]
+        # exponential integrator method
+        # eig = np.sqrt(Ti/K[i])
+        # dum = np.cos(eig*dz[i])*fftp-1.0/K[i]/eig*np.sin(eig*dz[i])*fftq
+        # fftq = Ti/eig*np.sin(eig*dz[i])*fftp+np.cos(eig*dz[i])*fftq
+        # fftp = dum
 
-        eig = np.sqrt(Ti/K[i])
-        fftp = np.cos(eig*dz[i])*fftp-1.0/K[i]/eig*np.sin(eig*dz[i])*fftq
-        fftq = Ti[i]/eig*np.sin(eig*dz[i])*fftp+np.cos(eig*dz[i])*fftq
+        # Taylor series for exponential method up to 3rd order
+        # a = 1.0 - 0.5 * Kinv * Ti * dzi**2 
+        # b = -Kinv * dzi - 1.0/6.0 * Kinv**2 * Ti *dzi**3
+        # c = Ti * dzi - 1.0/6.0 * Kinv * Ti**2 *dzi**3
+        # d = 1.0 - 0.5 * Kinv * Ti * dzi**2
+
+        # dum  = a * fftp + b * fftq
+        # fftq = c * fftp + d * fftq
+        # fftp = dum
+
+        # Semi-implicit Euler method
+        fftp = fftp - dzi*Kinv*fftq
+        fftq = fftq + dzi*Ti*fftp
+
+        # Explicit Euler method
+        # dum = fftp - dz[i]/K[i]*fftq
+        # fftq = fftq + dz[i]*Ti*fftp
+        # fftp = dum
+
+
 
     return fftp, fftq
 
-def steady_state_transport_solver( u, v, K, z, nx, ny, dx, dy, p000=0.0, q0=np.array([]), green=False ):
+def steady_state_transport_solver( u, v, K, z, nx, ny, dx, dy, p000=0.0, q0=np.array([]), green=False, constant=False ):
     '''
     Solves the steady-state advection diffusion equation for a concentration 
     with flux boundary condition
@@ -45,16 +66,18 @@ def steady_state_transport_solver( u, v, K, z, nx, ny, dx, dy, p000=0.0, q0=np.a
     '''
 
     if green:
-        fftq = np.ones((ny,nx),dtype=complex)/nx/ny
+        fftq0 = np.ones((ny,nx),dtype=complex)
     else:
-        fftq = fft.ifft2(q0) # fft of source
+        fftq0 = fft.fft2(q0) # fft of source
     
     fftp = np.zeros((ny,nx),dtype=complex) # initialization
+    fftq = np.zeros((ny,nx),dtype=complex) # initialization
 
     lx = 2.0*np.pi*fft.fftfreq(nx,dx) # Definition of Fourier space 
     ly = 2.0*np.pi*fft.fftfreq(ny,dy)
     
     Lx, Ly = np.meshgrid(lx, ly)
+    # Lx, Ly = lx.reshape((1,-1)), ly.reshape((-1,1))
     
     dz = np.diff(z,axis=0)
     nz = len(z)
@@ -67,26 +90,35 @@ def steady_state_transport_solver( u, v, K, z, nx, ny, dx, dy, p000=0.0, q0=np.a
     one  = np.ones( (ny,nx),dtype=complex)[msk]
     zero = np.zeros((ny,nx),dtype=complex)[msk]
 
-    # solve auxillary initial value problem
-    fftp1, fftq1 = ivp_solver(one, zero,u,v,K,z,Lx[msk],Ly[msk])
-    fftp2, fftq2 = ivp_solver(zero,fftq[msk],u,v,K,z,Lx[msk],Ly[msk])
+    eigval = np.sqrt( Lx[msk]**2 + Ly[msk]**2 + 1j*u[nz-1]/K[nz-1]*Lx[msk] + 1j*v[nz-1]/K[nz-1]*Ly[msk] ) 
 
-    eigval = np.sqrt( Lx[msk]**2 + Ly[msk]**2 - 1j*u[nz-1]/K[nz-1]*Lx[msk] - 1j*v[nz-1]/K[nz-1]*Ly[msk] ) 
+    if constant:
 
-    fftp[msk] = fftp1 * ( K[nz-1]*eigval*fftp2 - fftq2 ) / ( fftq1 - K[nz-1]*eigval*fftp1 )
-    fftq[msk] = fftq2
+        # constant profiles solution
+        dz = z[nz-1]-z[0]
+        fftp[0,0] = p000 - fftq0[0,0] / K[nz-1] * dz
+        fftq[msk] = fftq0[msk] * np.exp( -eigval * dz )
+        fftp[msk] = fftq0[msk] / K[nz-1] / eigval 
+    
+    else:                                        
+    
+        # solve auxillary initial value problem  
+        fftp1, fftq1 = ivp_solver(one, zero,      u,v,K,z,Lx[msk],Ly[msk])
+        fftp2, fftq2 = ivp_solver(zero,fftq0[msk],u,v,K,z,Lx[msk],Ly[msk])
+                                                 
+        alpha = -( fftq2 - K[nz-1]*eigval*fftp2  ) / ( fftq1 - K[nz-1]*eigval*fftp1 )
+        fftp[msk] = alpha * fftp1 + fftp2        
+        fftq[msk] = alpha * fftq1 + fftq2        
+                                                 
+        # solve degenerated problem for (n,m) =  (0,0)
+        fftp[0,0] = p000                         
+        for i in range(nz-1):                    
+            fftp[0,0] = fftp[0,0] - fftq[0,0] / K[i] * dz[i]
 
-    # solve degenarated problem for (n,m) = (0,0)
-    fftp[0,0] = p000
+    p = fft.ifft2(fftp).real # concentration  
+    q = fft.ifft2(fftq).real # kinematic flux 
 
-    for i in range(nz-1):
-        
-        fftp[0,0] = fftp[0,0] - fftq[0,0] / K[i] * dz[i]
-
-    p = fft.fft2(fftp).real # concentration  
-    q = fft.fft2(fftq).real # kinematic flux 
-
-    return q, p
+    return p, q
 
 
 def convolve(f,g,iy,ix):
@@ -100,11 +132,13 @@ if __name__=='__main__':
 
     import matplotlib.pyplot as plt
 
-    nx, ny, nz    = 512, 256, 10
-    xmx, ymx, zmx = 2000.0, 1000.0, 10.0
-    um, vm, Km    = 1.0, -2.0, 2.0
+    nx, ny, nz    = 1024, 512, 2
+    xmx, ymx, zmx = 2000.0, 1000.0, 20.0
+    um, vm, Km    = 1.0, -3.0, 2.0
     ix, iy        = 300, 128 
     ustar, mol    = 0.25, 1e9
+
+    constant = False
 
     R0  = xmx/12
 
@@ -117,9 +151,13 @@ if __name__=='__main__':
 
     X, Y = np.meshgrid(x,y)
 
-    z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, mol)
+    # z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, mol)
+    z = np.linspace( 0, zmx, nz )
+    u = um * np.ones(nz)
+    v = vm * np.ones(nz)
+    K = Km * np.ones(nz)
 
-    p0 = 1.0
+    p000 = 1.0
     q0 = np.zeros([ny,nx])
 
     R = np.sqrt((X-xmx/2)**2+(Y-ymx/2)**2)
@@ -127,7 +165,7 @@ if __name__=='__main__':
 
     tic = time.time()
     # direct computation by upgraded solver
-    q, p = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,p0,q0)
+    p, q = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,p000,q0,constant=constant)
     toc = time.time()
     plt.imshow(p,origin="lower")
     plt.title("Concentration at zm")
@@ -149,11 +187,11 @@ if __name__=='__main__':
     print('q    = ',q[iy,ix])
 
     # compute Green function by upgraded solver
-    qg, pg = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,green=True)
+    pg, qg = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,green=True,constant=constant)
 
     # compute solution by convolution with Green function
     tic = time.time()
-    p = p0 + convolve(q0,pg,iy,ix)
+    p = p000/nx/ny + convolve(q0,pg,iy,ix)
     q = convolve(q0,qg,iy,ix)
     toc = time.time()
     print('Convolution with Green function')
