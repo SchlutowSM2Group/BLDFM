@@ -19,7 +19,7 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='EI' ):
 
     for i in range(nz-1):
 
-        Ti =  -K[i]*(Lx**2 + Ly**2) - 1j*u[i]*Lx - 1j*v[i]*Ly
+        Ti =  -K[i]*(Lx**2 + Ly**2) + 1j*u[i]*Lx + 1j*v[i]*Ly
         Kinv = 1.0/K[i]
         dzi = dz[i]
 
@@ -80,9 +80,9 @@ def steady_state_transport_solver( u, v, K, z,
     '''
 
     if green:
-        fftq0 = np.ones((ny,nx),dtype=complex)
+        fftq0 = np.ones((ny,nx),dtype=complex)/nx/ny
     else:
-        fftq0 = fft.fft2(q0) # fft of source
+        fftq0 = fft.ifft2(q0) # fft of source
     
     fftp = np.zeros((ny,nx),dtype=complex) # initialization
     fftq = np.zeros((ny,nx),dtype=complex) # initialization
@@ -106,8 +106,9 @@ def steady_state_transport_solver( u, v, K, z,
 
     eigval = np.sqrt( 
         Lx[msk]**2 + Ly[msk]**2 
-      + 1j*u[nz-1]/K[nz-1]*Lx[msk] + 1j*v[nz-1]/K[nz-1]*Ly[msk]
+       -1j*u[nz-1]/K[nz-1]*Lx[msk] - 1j*v[nz-1]/K[nz-1]*Ly[msk]
                      )
+
     if constant:
 
         # constant profiles solution
@@ -137,8 +138,8 @@ def steady_state_transport_solver( u, v, K, z,
         for i in range(nz-1):                    
             fftp[0,0] = fftp[0,0] - fftq0[0,0] / K[i] * dz[i]
 
-    p = fft.ifft2(fftp).real # concentration  
-    q = fft.ifft2(fftq).real # kinematic flux 
+    p = fft.fft2(fftp).real # concentration  
+    q = fft.fft2(fftq).real # kinematic flux 
 
     return p, q
 
@@ -229,7 +230,7 @@ if __name__=='__main__':
 
     # compute solution by convolution with Green function
     tic = time.time()
-    p = p000/nx/ny + convolve(q0,pg,iy,ix)
+    p = p000 + convolve(q0,pg,iy,ix)
     q = convolve(q0,qg,iy,ix)
     toc = time.time()
     print('Convolution with Green function')
