@@ -20,7 +20,7 @@ def phi(x):
     return np.where( x>0.0, 1.0+5.0*x, (1.0-16.0*x)**-0.5 )
 
 
-def vertical_profiles(nz,zmx,um,vm,ustar,mol=1000.0,prsc=0.8):
+def vertical_profiles(nz,zmx,um,vm,ustar,mol=1e9,prsc=0.8,constant=False):
 
     '''
     z     - array of vertical grid points
@@ -36,21 +36,26 @@ def vertical_profiles(nz,zmx,um,vm,ustar,mol=1000.0,prsc=0.8):
 
     kap = 0.4 # Karman constant
 
-    absum = np.sqrt( um**2 + vm**2 ) # absolute wind at zm
-    z0 = zmx * np.exp( -kap * absum / ustar + psi( zmx/mol ) ) # roughness length
+    if constant:
 
-    # zmx = zm - z0 # shift vertical coordinate by roughness length
+        Km = kap * ustar * zmx / prsc
+        z = np.linspace( 0.0, zmx, nz )
+        u = um * np.ones(nz)
+        v = vm * np.ones(nz)
+        K = Km * np.ones(nz)
 
-    # dz = zmx / nz
+    else:
+        absum = np.sqrt( um**2 + vm**2 ) # absolute wind at zm
+        z0 = zmx * np.exp( -kap * absum / ustar + psi( zmx/mol ) ) # roughness length
 
-    z = np.linspace( z0, zmx, nz )
+        z = np.linspace( z0, zmx, nz )
 
-    absu = ustar / kap * ( np.log( z/z0 ) + psi( z/mol ) ) 
+        absu = ustar / kap * ( np.log( z/z0 ) + psi( z/mol ) ) 
 
-    u = um / absum * absu
-    v = vm / absum * absu
+        u = um / absum * absu
+        v = vm / absum * absu
 
-    K = kap * ustar * z / phi( z/mol ) / prsc
+        K = kap * ustar * z / phi( z/mol ) / prsc
 
     print('umax, vmax, Kmax', max(u), max(v), max(K))
     print('umin, vmin, Kmin', min(u), min(v), min(K))
