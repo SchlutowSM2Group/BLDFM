@@ -2,7 +2,7 @@ import numpy as np
 import scipy.fft as fft
 import time
 from .most import vertical_profiles
-from scipy.linalg import expm
+from scipy.signal import convolve2d
 #import logging
 
 def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='EI' ):
@@ -161,9 +161,9 @@ if __name__=='__main__':
 
     import matplotlib.pyplot as plt
 
-    nx, ny, nz    = 256, 128, 20
+    nx, ny, nz    = 512, 256, 10
     xmx, ymx, zmx = 2000.0, 1000.0, 5.0
-    xm, ym        = 1000.0, 500.0
+    xm, ym        = 1500.0, 700.0
     um, vm        = 1.2, 0.5
     ustar, mol    = 0.25, 100.0
 
@@ -192,11 +192,12 @@ if __name__=='__main__':
     tic = time.time()
     p, q = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,p000,q0,constant=True)
     toc = time.time()
-    plt.imshow(p,origin="lower")
+    plt.imshow(p,origin="lower",extent=[0,xmx,0,ymx])
+    # plt.contour(X,Y,p)
     plt.title("Concentration at zm for constant profile")
-    plt.xlabel("ix")
-    plt.ylabel("iy")
-    plt.plot(ix,iy,'ro') 
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.plot(xm,ym,'ro') 
     plt.colorbar()
     plt.show()
     print('Constant profile')
@@ -209,18 +210,18 @@ if __name__=='__main__':
     z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, mol, constant=True)
     p, q = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,p000,q0)
     toc = time.time()
-    plt.imshow(p,origin="lower")
+    plt.imshow(p,origin="lower",extent=[0,xmx,0,ymx])
     plt.title("Concentration at zm")
-    plt.xlabel("ix")
-    plt.ylabel("iy")
-    plt.plot(ix,iy,'ro') 
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.plot(xm,ym,'ro') 
     plt.colorbar()
     plt.show()
-    plt.imshow(q,origin="lower")
+    plt.imshow(q,origin="lower",extent=[0,xmx,0,ymx])
     plt.title("Vertical kinematic flux at zm")
-    plt.xlabel("ix")
-    plt.ylabel("iy")
-    plt.plot(ix,iy,'ro') 
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.plot(xm,ym,'ro') 
     plt.colorbar()
     plt.show()
     print('Direct method')
@@ -241,9 +242,32 @@ if __name__=='__main__':
     print('p    = ',p)
     print('q    = ',q)
 
-    plt.imshow(qg,origin="lower")
+    # Scipy convolution with Green function
+    tic = time.time()
+    p = p000 + convolve2d(q0,np.roll(pg,(-iy-1,-ix-1),axis=(0,1)),mode='valid')
+    q = convolve2d(q0,np.roll(qg,(-iy-1,-ix-1),axis=(0,1)),mode='valid')
+    toc = time.time()
+    print('Convolution from scipy')
+    print('time ',toc-tic,'s')
+    print('p    = ',p)
+    print('q    = ',q)
+
+
+    # plt.imshow(qg,origin="lower")
+    plt.imshow(np.roll(pg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
+    plt.title("Green's function for concentration at zm")
+    plt.xlabel("x")
+    plt.ylabel("y")
     plt.colorbar()
     plt.show()
+
+    plt.imshow(np.roll(qg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
+    plt.title("Green's function for flux aka footprint at zm")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.colorbar()
+    plt.show()
+
 
 
 
