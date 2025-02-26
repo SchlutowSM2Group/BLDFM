@@ -20,7 +20,7 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='EI' ):
     for i in range(nz-1):
 
         Ti =  -K[i]*(Lx**2 + Ly**2) + 1j*u[i]*Lx + 1j*v[i]*Ly
-        Kinv = 1.0/K[i]
+        Kinv = 1.0 / K[i]
         dzi = dz[i]
 
         # exponential integrator (exact) method
@@ -57,9 +57,10 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='EI' ):
 
 def steady_state_transport_solver( u, v, K, z, 
                                   nx, ny, dx, dy, 
-                                  p000=0.0, q0=np.array([]), 
-                                  green=False, 
-                                  constant=False ):
+                                  p000     = 0.0, 
+                                  q0       = np.array([]), 
+                                  green    = False, 
+                                  constant = False ):
     '''
     Solves the steady-state advection diffusion equation for a concentration 
     with flux boundary condition
@@ -97,26 +98,31 @@ def steady_state_transport_solver( u, v, K, z,
 
     # solve boundary value problem for (n,m) =/= (0,0) 
     # use linear shooting method
+
     # define mask to seperate degenerated and non-degenerated system
-    msk = np.ones((ny,nx),dtype=bool) # all n and m not equal 0
+    msk      = np.ones((ny,nx),dtype=bool) # all n and m not equal 0
     msk[0,0] = False
 
     one  = np.ones( (ny,nx),dtype=complex)[msk]
     zero = np.zeros((ny,nx),dtype=complex)[msk]
 
+    Kinv = 1.0 / K[nz-1]
+
     eigval = np.sqrt( 
         Lx[msk]**2 + Ly[msk]**2 
-       -1j*u[nz-1]/K[nz-1]*Lx[msk] - 1j*v[nz-1]/K[nz-1]*Ly[msk]
+       -1j * u[nz-1] * Kinv * Lx[msk] 
+       -1j * v[nz-1] * Kinv * Ly[msk]
                      )
+    fftq[0,0] = fftq0[0,0] # conservation by design
 
     if constant:
 
         # constant profiles solution
         # for validation purposes
         dz = z[nz-1]-z[0]
-        fftp[0,0] = p000 - fftq0[0,0] / K[nz-1] * dz
+        fftp[0,0] = p000 - fftq0[0,0] * Kinv  * dz
         fftq[msk] = fftq0[msk] * np.exp( -eigval * dz )
-        fftp[msk] = fftq0[msk] / K[nz-1] / eigval 
+        fftp[msk] = fftq[msk] * Kinv / eigval 
     
     else:                                        
     
@@ -133,7 +139,7 @@ def steady_state_transport_solver( u, v, K, z,
         fftq[msk] = alpha * fftq1 + fftq2        
                                                  
         # solve degenerated problem for (n,m) =  (0,0)
-        # with Euler forward
+        # with Euler forward method
         fftp[0,0] = p000                         
         for i in range(nz-1):                    
             fftp[0,0] = fftp[0,0] - fftq0[0,0] / K[i] * dz[i]
@@ -155,11 +161,11 @@ if __name__=='__main__':
 
     import matplotlib.pyplot as plt
 
-    nx, ny, nz    = 512, 256, 2
-    xmx, ymx, zmx = 2000.0, 1000.0, 20.0
-    um, vm, Km    = 1.0, -3.0, 2.0
-    ix, iy        = 256, 128 
-    ustar, mol    = 0.25, 1e9
+    nx, ny, nz    = 256, 128, 20
+    xmx, ymx, zmx = 2000.0, 1000.0, 5.0
+    xm, ym        = 1000.0, 500.0
+    um, vm        = 1.2, 0.5
+    ustar, mol    = 0.25, 100.0
 
 
     R0  = xmx/12
@@ -168,15 +174,12 @@ if __name__=='__main__':
     dy = ymx/ny
     dz = zmx/nz
 
+    ix, iy = int(xm/xmx*nx), int(ym/ymx*ny)
+
     x = np.arange(0.0, xmx, dx)
     y = np.arange(0.0, ymx, dy)
 
     X, Y = np.meshgrid(x,y)
-
-    # z = np.linspace( 0, zmx, nz )
-    # u = um * np.ones(nz)
-    # v = vm * np.ones(nz)
-    # K = Km * np.ones(nz)
 
     p000 = 1.0
     q0 = np.zeros([ny,nx])
@@ -203,7 +206,7 @@ if __name__=='__main__':
  
     # direct computation by upgraded solver
     tic = time.time()
-    z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, constant=True)
+    z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, mol, constant=True)
     p, q = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,p000,q0)
     toc = time.time()
     plt.imshow(p,origin="lower")
