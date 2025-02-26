@@ -45,6 +45,7 @@ def vertical_profiles(nz,zmx,um,vm,ustar,mol=1e9,prsc=0.8,constant=False):
         K = Km * np.ones(nz)
 
     else:
+
         absum = np.sqrt( um**2 + vm**2 ) # absolute wind at zm
         z0 = zmx * np.exp( -kap * absum / ustar + psi( zmx/mol ) ) # roughness length
 
