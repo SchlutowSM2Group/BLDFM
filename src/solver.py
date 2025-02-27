@@ -5,7 +5,7 @@ from .most import vertical_profiles
 from scipy.signal import convolve2d
 #import logging
 
-def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='EI' ):
+def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
     '''
     Solves the initial value problem resulting from 
     the discretization of the steady-state advection-diffusion equation
@@ -55,30 +55,37 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='EI' ):
     return fftp, fftq
 
 
-def steady_state_transport_solver( u, v, K, z, 
+def steady_state_transport_solver(u, v, K, z, 
                                   nx, ny, dx, dy, 
-                                  p000     = 0.0, 
-                                  q0       = np.array([]), 
-                                  green    = False, 
-                                  constant = False ):
+                                  p000      = 0.0, 
+                                  q0        = np.array([]), 
+                                  green     = False, 
+                                  constant  = False,
+                                  pxy = 0 ):
     '''
     Solves the steady-state advection diffusion equation for a concentration 
     with flux boundary condition
     given vertical profiles of wind and eddy diffusivity
     using the Fourier and multilayer method
 
-    p000   -  laterally averaged concentration at z=z0
-    q0     -  flux boundary condition at z=z0 
-    u,v    -  zonal and meridional wind
-    K      -  eddy diffusivity
-    z      -  grid points
-    nx,ny  -  # of gridpoints in lateral direction
-    dx,dy  -  grid increments
+    p000  -  laterally averaged concentration at z=z0
+    q0    -  flux boundary condition at z=z0 
+    u,v   -  zonal and meridional wind
+    K     -  eddy diffusivity
+    z     -  grid points
+    nx,ny -  # of gridpoints in lateral direction
+    dx,dy -  grid increments
+    pxy   -  number of ghost cells around domain for zero padding
 
     Returns concentration p and kinematic flux q at zm.
     If green=True, it returns the respective 
     Green's functions instead
     '''
+
+    q0 = np.pad( q0, pxy, mode='constant', constant_values=0.0 )
+
+    nx = nx + 2*pxy
+    ny = ny + 2*pxy
 
     if green:
         fftq0 = np.ones((ny,nx),dtype=complex)/nx/ny
@@ -147,12 +154,18 @@ def steady_state_transport_solver( u, v, K, z,
     p = fft.fft2(fftp).real # concentration  
     q = fft.fft2(fftq).real # kinematic flux 
 
-    return p, q
+    if green:
+        p = np.roll(p,(ny//2,nx//2),axis=(0,1))
+        q = np.roll(q,(ny//2,nx//2),axis=(0,1))
+
+    return p[pxy:ny-pxy,pxy:nx-pxy], q[pxy:ny-pxy,pxy:nx-pxy]
 
 
 def convolve( f, g, iy, ix):
+
+    ny, nx = g.shape
                            
-    g = np.roll(g,(-iy,-ix),axis=(0,1))
+    g = np.roll(g,(ny//2-iy,nx//2-ix),axis=(0,1))
 
     return np.sum(f*g)
 
@@ -161,12 +174,13 @@ if __name__=='__main__':
 
     import matplotlib.pyplot as plt
 
-    nx, ny, nz    = 512, 256, 10
+    nx, ny, nz    = 512, 256, 20
     xmx, ymx, zmx = 2000.0, 1000.0, 5.0
     xm, ym        = 1500.0, 700.0
     um, vm        = 1.2, 0.5
-    ustar, mol    = 0.25, 100.0
+    ustar, mol    = 0.25, 10.0
 
+    pad_width = 0
 
     R0  = xmx/12
 
@@ -187,17 +201,18 @@ if __name__=='__main__':
     R = np.sqrt((X-xmx/2)**2+(Y-ymx/2)**2)
     q0 = np.where(R<R0,1.0,0.0)
 
+    
     # direct computation with constant profile
     z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, constant=True)
     tic = time.time()
-    p, q = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,p000,q0,constant=True)
+    p, q = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,p000,q0,constant=True,pxy=pad_width)
     toc = time.time()
     plt.imshow(p,origin="lower",extent=[0,xmx,0,ymx])
     # plt.contour(X,Y,p)
     plt.title("Concentration at zm for constant profile")
     plt.xlabel("x")
     plt.ylabel("y")
-    plt.plot(xm,ym,'ro') 
+    #plt.plot(xm,ym,'ro') 
     plt.colorbar()
     plt.show()
     print('Constant profile')
@@ -208,7 +223,7 @@ if __name__=='__main__':
     # direct computation by upgraded solver
     tic = time.time()
     z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, mol, constant=True)
-    p, q = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,p000,q0)
+    p, q = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,p000,q0,pxy=pad_width)
     toc = time.time()
     plt.imshow(p,origin="lower",extent=[0,xmx,0,ymx])
     plt.title("Concentration at zm")
@@ -230,7 +245,7 @@ if __name__=='__main__':
     print('q    = ',q[iy,ix])
 
     # compute Green function by upgraded solver
-    pg, qg = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,green=True)
+    pg, qg = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,green=True,pxy=pad_width)
 
     # compute solution by convolution with Green function
     tic = time.time()
@@ -243,25 +258,27 @@ if __name__=='__main__':
     print('q    = ',q)
 
     # Scipy convolution with Green function
-    tic = time.time()
-    p = p000 + convolve2d(q0,np.roll(pg,(-iy-1,-ix-1),axis=(0,1)),mode='valid')
-    q = convolve2d(q0,np.roll(qg,(-iy-1,-ix-1),axis=(0,1)),mode='valid')
-    toc = time.time()
-    print('Convolution from scipy')
-    print('time ',toc-tic,'s')
-    print('p    = ',p)
-    print('q    = ',q)
+    # tic = time.time()
+    # p = p000 + convolve2d(q0,np.roll(pg,(-iy-1,-ix-1),axis=(0,1)),mode='valid')
+    # q = convolve2d(q0,np.roll(qg,(-iy-1,-ix-1),axis=(0,1)),mode='valid')
+    # toc = time.time()
+    # print('Convolution from scipy')
+    # print('time ',toc-tic,'s')
+    # print('p    = ',p)
+    # print('q    = ',q)
 
 
     # plt.imshow(qg,origin="lower")
-    plt.imshow(np.roll(pg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
+    # plt.imshow(np.roll(pg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
+    plt.imshow(pg,origin='lower',extent=[0,xmx,0,ymx])
     plt.title("Green's function for concentration at zm")
     plt.xlabel("x")
     plt.ylabel("y")
     plt.colorbar()
     plt.show()
 
-    plt.imshow(np.roll(qg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
+    # plt.imshow(np.roll(qg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
+    plt.imshow(qg,origin='lower',extent=[0,xmx,0,ymx])
     plt.title("Green's function for flux aka footprint at zm")
     plt.xlabel("x")
     plt.ylabel("y")
