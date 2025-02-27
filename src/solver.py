@@ -57,6 +57,7 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
 
 def steady_state_transport_solver(u, v, K, z, 
                                   dx, dy, 
+                                  nkx, nky,
                                   q0, 
                                   p000      = 0.0, 
                                   green     = False, 
@@ -91,15 +92,15 @@ def steady_state_transport_solver(u, v, K, z,
     ny = ny + 2*pxy
 
     if green:
-        fftq0 = np.ones((ny,nx),dtype=complex)/nx/ny
+        fftq0 = np.ones((nky,nkx),dtype=complex)/nx/ny
     else:
-        fftq0 = fft.ifft2(q0) # fft of source
+        fftq0 = fft.ifft2(q0,s=(nky,nkx)) # fft of source
     
-    fftp = np.zeros((ny,nx),dtype=complex) # initialization
-    fftq = np.zeros((ny,nx),dtype=complex) # initialization
+    fftp = np.zeros((nky,nkx),dtype=complex) # initialization
+    fftq = np.zeros((nky,nkx),dtype=complex) # initialization
 
-    lx = 2.0*np.pi*fft.fftfreq(nx,dx) # Definition of Fourier space 
-    ly = 2.0*np.pi*fft.fftfreq(ny,dy)
+    lx = 2.0*np.pi*fft.fftfreq(nkx,dx) # Definition of Fourier space 
+    ly = 2.0*np.pi*fft.fftfreq(nky,dy)
     
     Lx, Ly = np.meshgrid(lx, ly)
     
@@ -110,11 +111,11 @@ def steady_state_transport_solver(u, v, K, z,
     # use linear shooting method
 
     # define mask to seperate degenerated and non-degenerated system
-    msk      = np.ones((ny,nx),dtype=bool) # all n and m not equal 0
+    msk      = np.ones((nky,nkx),dtype=bool) # all n and m not equal 0
     msk[0,0] = False
 
-    one  = np.ones( (ny,nx),dtype=complex)[msk]
-    zero = np.zeros((ny,nx),dtype=complex)[msk]
+    one  = np.ones( (nky,nkx),dtype=complex)[msk]
+    zero = np.zeros((nky,nkx),dtype=complex)[msk]
 
     Kinv = 1.0 / K[nz-1]
 
@@ -154,8 +155,8 @@ def steady_state_transport_solver(u, v, K, z,
         for i in range(nz-1):                    
             fftp[0,0] = fftp[0,0] - fftq0[0,0] / K[i] * dz[i]
 
-    p = fft.fft2(fftp).real # concentration  
-    q = fft.fft2(fftq).real # kinematic flux 
+    p = fft.fft2(fftp,s=(ny,nx)).real # concentration  
+    q = fft.fft2(fftq,s=(ny,nx)).real # kinematic flux 
 
     if green:
         p = np.roll(p,(ny//2,nx//2),axis=(0,1))
@@ -178,6 +179,7 @@ if __name__=='__main__':
     import matplotlib.pyplot as plt
 
     nx, ny, nz    = 512, 256, 20
+    nkx, nky      = 256, 128 
     xmx, ymx, zmx = 2000.0, 1000.0, 5.0
     xm, ym        = 1500.0, 700.0
     um, vm        = 1.2, 0.5
@@ -207,7 +209,7 @@ if __name__=='__main__':
     # direct computation with constant profile
     z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, constant=True)
     tic = time.time()
-    p, q = steady_state_transport_solver(u,v,K,z,dx,dy,q0,p000,constant=True,fetch=fetch)
+    p, q = steady_state_transport_solver(u,v,K,z,dx,dy,nkx,nky,q0,p000,constant=True,fetch=fetch)
     toc = time.time()
     plt.imshow(p,origin="lower",extent=[0,xmx,0,ymx])
     # plt.contour(X,Y,p)
@@ -225,7 +227,7 @@ if __name__=='__main__':
     # direct computation by upgraded solver
     tic = time.time()
     z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, mol, constant=True)
-    p, q = steady_state_transport_solver(u,v,K,z,dx,dy,q0,p000,fetch=fetch)
+    p, q = steady_state_transport_solver(u,v,K,z,dx,dy,nkx,nky,q0,p000,fetch=fetch)
     toc = time.time()
     plt.imshow(p,origin="lower",extent=[0,xmx,0,ymx])
     plt.title("Concentration at zm")
@@ -248,7 +250,7 @@ if __name__=='__main__':
 
     # compute Green function by upgraded solver
     dum = np.zeros([ny,nx]) # dummy for dimensions
-    pg, qg = steady_state_transport_solver(u,v,K,z,dx,dy,q0=dum,green=True,fetch=fetch)
+    pg, qg = steady_state_transport_solver(u,v,K,z,dx,dy,nkx,nky,q0=dum,green=True,fetch=fetch)
 
     # compute solution by convolution with Green function
     tic = time.time()
