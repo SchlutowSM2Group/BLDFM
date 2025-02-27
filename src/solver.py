@@ -56,33 +56,36 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
 
 
 def steady_state_transport_solver(u, v, K, z, 
-                                  nx, ny, dx, dy, 
+                                  dx, dy, 
+                                  q0, 
                                   p000      = 0.0, 
-                                  q0        = np.array([]), 
                                   green     = False, 
                                   constant  = False,
-                                  pxy = 0 ):
+                                  fetch     = 0.0 ):
     '''
     Solves the steady-state advection diffusion equation for a concentration 
     with flux boundary condition
     given vertical profiles of wind and eddy diffusivity
-    using the Fourier and multilayer method
+    using the Fourier, linear shooting and semi-implicit Euler methods
 
-    p000  -  laterally averaged concentration at z=z0
-    q0    -  flux boundary condition at z=z0 
-    u,v   -  zonal and meridional wind
-    K     -  eddy diffusivity
-    z     -  grid points
+    p000  -  laterally averaged concentration at z=z0 [1]
+    q0    -  kinematic flux boundary condition at z=z0 [m s-1]
+    u,v   -  zonal and meridional wind [m s-1]
+    K     -  eddy diffusivity [m2 s-1]
+    z     -  grid points [m]
     nx,ny -  # of gridpoints in lateral direction
-    dx,dy -  grid increments
-    pxy   -  number of ghost cells around domain for zero padding
+    dx,dy -  grid increments [m]
+    fetch -  zero-flux zone around domain [m]
 
     Returns concentration p and kinematic flux q at zm.
     If green=True, it returns the respective 
     Green's functions instead
     '''
 
-    q0 = np.pad( q0, pxy, mode='constant', constant_values=0.0 )
+    ny, nx = q0.shape
+
+    pxy = int(fetch/np.sqrt(dx**2+dy**2)) 
+    q0  = np.pad( q0, pxy, mode='constant', constant_values=0.0 )
 
     nx = nx + 2*pxy
     ny = ny + 2*pxy
@@ -179,8 +182,7 @@ if __name__=='__main__':
     xm, ym        = 1500.0, 700.0
     um, vm        = 1.2, 0.5
     ustar, mol    = 0.25, 10.0
-
-    pad_width = 0
+    fetch         = 1000.0
 
     R0  = xmx/12
 
@@ -205,7 +207,7 @@ if __name__=='__main__':
     # direct computation with constant profile
     z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, constant=True)
     tic = time.time()
-    p, q = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,p000,q0,constant=True,pxy=pad_width)
+    p, q = steady_state_transport_solver(u,v,K,z,dx,dy,q0,p000,constant=True,fetch=fetch)
     toc = time.time()
     plt.imshow(p,origin="lower",extent=[0,xmx,0,ymx])
     # plt.contour(X,Y,p)
@@ -223,7 +225,7 @@ if __name__=='__main__':
     # direct computation by upgraded solver
     tic = time.time()
     z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, mol, constant=True)
-    p, q = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,p000,q0,pxy=pad_width)
+    p, q = steady_state_transport_solver(u,v,K,z,dx,dy,q0,p000,fetch=fetch)
     toc = time.time()
     plt.imshow(p,origin="lower",extent=[0,xmx,0,ymx])
     plt.title("Concentration at zm")
@@ -245,7 +247,8 @@ if __name__=='__main__':
     print('q    = ',q[iy,ix])
 
     # compute Green function by upgraded solver
-    pg, qg = steady_state_transport_solver(u,v,K,z,nx,ny,dx,dy,green=True,pxy=pad_width)
+    dum = np.zeros([ny,nx]) # dummy for dimensions
+    pg, qg = steady_state_transport_solver(u,v,K,z,dx,dy,q0=dum,green=True,fetch=fetch)
 
     # compute solution by convolution with Green function
     tic = time.time()
