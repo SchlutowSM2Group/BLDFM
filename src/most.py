@@ -5,8 +5,9 @@ def psi(x):
     Businger–Dyer relationship
     x =  z / L 
     '''
-    xi = np.where( x>0.0, np.nan, (1.0-16.0*x)**0.25 )
-    xi = xi.real
+    xi = np.where(x>0.0, 
+                  np.nan, 
+                  np.power(1.0-16.0*x,0.25,dtype=complex).real)
     return np.where( x>0.0, 
                      5.0*x, 
                     -2.0*np.log(0.5*(1.0+xi))-np.log(0.5*(1.0+xi**2))
@@ -17,7 +18,9 @@ def phi(x):
     Businger–Dyer relationship
     x =  z / L 
     '''
-    return np.where( x>0.0, 1.0+5.0*x, (1.0-16.0*x)**-0.5 )
+    return np.where(x>0.0, 
+                    1.0+5.0*x, 
+                    np.power(1.0-16.0*x,-0.5,dtype=complex).real)
 
 
 def vertical_profiles(nz,zmx,um,vm,ustar,mol=1e9,prsc=0.8,constant=False):
