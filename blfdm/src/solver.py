@@ -256,7 +256,7 @@ if __name__=='__main__':
     nx, ny, nz    = 1024, 512, 20
     nlx, nly      = 1024, 512 
     xmx, ymx, zmx = 2000.0, 1000.0, 10.0
-    fetch         = 1000.0
+    fetch         = 4000.0
     xm, ym        = 1500.0, 700.0
     um, vm        = 1.2, 0.5
     ustar, mol    = 0.25, 100.0
@@ -277,7 +277,7 @@ if __name__=='__main__':
     p000 = 1.0
     q0 = np.zeros([ny,nx])
 
-    R = np.sqrt((X-xmx/2)**2+(Y-ymx/2)**2)
+    R = np.sqrt((X-xmx/2)**2 + (Y-ymx/2)**2)
     q0 = np.where(R<R0,1.0,0.0)
 
     
