@@ -55,9 +55,11 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
     return fftpm, fftqm
 
 
-def steady_state_transport_solver(u, v, K, z, 
-                                  dx, dy, 
-                                  nlx, nly,
+def steady_state_transport_solver(z, 
+                                  profiles, 
+                                  grid_incr, 
+                                  modes,
+                                  meas_point,
                                   q0, 
                                   p000      = 0.0, 
                                   green     = False, 
@@ -102,8 +104,16 @@ def steady_state_transport_solver(u, v, K, z,
             2D field of kinematic flux at zm.
     """
     
+    u, v, K  = profiles
+    dx, dy   = grid_incr
+    nlx, nly = modes 
+    xm, ym   = meas_point
+
     # number of grid cells
     ny, nx = q0.shape
+
+    # domain size
+    xmx, ymx = dx*nx, dy*ny
 
     # pad width
     px = int(fetch/dx) 
@@ -126,9 +136,10 @@ def steady_state_transport_solver(u, v, K, z,
 
     if green:
         # Fourier trafo of delta distribution
-        tfftq0 = np.ones((nly,nlx),dtype=complex)/nx/ny
+        tfftq0 = np.ones((nly,nlx),dtype=complex)
     else:
         fftq0 = fft.fft2(q0,norm='forward') # fft of source
+
 
         # shift zero wave number to center of array
         fftq0 = fft.fftshift(fftq0)
@@ -143,7 +154,7 @@ def steady_state_transport_solver(u, v, K, z,
     ilx = fft.fftfreq(nlx, d=1.0/nlx) 
     ily = fft.fftfreq(nly, d=1.0/nly) 
 
-    # zonal and meridional wavenumbers
+    # define truncated zonal and meridional wavenumbers
     lx = 2.0*np.pi/dx/nx * ilx 
     ly = 2.0*np.pi/dy/ny * ily 
 
@@ -222,6 +233,21 @@ def steady_state_transport_solver(u, v, K, z,
     fftpm = fft.ifftshift(fftpm)
     fftqm = fft.ifftshift(fftqm)
 
+    # redefine Fourier summation index
+    ilx = fft.fftfreq(nx, d=1.0/nx) 
+    ily = fft.fftfreq(ny, d=1.0/ny) 
+
+    # zonal and meridional wavenumbers
+    lx = 2.0*np.pi/dx/nx * ilx 
+    ly = 2.0*np.pi/dy/ny * ily 
+
+    Lx, Ly = np.meshgrid(lx, ly)
+
+    # shift such that xm, ym are in the middle of the domain 
+    fftp0 = fftp0 * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+    fftpm = fftpm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+    fftqm = fftqm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+
     p0 = fft.ifft2(fftp0,norm='forward').real # concentration  
     pm = fft.ifft2(fftpm,norm='forward').real # concentration  
     qm = fft.ifft2(fftqm,norm='forward').real # kinematic flux 
@@ -244,9 +270,10 @@ def convolve( f, g, iy, ix):
 
     ny, nx = g.shape
                            
-    g = np.roll(g, (ny//2-iy,nx//2-ix), axis=(0,1))
+    #g = np.roll(g, (ny//2-iy,nx//2-ix), axis=(0,1))
+    g = np.roll(g, (ny//2,nx//2), axis=(0,1))
 
-    return np.sum(f*g)
+    return np.sum(f*g)/nx/ny
 
 
 if __name__=='__main__':
@@ -256,7 +283,7 @@ if __name__=='__main__':
     nx, ny, nz    = 1024, 512, 20
     nlx, nly      = 1024, 512 
     xmx, ymx, zmx = 2000.0, 1000.0, 10.0
-    fetch         = 4000.0
+    fetch         = 2000.0
     xm, ym        = 1500.0, 700.0
     um, vm        = 1.2, 0.5
     ustar, mol    = 0.25, 100.0
@@ -284,8 +311,11 @@ if __name__=='__main__':
     # direct computation with constant profile
     z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, constant=True)
     tic = time.time()
-    p0,pm00,pm, qm = steady_state_transport_solver(u,v,K,z,
-                                                   dx,dy,nlx,nly,
+    p0,pm00,pm, qm = steady_state_transport_solver(z,
+                                                   (u,v,K),
+                                                   (dx,dy),
+                                                   (nlx,nly),
+                                                   (xm,ym),
                                                    q0,p000,
                                                    analytic=True,
                                                    fetch=fetch)
@@ -294,7 +324,7 @@ if __name__=='__main__':
     plt.title("Concentration at z0")
     plt.xlabel("x")
     plt.ylabel("y")
-    plt.plot(xm,ym,'ro') 
+    plt.plot(xmx/2,ymx/2,'ro') 
     plt.colorbar()
     plt.show()
     plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
@@ -302,20 +332,23 @@ if __name__=='__main__':
     plt.title("Concentration at zm for constant profile")
     plt.xlabel("x")
     plt.ylabel("y")
-    #plt.plot(xm,ym,'ro') 
+    plt.plot(xmx/2,ymx/2,'ro') 
     plt.colorbar()
     plt.show()
     print('Constant profile')
     print('time ',toc-tic,'s')
     print('pm00          = ',pm00)
-    print('pm at xm,ym   = ',pm[iy,ix])
-    print('qm at xm,ym   = ',qm[iy,ix])
- 
+    print('pm at xm,ym   = ',pm[ny//2,nx//2])
+    print('qm at xm,ym   = ',qm[ny//2,nx//2])
+
     # direct computation 
     tic = time.time()
     z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, mol, constant=True)
-    p0, pm00, pm, qm = steady_state_transport_solver(u,v,K,z,
-                                                     dx,dy,nlx,nly,
+    p0, pm00, pm, qm = steady_state_transport_solver(z,
+                                                     (u,v,K),
+                                                     (dx,dy),
+                                                     (nlx,nly),
+                                                     (xm,ym),
                                                      q0,p000,
                                                      fetch=fetch)
     toc = time.time()
@@ -323,33 +356,36 @@ if __name__=='__main__':
     plt.title("Concentration at z0")
     plt.xlabel("x")
     plt.ylabel("y")
-    plt.plot(xm,ym,'ro') 
+    plt.plot(xmx/2,ymx/2,'ro') 
     plt.colorbar()
     plt.show()
     plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
     plt.title("Concentration at zm")
     plt.xlabel("x")
     plt.ylabel("y")
-    plt.plot(xm,ym,'ro') 
+    plt.plot(xmx/2,ymx/2,'ro') 
     plt.colorbar()
     plt.show()
     plt.imshow(qm,origin="lower",extent=[0,xmx,0,ymx])
     plt.title("Vertical kinematic flux at zm")
     plt.xlabel("x")
     plt.ylabel("y")
-    plt.plot(xm,ym,'ro') 
+    plt.plot(xmx/2,ymx/2,'ro') 
     plt.colorbar()
     plt.show()
     print('Direct method')
     print('time ',toc-tic,'s')
     print('pm00         = ',pm00)
-    print('pm at xm,ym  = ',pm[iy,ix])
-    print('qm at xm,ym  = ',qm[iy,ix])
+    print('pm at xm,ym  = ',pm[ny//2,nx//2])
+    print('qm at xm,ym  = ',qm[ny//2,nx//2])
 
     # compute Green function by upgraded solver
     dum = np.zeros([ny,nx]) # dummy for dimensions
-    _,_,pg, qg = steady_state_transport_solver(u,v,K,z,
-                                               dx,dy,nlx,nly,
+    _,_,pg, qg = steady_state_transport_solver(z,
+                                               (u,v,K),
+                                               (dx,dy),
+                                               (nlx,nly),
+                                               (xm,ym),
                                                q0=dum,green=True,
                                                fetch=fetch)
 
