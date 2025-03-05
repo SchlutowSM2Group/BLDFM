@@ -55,16 +55,16 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
     return fftpm, fftqm
 
 
-def steady_state_transport_solver(z, 
+def steady_state_transport_solver(surf_flx,
+                                  z, 
                                   profiles, 
                                   grid_incr, 
-                                  modes,
-                                  q0, 
-                                  meas_point = (0.0, 0.0),
-                                  p000       = 0.0, 
-                                  green      = False, 
-                                  analytic   = False,
-                                  fetch      = 0.0 ):
+                                  modes    = (256, 256),
+                                  meas_pt  = (0.0, 0.0),
+                                  surf_bg  = 0.0, 
+                                  green    = False, 
+                                  analytic = False,
+                                  fetch    = 0.0 ):
     """
     Solves the steady-state advection-diffusion equation for a concentration 
     with flux boundary condition
@@ -72,16 +72,16 @@ def steady_state_transport_solver(z,
     using the Fourier, linear shooting and semi-implicit Euler methods
 
     Parameters:
-        p000: scalar(float), optional 
-            Background concentration at z=z0 [U]
-        q0: array(float)
-            2D field of surface kinematic flux at z=z0 [U m s-1]
+        surf_bg: scalar(float), optional 
+            Surface background concentration at z=z0 [scalar_unit]
+        z: array(float): 
+            1D array of vertical grid points from z0 to zm [m]
+        surf_flx: array(float)
+            2D field of surface kinematic flux at z=z0 [scalar_unit m s-1]
         u,v: array(float) 
             1D array of zonal and meridional wind vertical profile [m s-1]
         K: array(float)
             1D array of eddy diffusivity [m2 s-1]
-        z: array(float): 
-            1D array of vertical grid points from z0 to zm [m]
         nlx, nly: scalar(int) 
             Number of Fourier modes
         dx, dy: scalar(float) 
@@ -95,19 +95,21 @@ def steady_state_transport_solver(z,
 
     Returns:
         p0: array(float)
-            2D field of surface concentrations
+            2D field of surface concentrations [scalar_unit]
         pm00: scalar(float) 
-            Background concentration at zm
+            Background concentration at zm [scalar_unit]
         pm: array(float) 
-            2D field of concentration at zm
+            2D field of concentration at zm or Green's function [scalar_unit]
         qm: array(float) 
-            2D field of kinematic flux at zm.
+            2D field of kinematic flux at zm or Footprint [scalar_unit m s-1]
     """
     
+    q0       = surf_flx 
+    p000     = surf_bg
     u, v, K  = profiles
     dx, dy   = grid_incr
     nlx, nly = modes 
-    xm, ym   = meas_point
+    xm, ym   = meas_pt
 
     # number of grid cells
     ny, nx = q0.shape
@@ -120,7 +122,7 @@ def steady_state_transport_solver(z,
     py = int(fetch/dy)
 
     # construct zero-flux halo by padding
-    q0  = np.pad(q0, ((py,py),(px,px)), mode='constant', constant_values=0.0)
+    q0 = np.pad(q0, ((py,py),(px,px)), mode='constant', constant_values=0.0)
 
     # extent domain
     nx = nx + 2*px
@@ -136,10 +138,9 @@ def steady_state_transport_solver(z,
 
     if green:
         # Fourier trafo of delta distribution
-        tfftq0 = np.ones((nly,nlx),dtype=complex)
+        tfftq0 = np.ones((nly,nlx),dtype=complex)/nx/ny
     else:
         fftq0 = fft.fft2(q0,norm='forward') # fft of source
-
 
         # shift zero wave number to center of array
         fftq0 = fft.fftshift(fftq0)
@@ -173,11 +174,10 @@ def steady_state_transport_solver(z,
     Kinv = 1.0 / K[nz-1]
 
     # Eigenvalue determining solution for z > zm
-    eigval = np.sqrt( 
-        Lx[msk]**2 + Ly[msk]**2 
-       +1j * u[nz-1] * Kinv * Lx[msk] 
-       +1j * v[nz-1] * Kinv * Ly[msk]
-                     )
+    eigval = np.sqrt(Lx[msk]**2 + Ly[msk]**2 
+                    +1j * u[nz-1] * Kinv * Lx[msk] 
+                    +1j * v[nz-1] * Kinv * Ly[msk])
+
     # initialization
     tfftp0 = np.zeros((nly,nlx),dtype=complex) 
     tfftpm = np.zeros((nly,nlx),dtype=complex) 
@@ -218,6 +218,17 @@ def steady_state_transport_solver(z,
         for i in range(nz-1):                    
             tfftpm[0,0] = tfftpm[0,0] - tfftq0[0,0] / K[i] * dz[i]
 
+    # shift green function in Fourier space to measurement point
+    if green:
+        tfftp0 = tfftp0 * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
+        tfftpm = tfftpm * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
+        tfftqm = tfftqm * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
+    # shift such that xm, ym are in the middle of the domain 
+    elif xm**2 + ym**2 > 0.0:
+        tfftp0 = tfftp0 * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+        tfftpm = tfftpm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+        tfftqm = tfftqm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+
     # shift zero to center
     tfftp0  = fft.fftshift(tfftp0)
     tfftpm  = fft.fftshift(tfftpm)
@@ -233,81 +244,47 @@ def steady_state_transport_solver(z,
     fftpm = fft.ifftshift(fftpm)
     fftqm = fft.ifftshift(fftqm)
 
-    # redefine Fourier summation index
-    ilx = fft.fftfreq(nx, d=1.0/nx) 
-    ily = fft.fftfreq(ny, d=1.0/ny) 
-
-    # zonal and meridional wavenumbers
-    lx = 2.0*np.pi/dx/nx * ilx 
-    ly = 2.0*np.pi/dy/ny * ily 
-
-    Lx, Ly = np.meshgrid(lx, ly)
-
-    # shift such that xm, ym are in the middle of the domain 
-
-
     if green:
-        fftp0 = fftp0 * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
-        fftpm = fftpm * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
-        fftqm = fftqm * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
-        #p0 = fft.ifft2(np.conjugate(fftp0),norm='forward').real # concentration  
-        #pm = fft.ifft2(np.conjugate(fftpm),norm='forward').real # concentration  
-        #qm = fft.ifft2(np.conjugate(fftqm),norm='forward').real # kinematic flux 
+        # use fft to reverse sign, make green's function to footprint
         p0 = fft.fft2(fftp0,norm='backward').real # concentration  
         pm = fft.fft2(fftpm,norm='backward').real # concentration  
         qm = fft.fft2(fftqm,norm='backward').real # kinematic flux 
     else: 
-        if np.sqrt(xm**2 + ym**2) > 0.0:
-            fftp0 = fftp0 * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
-            fftpm = fftpm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
-            fftqm = fftqm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+        # use ifft as usual
         p0 = fft.ifft2(fftp0,norm='forward').real # concentration  
         pm = fft.ifft2(fftpm,norm='forward').real # concentration  
         qm = fft.ifft2(fftqm,norm='forward').real # kinematic flux 
-
-    #if green:
-    #    p0 = np.roll(p0,(ny//2,nx//2),axis=(0,1))
-    #    pm = np.roll(pm,(ny//2,nx//2),axis=(0,1))
-    #    qm = np.roll(qm,(ny//2,nx//2),axis=(0,1))
 
     return p0[py:ny-py,px:nx-px], fftpm[0,0].real, \
            pm[py:ny-py,px:nx-px], qm[py:ny-py,px:nx-px]
 
 
-def point_measurement( f, g, iy, ix):
+def point_measurement(f, g):
     """
-    Computes the convolution of two 2D arrays evaluated at (ix,iy).
+    Computes the convolution of two 2D arrays evaluated at xm, ym.
     scipy.convolve2d(...,mode='valid') is slighly faster,
     but gives less precise results.
     """
-
-    ny, nx = g.shape
-                           
-    #g = np.roll(g, (ny//2-iy,nx//2-ix), axis=(0,1))
-    #g = np.roll(g, (ny//2,nx//2), axis=(0,1))
-
-    return np.sum(f*g)/nx/ny
+    return np.sum(f*g)
 
 
 if __name__=='__main__':
 
     import matplotlib.pyplot as plt
 
-    nx, ny, nz    = 1024, 512, 20
-    nlx, nly      = 512, 256 
-    xmx, ymx, zmx = 2000.0, 1000.0, 10.0
-    fetch         = 0.0 #2000.0
-    xm, ym        = 1500.0, 700.0
-    um, vm        = 1.2, 0.5
-    ustar, mol    = 0.25, 100.0
+    nx, ny, nz = 1024, 512, 10
+    nlx, nly   = 512, 512 
+    xmx, ymx   = 2000.0, 1000.0
+    fetch      = 2000.0
+    xm, ym, zm = 1501.0, 700.5, 6.0
+    um, vm     = 2.0, 0.5
+    ustar, mol = 0.25, 100.0
 
     R0  = xmx/12
 
     dx = xmx/nx
     dy = ymx/ny
-    dz = zmx/nz
-
-    ix, iy = int(xm/xmx*nx), int(ym/ymx*ny)
+    dz = zm/nz
 
     x = np.arange(0.0, xmx, dx)
     y = np.arange(0.0, ymx, dy)
@@ -317,18 +294,19 @@ if __name__=='__main__':
     p000 = 1.0
     q0 = np.zeros([ny,nx])
 
-    R = np.sqrt((X-xmx/2)**2 + (Y-ymx/2)**2)
+    # R = np.sqrt((X-xmx/2)**2 + (Y-ymx/2)**2)
+    R = np.abs(X-xmx/2) + np.abs(Y-ymx/2)
     q0 = np.where(R<R0,1.0,0.0)
 
     
     # direct computation with constant profile
-    z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, constant=True)
+    z, u, v, K = vertical_profiles(nz, zm, um, vm, ustar, constant=True)
     tic = time.time()
-    p0,pm00,pm, qm = steady_state_transport_solver(z,
+    p0,pm00,pm, qm = steady_state_transport_solver(q0,
+                                                   z,
                                                    (u,v,K),
                                                    (dx,dy),
                                                    (nlx,nly),
-                                                   q0,
                                                    (xm,ym),
                                                    p000,
                                                    analytic=True,
@@ -357,12 +335,12 @@ if __name__=='__main__':
 
     # direct computation 
     tic = time.time()
-    z, u, v, K = vertical_profiles(nz, zmx, um, vm, ustar, mol, constant=True)
-    p0, pm00, pm, qm = steady_state_transport_solver(z,
+    z, u, v, K = vertical_profiles(nz, zm, um, vm, ustar, mol, constant=True)
+    p0, pm00, pm, qm = steady_state_transport_solver(q0,
+                                                     z,
                                                      (u,v,K),
                                                      (dx,dy),
                                                      (nlx,nly),
-                                                     q0,
                                                      (xm,ym),
                                                      p000,
                                                      fetch=fetch)
@@ -395,36 +373,24 @@ if __name__=='__main__':
     print('qm at xm,ym  = ',qm[ny//2,nx//2])
 
     # compute Green function by upgraded solver
-    dum = np.zeros([ny,nx]) # dummy for dimensions
-    _,_,pg, qg = steady_state_transport_solver(z,
+    _,_,pg, qg = steady_state_transport_solver(q0,
+                                               z,
                                                (u,v,K),
                                                (dx,dy),
                                                (nlx,nly),
-                                               dum,
                                                (xm,ym),
                                                green=True,
                                                fetch=fetch)
 
     # compute solution by convolution with Green function
     tic = time.time()
-    pm = p000 + point_measurement(q0,pg,iy,ix)
-    qm = point_measurement(q0,qg,iy,ix)
+    pm = p000 + point_measurement(q0,pg)
+    qm = point_measurement(q0,qg)
     toc = time.time()
     print('Convolution with Green function')
     print('time ',toc-tic,'s')
-    print('pm    = ',pm)
-    print('qm    = ',qm)
-
-    # Scipy convolution with Green function
-    # tic = time.time()
-    # p = p000 + convolve2d(q0,np.roll(pg,(-iy-1,-ix-1),axis=(0,1)),mode='valid')
-    # q = convolve2d(q0,np.roll(qg,(-iy-1,-ix-1),axis=(0,1)),mode='valid')
-    # toc = time.time()
-    # print('Convolution from scipy')
-    # print('time ',toc-tic,'s')
-    # print('p    = ',p)
-    # print('q    = ',q)
-
+    print('pm at xm,ym   = ',pm)
+    print('qm at xm,ym   = ',qm)
 
     # plt.imshow(qg,origin="lower")
     # plt.imshow(np.roll(pg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
