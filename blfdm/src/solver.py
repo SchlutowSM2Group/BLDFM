@@ -59,12 +59,12 @@ def steady_state_transport_solver(z,
                                   profiles, 
                                   grid_incr, 
                                   modes,
-                                  meas_point,
                                   q0, 
-                                  p000      = 0.0, 
-                                  green     = False, 
-                                  analytic  = False,
-                                  fetch     = 0.0 ):
+                                  meas_point = (0.0, 0.0),
+                                  p000       = 0.0, 
+                                  green      = False, 
+                                  analytic   = False,
+                                  fetch      = 0.0 ):
     """
     Solves the steady-state advection-diffusion equation for a concentration 
     with flux boundary condition
@@ -244,24 +244,37 @@ def steady_state_transport_solver(z,
     Lx, Ly = np.meshgrid(lx, ly)
 
     # shift such that xm, ym are in the middle of the domain 
-    fftp0 = fftp0 * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
-    fftpm = fftpm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
-    fftqm = fftqm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
 
-    p0 = fft.ifft2(fftp0,norm='forward').real # concentration  
-    pm = fft.ifft2(fftpm,norm='forward').real # concentration  
-    qm = fft.ifft2(fftqm,norm='forward').real # kinematic flux 
 
     if green:
-        p0 = np.roll(p0,(ny//2,nx//2),axis=(0,1))
-        pm = np.roll(pm,(ny//2,nx//2),axis=(0,1))
-        qm = np.roll(qm,(ny//2,nx//2),axis=(0,1))
+        fftp0 = fftp0 * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
+        fftpm = fftpm * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
+        fftqm = fftqm * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
+        #p0 = fft.ifft2(np.conjugate(fftp0),norm='forward').real # concentration  
+        #pm = fft.ifft2(np.conjugate(fftpm),norm='forward').real # concentration  
+        #qm = fft.ifft2(np.conjugate(fftqm),norm='forward').real # kinematic flux 
+        p0 = fft.fft2(fftp0,norm='backward').real # concentration  
+        pm = fft.fft2(fftpm,norm='backward').real # concentration  
+        qm = fft.fft2(fftqm,norm='backward').real # kinematic flux 
+    else: 
+        if np.sqrt(xm**2 + ym**2) > 0.0:
+            fftp0 = fftp0 * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+            fftpm = fftpm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+            fftqm = fftqm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+        p0 = fft.ifft2(fftp0,norm='forward').real # concentration  
+        pm = fft.ifft2(fftpm,norm='forward').real # concentration  
+        qm = fft.ifft2(fftqm,norm='forward').real # kinematic flux 
+
+    #if green:
+    #    p0 = np.roll(p0,(ny//2,nx//2),axis=(0,1))
+    #    pm = np.roll(pm,(ny//2,nx//2),axis=(0,1))
+    #    qm = np.roll(qm,(ny//2,nx//2),axis=(0,1))
 
     return p0[py:ny-py,px:nx-px], fftpm[0,0].real, \
            pm[py:ny-py,px:nx-px], qm[py:ny-py,px:nx-px]
 
 
-def convolve( f, g, iy, ix):
+def point_measurement( f, g, iy, ix):
     """
     Computes the convolution of two 2D arrays evaluated at (ix,iy).
     scipy.convolve2d(...,mode='valid') is slighly faster,
@@ -271,7 +284,7 @@ def convolve( f, g, iy, ix):
     ny, nx = g.shape
                            
     #g = np.roll(g, (ny//2-iy,nx//2-ix), axis=(0,1))
-    g = np.roll(g, (ny//2,nx//2), axis=(0,1))
+    #g = np.roll(g, (ny//2,nx//2), axis=(0,1))
 
     return np.sum(f*g)/nx/ny
 
@@ -281,9 +294,9 @@ if __name__=='__main__':
     import matplotlib.pyplot as plt
 
     nx, ny, nz    = 1024, 512, 20
-    nlx, nly      = 1024, 512 
+    nlx, nly      = 512, 256 
     xmx, ymx, zmx = 2000.0, 1000.0, 10.0
-    fetch         = 2000.0
+    fetch         = 0.0 #2000.0
     xm, ym        = 1500.0, 700.0
     um, vm        = 1.2, 0.5
     ustar, mol    = 0.25, 100.0
@@ -315,8 +328,9 @@ if __name__=='__main__':
                                                    (u,v,K),
                                                    (dx,dy),
                                                    (nlx,nly),
+                                                   q0,
                                                    (xm,ym),
-                                                   q0,p000,
+                                                   p000,
                                                    analytic=True,
                                                    fetch=fetch)
     toc = time.time()
@@ -348,8 +362,9 @@ if __name__=='__main__':
                                                      (u,v,K),
                                                      (dx,dy),
                                                      (nlx,nly),
+                                                     q0,
                                                      (xm,ym),
-                                                     q0,p000,
+                                                     p000,
                                                      fetch=fetch)
     toc = time.time()
     plt.imshow(p0,origin="lower",extent=[0,xmx,0,ymx])
@@ -385,14 +400,15 @@ if __name__=='__main__':
                                                (u,v,K),
                                                (dx,dy),
                                                (nlx,nly),
+                                               dum,
                                                (xm,ym),
-                                               q0=dum,green=True,
+                                               green=True,
                                                fetch=fetch)
 
     # compute solution by convolution with Green function
     tic = time.time()
-    pm = p000 + convolve(q0,pg,iy,ix)
-    qm = convolve(q0,qg,iy,ix)
+    pm = p000 + point_measurement(q0,pg,iy,ix)
+    qm = point_measurement(q0,qg,iy,ix)
     toc = time.time()
     print('Convolution with Green function')
     print('time ',toc-tic,'s')
@@ -421,6 +437,7 @@ if __name__=='__main__':
 
     # plt.imshow(np.roll(qg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
     plt.imshow(qg,origin='lower',extent=[0,xmx,0,ymx])
+    # plt.contour(X,Y,qg)
     plt.title("Green's function for flux aka footprint at zm")
     plt.xlabel("x")
     plt.ylabel("y")
