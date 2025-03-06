@@ -6,16 +6,18 @@ from .most import vertical_profiles
 # import logging
 
 
-def steady_state_transport_solver(surf_flx,
-                                  z, 
-                                  profiles, 
-                                  grid_incr, 
-                                  modes     = (256, 256),
-                                  meas_pt   = (0.0, 0.0),
-                                  surf_bg   = 0.0, 
-                                  footprint = False, 
-                                  analytic  = False,
-                                  fetch     = -1e9 ):
+def steady_state_transport_solver(
+        surf_flx,
+        z, 
+        profiles, 
+        grid_incr, 
+        modes     = (256, 256),
+        meas_pt   = (0.0, 0.0),
+        surf_bg   = 0.0, 
+        footprint = False, 
+        analytic  = False,
+        fetch     = -1e9 
+        ):
     """
     Solves the steady-state advection-diffusion equation for a concentration 
     with flux boundary condition
@@ -44,7 +46,9 @@ def steady_state_transport_solver(surf_flx,
         analytic: scalar(bool), optional
             Analytic solution for constant wind and eddy diffusivity
         fetch: scalar(float), optional 
-            Width of zero-flux halo around domain [m]
+            Width of zero-flux halo around domain [m].
+            Default is min(xmax, ymax).
+            fetch = 0.0, same as periodic boundaries.
 
     Returns:
         p0: array(float)
@@ -278,13 +282,13 @@ if __name__=='__main__':
 
     import matplotlib.pyplot as plt
 
-    nx, ny, nz = 1024, 512, 10
+    nx, ny, nz = 512, 256, 10
     nlx, nly   = 512, 512 
     xmx, ymx   = 2000.0, 1000.0
     fetch      = 2000.0
     xm, ym, zm = 1501.0, 700.5, 6.0
     um, vm     = 2.0, 0.5
-    ustar, mol = 0.25, 100.0
+    ustar, mol = 0.2, 100.0
 
     R0  = xmx/12
 
@@ -344,7 +348,7 @@ if __name__=='__main__':
                                                    fetch=fetch)
     toc = time.time()
     plt.imshow(p0,origin="lower",extent=[0,xmx,0,ymx])
-    plt.title("Concentration at z0")
+    plt.title("Concentration at z0 for constant profile")
     plt.xlabel("x")
     plt.ylabel("y")
     plt.plot(xmx/2,ymx/2,'ro') 
@@ -432,8 +436,8 @@ if __name__=='__main__':
     plt.colorbar()
     plt.show()
 
-    # plt.imshow(np.roll(qg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
     plt.imshow(qg,origin='lower',extent=[0,xmx,0,ymx])
+    # qg = np.where(qg<0.002,0.0,qg)
     # plt.contour(X,Y,qg)
     plt.title("Footprint")
     plt.xlabel("x")
