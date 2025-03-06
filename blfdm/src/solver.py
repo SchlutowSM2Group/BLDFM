@@ -2,69 +2,20 @@ import numpy as np
 import scipy.fft as fft
 import time
 from .most import vertical_profiles
-from scipy.signal import convolve2d
-#import logging
-
-def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
-    '''
-    Solves the initial value problem resulting from 
-    the discretization of the steady-state advection-diffusion equation
-    with the Fast Fourier Transform
-    '''
-
-    fftpm, fftqm = np.copy(fftp0), np.copy(fftq0)
-
-    nz = len(z)
-    dz = np.diff(z,axis=0)
-
-    for i in range(nz-1):
-
-        Ti =  -K[i]*(Lx**2 + Ly**2) - 1j*u[i]*Lx - 1j*v[i]*Ly
-        Kinv = 1.0 / K[i]
-        dzi = dz[i]
-
-        # exponential integrator (exact) method
-        if method == 'EI':
-            eig = np.sqrt( Ti*Kinv )
-            dum = np.cos(eig*dzi) * fftpm - Kinv/eig*np.sin(eig*dzi) * fftqm
-            fftqm = Ti/eig*np.sin(eig*dzi) * fftpm + np.cos(eig*dzi) * fftqm
-            fftpm = dum
-
-        # Taylor series for exponential integrator method up to 3rd order
-        if method == 'TSEI3':
-            a = 1.0 - 0.5 * Kinv * Ti * dzi**2 
-            b = -Kinv * dzi - 1.0/6.0 * Kinv**2 * Ti *dzi**3
-            c = Ti * dzi - 1.0/6.0 * Kinv * Ti**2 *dzi**3
-            d = 1.0 - 0.5 * Kinv * Ti * dzi**2
-
-            dum   = a * fftpm + b * fftqm
-            fftqm = c * fftpm + d * fftqm
-            fftpm = dum
-
-        # Semi-implicit Euler method
-        if method == 'SIE':
-            fftpm = fftpm - dzi * Kinv * fftqm
-            fftqm = fftqm + dzi * Ti * fftpm
-
-        # Explicit Euler method
-        if method == 'EE':
-            dum = fftpm - dz[i]/K[i]*fftqm
-            fftqm = fftqm + dz[i]*Ti*fftpm
-            fftpm = dum
-
-    return fftpm, fftqm
+# from scipy.signal import convolve2d
+# import logging
 
 
 def steady_state_transport_solver(surf_flx,
                                   z, 
                                   profiles, 
                                   grid_incr, 
-                                  modes    = (256, 256),
-                                  meas_pt  = (0.0, 0.0),
-                                  surf_bg  = 0.0, 
-                                  green    = False, 
-                                  analytic = False,
-                                  fetch    = 0.0 ):
+                                  modes     = (256, 256),
+                                  meas_pt   = (0.0, 0.0),
+                                  surf_bg   = 0.0, 
+                                  footprint = False, 
+                                  analytic  = False,
+                                  fetch     = -1e9 ):
     """
     Solves the steady-state advection-diffusion equation for a concentration 
     with flux boundary condition
@@ -72,36 +23,38 @@ def steady_state_transport_solver(surf_flx,
     using the Fourier, linear shooting and semi-implicit Euler methods
 
     Parameters:
-        surf_bg: scalar(float), optional 
-            Surface background concentration at z=z0 [scalar_unit]
-        z: array(float): 
-            1D array of vertical grid points from z0 to zm [m]
         surf_flx: array(float)
             2D field of surface kinematic flux at z=z0 [scalar_unit m s-1]
-        u,v: array(float) 
-            1D array of zonal and meridional wind vertical profile [m s-1]
-        K: array(float)
-            1D array of eddy diffusivity [m2 s-1]
-        nlx, nly: scalar(int) 
-            Number of Fourier modes
-        dx, dy: scalar(float) 
-            Grid increments [m]
-        fetch: scalar(float), optional 
-            Width of zero-flux halo around domain [m]
-        green: scalar(bool), optional 
-            Activates Green's function for output
+        z: array(float) 
+            1D array of vertical grid points from z0 to zm [m]
+        profiles: array(float)
+            List of 1D arrays of vertical profiles of zonal wind, meridional wind [m s-1]
+            and eddy diffusivity [m2 s-1]
+        grid_incr: scalar(float) 
+            List of grid increments dx and dy [m]
+        surf_bg: scalar(float), optional 
+            Surface background concentration at z=z0 [scalar_unit]
+        modes: scalar(int) 
+            List of number of zonal and meridional Fourier modes nlx and nly
+        meas_pt: scalar(float), optional
+            Coordinates of measurement point xm and ym [m] relative to surf_flx
+            where the origin is at surf_flx[0,0]
+        footprint: scalar(bool), optional 
+            Activates footprints aka Green's function for output
         analytic: scalar(bool), optional
             Analytic solution for constant wind and eddy diffusivity
+        fetch: scalar(float), optional 
+            Width of zero-flux halo around domain [m]
 
     Returns:
         p0: array(float)
-            2D field of surface concentrations [scalar_unit]
+            2D field of surface concentrations at z=z0 [scalar_unit]
         pm00: scalar(float) 
-            Background concentration at zm [scalar_unit]
+            Background concentration at z=zm [scalar_unit]
         pm: array(float) 
-            2D field of concentration at zm or Green's function [scalar_unit]
+            2D field of concentration at z=zm or Green's function [scalar_unit]
         qm: array(float) 
-            2D field of kinematic flux at zm or Footprint [scalar_unit m s-1]
+            2D field of kinematic flux at z=zm or Footprint [scalar_unit m s-1]
     """
     
     q0       = surf_flx 
@@ -116,6 +69,9 @@ def steady_state_transport_solver(surf_flx,
 
     # domain size
     xmx, ymx = dx*nx, dy*ny
+
+    if fetch < 0.0:
+        fetch = min(xmx,ymx)
 
     # pad width
     px = int(fetch/dx) 
@@ -136,7 +92,7 @@ def steady_state_transport_solver(surf_flx,
     # Deltas for truncated Fourier transform
     dlx, dly = (nx-nlx)//2, (ny-nly)//2
 
-    if green:
+    if footprint:
         # Fourier trafo of delta distribution
         tfftq0 = np.ones((nly,nlx),dtype=complex)/nx/ny
     else:
@@ -219,7 +175,7 @@ def steady_state_transport_solver(surf_flx,
             tfftpm[0,0] = tfftpm[0,0] - tfftq0[0,0] / K[i] * dz[i]
 
     # shift green function in Fourier space to measurement point
-    if green:
+    if footprint:
         tfftp0 = tfftp0 * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
         tfftpm = tfftpm * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
         tfftqm = tfftqm * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
@@ -244,7 +200,7 @@ def steady_state_transport_solver(surf_flx,
     fftpm = fft.ifftshift(fftpm)
     fftqm = fft.ifftshift(fftqm)
 
-    if green:
+    if footprint:
         # use fft to reverse sign, make green's function to footprint
         p0 = fft.fft2(fftp0,norm='backward').real # concentration  
         pm = fft.fft2(fftpm,norm='backward').real # concentration  
@@ -257,6 +213,56 @@ def steady_state_transport_solver(surf_flx,
 
     return p0[py:ny-py,px:nx-px], fftpm[0,0].real, \
            pm[py:ny-py,px:nx-px], qm[py:ny-py,px:nx-px]
+
+
+def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
+    '''
+    Solves the initial value problem resulting from 
+    the discretization of the steady-state advection-diffusion equation
+    with the Fast Fourier Transform
+    '''
+
+    fftpm, fftqm = np.copy(fftp0), np.copy(fftq0)
+
+    nz = len(z)
+    dz = np.diff(z,axis=0)
+
+    for i in range(nz-1):
+
+        Ti =  -K[i]*(Lx**2 + Ly**2) - 1j*u[i]*Lx - 1j*v[i]*Ly
+        Kinv = 1.0 / K[i]
+        dzi = dz[i]
+
+        # exponential integrator (exact) method
+        if method == 'EI':
+            eig = np.sqrt( Ti*Kinv )
+            dum = np.cos(eig*dzi) * fftpm - Kinv/eig*np.sin(eig*dzi) * fftqm
+            fftqm = Ti/eig*np.sin(eig*dzi) * fftpm + np.cos(eig*dzi) * fftqm
+            fftpm = dum
+
+        # Taylor series for exponential integrator method up to 3rd order
+        if method == 'TSEI3':
+            a = 1.0 - 0.5 * Kinv * Ti * dzi**2 
+            b = -Kinv * dzi - 1.0/6.0 * Kinv**2 * Ti *dzi**3
+            c = Ti * dzi - 1.0/6.0 * Kinv * Ti**2 *dzi**3
+            d = 1.0 - 0.5 * Kinv * Ti * dzi**2
+
+            dum   = a * fftpm + b * fftqm
+            fftqm = c * fftpm + d * fftqm
+            fftpm = dum
+
+        # Semi-implicit Euler method
+        if method == 'SIE':
+            fftpm = fftpm - dzi * Kinv * fftqm
+            fftqm = fftqm + dzi * Ti * fftpm
+
+        # Explicit Euler method
+        if method == 'EE':
+            dum = fftpm - dz[i]/K[i]*fftqm
+            fftqm = fftqm + dz[i]*Ti*fftpm
+            fftpm = dum
+
+    return fftpm, fftqm
 
 
 def point_measurement(f, g):
@@ -298,8 +304,33 @@ if __name__=='__main__':
     R = np.abs(X-xmx/2) + np.abs(Y-ymx/2)
     q0 = np.where(R<R0,1.0,0.0)
 
+    # direct computation minimal example with varying profiles
+    tic = time.time()
+    z, u, v, K = vertical_profiles(nz, zm, um, vm, ustar, mol, constant=False)
+    p0, pm00, pm, qm = steady_state_transport_solver(q0,z,(u,v,K),(dx,dy))
+    toc = time.time()
+    print('Minimal example for stratified BL and default settings')
+    print('time ',toc-tic,'s')
+    plt.imshow(p0,origin="lower",extent=[0,xmx,0,ymx])
+    plt.title("Concentration at z0")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.colorbar()
+    plt.show()
+    plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
+    plt.title("Concentration at zm")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.colorbar()
+    plt.show()
+    plt.imshow(qm,origin="lower",extent=[0,xmx,0,ymx])
+    plt.title("Vertical kinematic flux at zm")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.colorbar()
+    plt.show()
     
-    # direct computation with constant profile
+    # Exact solution with constant profiles
     z, u, v, K = vertical_profiles(nz, zm, um, vm, ustar, constant=True)
     tic = time.time()
     p0,pm00,pm, qm = steady_state_transport_solver(q0,
@@ -379,7 +410,7 @@ if __name__=='__main__':
                                                (dx,dy),
                                                (nlx,nly),
                                                (xm,ym),
-                                               green=True,
+                                               footprint=True,
                                                fetch=fetch)
 
     # compute solution by convolution with Green function
@@ -395,7 +426,7 @@ if __name__=='__main__':
     # plt.imshow(qg,origin="lower")
     # plt.imshow(np.roll(pg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
     plt.imshow(pg,origin='lower',extent=[0,xmx,0,ymx])
-    plt.title("Green's function for concentration at zm")
+    plt.title("Flipped Green's function for concentration at zm")
     plt.xlabel("x")
     plt.ylabel("y")
     plt.colorbar()
@@ -404,12 +435,9 @@ if __name__=='__main__':
     # plt.imshow(np.roll(qg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
     plt.imshow(qg,origin='lower',extent=[0,xmx,0,ymx])
     # plt.contour(X,Y,qg)
-    plt.title("Green's function for flux aka footprint at zm")
+    plt.title("Footprint")
     plt.xlabel("x")
     plt.ylabel("y")
     plt.colorbar()
     plt.show()
-
-
-
 
