@@ -310,11 +310,13 @@ if __name__=='__main__':
 
     # direct computation minimal example with varying profiles
     tic = time.time()
-    z, u, v, K = vertical_profiles(nz, zm, um, vm, ustar, mol, constant=False)
-    p0, pm00, pm, qm = steady_state_transport_solver(q0,z,(u,v,K),(dx,dy))
+    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
+                                     ustar, mol, constant=False)
+    p0, pm00, pm, qm = steady_state_transport_solver(q0, z, (u,v,K), (dx,dy))
     toc = time.time()
     print('Minimal example for stratified BL and default settings')
-    print('time ',toc-tic,'s')
+    print('exe time      = ',toc-tic,'s')
+    print()
     plt.imshow(p0,origin="lower",extent=[0,xmx,0,ymx])
     plt.title("Concentration at z0")
     plt.xlabel("x")
@@ -335,9 +337,10 @@ if __name__=='__main__':
     plt.show()
     
     # Exact solution with constant profiles
-    z, u, v, K = vertical_profiles(nz, zm, um, vm, ustar, constant=True)
+    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
+                                   ustar, constant=True)
     tic = time.time()
-    p0,pm00,pm, qm = steady_state_transport_solver(q0,
+    p0, pm00, pm, qm = steady_state_transport_solver(q0,
                                                    z,
                                                    (u,v,K),
                                                    (dx,dy),
@@ -363,14 +366,16 @@ if __name__=='__main__':
     plt.colorbar()
     plt.show()
     print('Constant profile')
-    print('time ',toc-tic,'s')
+    print('exe time      = ',toc-tic,'s')
     print('pm00          = ',pm00)
     print('pm at xm,ym   = ',pm[ny//2,nx//2])
     print('qm at xm,ym   = ',qm[ny//2,nx//2])
+    print()
 
     # direct computation 
     tic = time.time()
-    z, u, v, K = vertical_profiles(nz, zm, um, vm, ustar, mol, constant=True)
+    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
+                                   ustar, mol, constant=True)
     p0, pm00, pm, qm = steady_state_transport_solver(q0,
                                                      z,
                                                      (u,v,K),
@@ -402,13 +407,14 @@ if __name__=='__main__':
     plt.colorbar()
     plt.show()
     print('Direct method')
-    print('time ',toc-tic,'s')
+    print('exe time     = ',toc-tic,'s')
     print('pm00         = ',pm00)
     print('pm at xm,ym  = ',pm[ny//2,nx//2])
     print('qm at xm,ym  = ',qm[ny//2,nx//2])
+    print()
 
     # compute Green function by upgraded solver
-    _,_,pg, qg = steady_state_transport_solver(q0,
+    _, _, pg, qg = steady_state_transport_solver(q0,
                                                z,
                                                (u,v,K),
                                                (dx,dy),
@@ -423,9 +429,10 @@ if __name__=='__main__':
     qm = point_measurement(q0,qg)
     toc = time.time()
     print('Convolution with Green function')
-    print('time ',toc-tic,'s')
+    print('exe time      = ',toc-tic,'s')
     print('pm at xm,ym   = ',pm)
     print('qm at xm,ym   = ',qm)
+    print()
 
     # plt.imshow(qg,origin="lower")
     # plt.imshow(np.roll(pg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
