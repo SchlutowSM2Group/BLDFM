@@ -1,5 +1,90 @@
 import numpy as np
 
+# def vertical_profiles(nz,zm,um,vm,ustar,mol=1e9,prsc=0.8,constant=False):
+def vertical_profiles(
+        n,
+        meas_height,
+        wind,
+        ustar,
+        mol=1e9,
+        prsc=0.8,
+        constant=False
+        ):
+    """ 
+    Computes profiles of horizontal wind and eddy diffusivity 
+    depending on the boundary layer's stratifictation
+    from point measurements with, e.g., Eddy Covariance systems
+    according to Monin-Obukhov Similarity Theory (MOST) 
+    (Kormann and Meixner, 2001, https://doi.org/10.1023/A:1018991015119).
+    
+    Parameters:
+        n: scalar(int)
+            Number of vertical grid points
+        meas_height: scalar(float)
+            Measurement height 
+        wind: array(float)
+            List of zonal and meridional wind components u and v and 
+            the measurement height
+        ustar: scalar(float)
+            Friction velocity
+        mol: scalar(float)
+            Monin-Obukhov length
+        prsc: scalar(float)
+            Prandtl or Schmidt number depending on the scalar 
+            that is subject to atmospheric dispersion
+        constant: scalar(bool)
+            Switch for returning constant profiles
+            
+    Returns:
+        z: array(float)
+            1D array of vertical grid points
+        profiles: array(float)
+            List of 1D arrays of horizontal wind components u and v
+            as well as the eddy diffusivity K
+    """
+
+    zm, (um, vm) = meas_height, wind
+
+    kap = 0.4 # Karman constant
+
+    if constant:
+
+        Km = kap * ustar * zm / prsc
+        z = np.linspace( 0.0, zm, n )
+        u = um * np.ones(n)
+        v = vm * np.ones(n)
+        K = Km * np.ones(n)
+
+    else:
+
+        # absolute wind at zm
+        absum = np.sqrt( um**2 + vm**2 ) 
+
+        # roughness length
+        z0 = zm * np.exp( -kap * absum / ustar + psi( zm/mol ) )
+
+        # equidistant vertical grid
+        z = np.linspace( z0, zm, n )
+
+        absu = ustar / kap * ( np.log( z/z0 ) + psi( z/mol ) ) 
+
+        u = um / absum * absu
+        v = vm / absum * absu
+
+        K = kap * ustar * z / phi( z/mol ) / prsc
+
+    print('Stats from vertical_profiles')
+    print('z0   = %.3f m' % z[0])
+    print('umax = %.3f ms-1, vmax = %.3f ms-1, Kmax = %.3f m2s-1' 
+          % (max(u), max(v), max(K)))
+    print('umin = %.3f ms-1, vmin = %.3f ms-1, Kmin = %.3f mss-1' 
+          % (min(u), min(v), min(K)))
+    print()
+
+    # we do the transpose here to make the time series the first axis
+    return z.T, (u.T, v.T, K.T)
+
+
 def psi(x):
     '''
     Businger–Dyer relationship
@@ -23,50 +108,6 @@ def phi(x):
                     np.power(1.0-16.0*x,-0.5,dtype=complex).real)
 
 
-def vertical_profiles(nz,zmx,um,vm,ustar,mol=1e9,prsc=0.8,constant=False):
-
-    '''
-    z     - array of vertical grid points
-    zm    - height of measurement starting 
-    um    - zonal wind at measurement height 
-    vm    - meridional wind at measurement height
-    ustar - friction velocity
-    mol   - Monin Obukhov length
-    prsc  - Prandtl/Schmidt number
-
-    MOST based on https://doi.org/10.1023/A:1018991015119
-    '''
-
-    kap = 0.4 # Karman constant
-
-    if constant:
-
-        Km = kap * ustar * zmx / prsc
-        z = np.linspace( 0.0, zmx, nz )
-        u = um * np.ones(nz)
-        v = vm * np.ones(nz)
-        K = Km * np.ones(nz)
-
-    else:
-
-        absum = np.sqrt( um**2 + vm**2 ) # absolute wind at zm
-        z0 = zmx * np.exp( -kap * absum / ustar + psi( zmx/mol ) ) # roughness length
-
-        z = np.linspace( z0, zmx, nz )
-
-        absu = ustar / kap * ( np.log( z/z0 ) + psi( z/mol ) ) 
-
-        u = um / absum * absu
-        v = vm / absum * absu
-
-        K = kap * ustar * z / phi( z/mol ) / prsc
-
-    print('umax, vmax, Kmax', max(u), max(v), max(K))
-    print('umin, vmin, Kmin', min(u), min(v), min(K))
-
-    # we do the transpose here to make the time series the first axis
-    return z.T, u.T, v.T, K.T
-
 def compute_wind_fields(u_rot, wind_dir):
     wind_dir = np.deg2rad(wind_dir)
     u = u_rot * np.sin(wind_dir)
@@ -78,11 +119,13 @@ def compute_wind_fields(u_rot, wind_dir):
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
     fig, axs = plt.subplots(2)
-    for mol in [-500,-400,-100,-10,-5,5,10,100,400,500,1000]:
-        print('mol = ',mol)
-        z,u,v,K = vertical_profiles(nz=100,zmx=5.0,um=3.0,vm=1.0,ustar=0.25,mol=mol)
-        print("z0  = ",z[0])
-        print("psi = ", psi( 5.0/mol ))
+    for mol in [-500,-400,-100,-10,10,100,400,500,1000]:
+        z, (u, v, K) = vertical_profiles(
+                n=100,
+                meas_height=5.0,
+                wind=(3.0, 1.0),
+                ustar=0.25,
+                mol=mol)
         axs[0].plot(u,z)
         axs[0].set_xlabel('u [m/s]')
         axs[0].set_ylabel('z [m]')
