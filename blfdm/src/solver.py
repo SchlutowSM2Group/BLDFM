@@ -10,7 +10,7 @@ def steady_state_transport_solver(
         surf_flx,
         z, 
         profiles, 
-        grid_incr, 
+        domain, 
         modes     = (256, 256),
         meas_pt   = (0.0, 0.0),
         surf_bg   = 0.0, 
@@ -32,8 +32,8 @@ def steady_state_transport_solver(
         profiles: array(float)
             List of 1D arrays of vertical profiles of zonal wind, meridional wind [m s-1]
             and eddy diffusivity [m2 s-1]
-        grid_incr: scalar(float) 
-            List of grid increments dx and dy [m]
+        domain: scalar(float) 
+            List of domain sizes xmax and ymax [m]
         surf_bg: scalar(float), optional 
             Surface background concentration at z=z0 [scalar_unit]
         modes: scalar(int) 
@@ -64,15 +64,15 @@ def steady_state_transport_solver(
     q0       = surf_flx 
     p000     = surf_bg
     u, v, K  = profiles
-    dx, dy   = grid_incr
+    xmx, ymx = domain
     nlx, nly = modes 
     xm, ym   = meas_pt
 
     # number of grid cells
     ny, nx = q0.shape
 
-    # domain size
-    xmx, ymx = dx*nx, dy*ny
+    # grid increments
+    dx, dy = xmx/nx, ymx/ny
 
     if fetch < 0.0:
         fetch = min(xmx,ymx)
@@ -268,187 +268,177 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
 
     return fftpm, fftqm
 
-
-def point_measurement(f, g):
-    """
-    Computes the convolution of two 2D arrays evaluated at xm, ym.
-    scipy.convolve2d(...,mode='valid') is slighly faster,
-    but gives less precise results.
-    """
-    return np.sum(f*g)
-
-
-if __name__=='__main__':
-
-    import matplotlib.pyplot as plt
-
-    nx, ny, nz = 512, 256, 10
-    nlx, nly   = 512, 512 
-    xmx, ymx   = 2000.0, 1000.0
-    fetch      = 2000.0
-    xm, ym, zm = 1501.0, 700.5, 6.0
-    um, vm     = 2.0, 0.5
-    ustar, mol = 0.2, 100.0
-
-    R0  = xmx/12
-
-    dx = xmx/nx
-    dy = ymx/ny
-    dz = zm/nz
-
-    x = np.arange(0.0, xmx, dx)
-    y = np.arange(0.0, ymx, dy)
-
-    X, Y = np.meshgrid(x,y)
-
-    p000 = 1.0
-    q0 = np.zeros([ny,nx])
-
-    # R = np.sqrt((X-xmx/2)**2 + (Y-ymx/2)**2)
-    R = np.abs(X-xmx/2) + np.abs(Y-ymx/2)
-    q0 = np.where(R<R0,1.0,0.0)
-
-    # direct computation minimal example with varying profiles
-    tic = time.time()
-    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
-                                     ustar, mol, constant=False)
-    p0, pm00, pm, qm = steady_state_transport_solver(q0, z, (u,v,K), (dx,dy))
-    toc = time.time()
-    print('Minimal example for stratified BL and default settings')
-    print('exe time      = ',toc-tic,'s')
-    print()
-    plt.imshow(p0,origin="lower",extent=[0,xmx,0,ymx])
-    plt.title("Concentration at z0")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.colorbar()
-    plt.show()
-    plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
-    plt.title("Concentration at zm")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.colorbar()
-    plt.show()
-    plt.imshow(qm,origin="lower",extent=[0,xmx,0,ymx])
-    plt.title("Vertical kinematic flux at zm")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.colorbar()
-    plt.show()
-    
-    # Exact solution with constant profiles
-    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
-                                   ustar, constant=True)
-    tic = time.time()
-    p0, pm00, pm, qm = steady_state_transport_solver(q0,
-                                                   z,
-                                                   (u,v,K),
-                                                   (dx,dy),
-                                                   (nlx,nly),
-                                                   (xm,ym),
-                                                   p000,
-                                                   analytic=True,
-                                                   fetch=fetch)
-    toc = time.time()
-    plt.imshow(p0,origin="lower",extent=[0,xmx,0,ymx])
-    plt.title("Concentration at z0 for constant profile")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.plot(xmx/2,ymx/2,'ro') 
-    plt.colorbar()
-    plt.show()
-    plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
-    # plt.contour(X,Y,p)
-    plt.title("Concentration at zm for constant profile")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.plot(xmx/2,ymx/2,'ro') 
-    plt.colorbar()
-    plt.show()
-    print('Constant profile')
-    print('exe time      = ',toc-tic,'s')
-    print('pm00          = ',pm00)
-    print('pm at xm,ym   = ',pm[ny//2,nx//2])
-    print('qm at xm,ym   = ',qm[ny//2,nx//2])
-    print()
-
-    # direct computation 
-    tic = time.time()
-    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
-                                   ustar, mol, constant=True)
-    p0, pm00, pm, qm = steady_state_transport_solver(q0,
-                                                     z,
-                                                     (u,v,K),
-                                                     (dx,dy),
-                                                     (nlx,nly),
-                                                     (xm,ym),
-                                                     p000,
-                                                     fetch=fetch)
-    toc = time.time()
-    plt.imshow(p0,origin="lower",extent=[0,xmx,0,ymx])
-    plt.title("Concentration at z0")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.plot(xmx/2,ymx/2,'ro') 
-    plt.colorbar()
-    plt.show()
-    plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
-    plt.title("Concentration at zm")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.plot(xmx/2,ymx/2,'ro') 
-    plt.colorbar()
-    plt.show()
-    plt.imshow(qm,origin="lower",extent=[0,xmx,0,ymx])
-    plt.title("Vertical kinematic flux at zm")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.plot(xmx/2,ymx/2,'ro') 
-    plt.colorbar()
-    plt.show()
-    print('Direct method')
-    print('exe time     = ',toc-tic,'s')
-    print('pm00         = ',pm00)
-    print('pm at xm,ym  = ',pm[ny//2,nx//2])
-    print('qm at xm,ym  = ',qm[ny//2,nx//2])
-    print()
-
-    # compute Green function by upgraded solver
-    _, _, pg, qg = steady_state_transport_solver(q0,
-                                               z,
-                                               (u,v,K),
-                                               (dx,dy),
-                                               (nlx,nly),
-                                               (xm,ym),
-                                               footprint=True,
-                                               fetch=fetch)
-
-    # compute solution by convolution with Green function
-    tic = time.time()
-    pm = p000 + point_measurement(q0,pg)
-    qm = point_measurement(q0,qg)
-    toc = time.time()
-    print('Convolution with Green function')
-    print('exe time      = ',toc-tic,'s')
-    print('pm at xm,ym   = ',pm)
-    print('qm at xm,ym   = ',qm)
-    print()
-
-    # plt.imshow(qg,origin="lower")
-    # plt.imshow(np.roll(pg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
-    plt.imshow(pg,origin='lower',extent=[0,xmx,0,ymx])
-    plt.title("Flipped Green's function for concentration at zm")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.colorbar()
-    plt.show()
-
-    plt.imshow(qg,origin='lower',extent=[0,xmx,0,ymx])
-    # qg = np.where(qg<0.002,0.0,qg)
-    # plt.contour(X,Y,qg)
-    plt.title("Footprint")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.colorbar()
-    plt.show()
+#if __name__=='__main__':
+#
+#    import matplotlib.pyplot as plt
+#
+#    nx, ny, nz = 512, 256, 10
+#    nlx, nly   = 512, 512 
+#    xmx, ymx   = 2000.0, 1000.0
+#    fetch      = 2000.0
+#    xm, ym, zm = 1501.0, 700.5, 6.0
+#    um, vm     = 2.0, 0.5
+#    ustar, mol = 0.2, 100.0
+#
+#    R0  = xmx/12
+#
+#    dx = xmx/nx
+#    dy = ymx/ny
+#    dz = zm/nz
+#
+#    x = np.arange(0.0, xmx, dx)
+#    y = np.arange(0.0, ymx, dy)
+#
+#    X, Y = np.meshgrid(x,y)
+#
+#    p000 = 1.0
+#    q0 = np.zeros([ny,nx])
+#
+#    # R = np.sqrt((X-xmx/2)**2 + (Y-ymx/2)**2)
+#    R = np.abs(X-xmx/2) + np.abs(Y-ymx/2)
+#    q0 = np.where(R<R0,1.0,0.0)
+#
+#    # direct computation minimal example with varying profiles
+#    tic = time.time()
+#    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
+#                                     ustar, mol, constant=False)
+#    p0, pm00, pm, qm = steady_state_transport_solver(q0, z, (u,v,K), (dx,dy))
+#    toc = time.time()
+#    print('Minimal example for stratified BL and default settings')
+#    print('exe time      = ',toc-tic,'s')
+#    print()
+#    plt.imshow(p0,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.title("Concentration at z0")
+#    plt.xlabel("x")
+#    plt.ylabel("y")
+#    plt.colorbar()
+#    plt.show()
+#    plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.title("Concentration at zm")
+#    plt.xlabel("x")
+#    plt.ylabel("y")
+#    plt.colorbar()
+#    plt.show()
+#    plt.imshow(qm,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.title("Vertical kinematic flux at zm")
+#    plt.xlabel("x")
+#    plt.ylabel("y")
+#    plt.colorbar()
+#    plt.show()
+#    
+#    # Exact solution with constant profiles
+#    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
+#                                   ustar, constant=True)
+#    tic = time.time()
+#    p0, pm00, pm, qm = steady_state_transport_solver(q0,
+#                                                   z,
+#                                                   (u,v,K),
+#                                                   (dx,dy),
+#                                                   (nlx,nly),
+#                                                   (xm,ym),
+#                                                   p000,
+#                                                   analytic=True,
+#                                                   fetch=fetch)
+#    toc = time.time()
+#    plt.imshow(p0,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.title("Concentration at z0 for constant profile")
+#    plt.xlabel("x")
+#    plt.ylabel("y")
+#    plt.plot(xmx/2,ymx/2,'ro') 
+#    plt.colorbar()
+#    plt.show()
+#    plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
+#    # plt.contour(X,Y,p)
+#    plt.title("Concentration at zm for constant profile")
+#    plt.xlabel("x")
+#    plt.ylabel("y")
+#    plt.plot(xmx/2,ymx/2,'ro') 
+#    plt.colorbar()
+#    plt.show()
+#    print('Constant profile')
+#    print('exe time      = ',toc-tic,'s')
+#    print('pm00          = ',pm00)
+#    print('pm at xm,ym   = ',pm[ny//2,nx//2])
+#    print('qm at xm,ym   = ',qm[ny//2,nx//2])
+#    print()
+#
+#    # direct computation 
+#    tic = time.time()
+#    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
+#                                   ustar, mol, constant=True)
+#    p0, pm00, pm, qm = steady_state_transport_solver(q0,
+#                                                     z,
+#                                                     (u,v,K),
+#                                                     (dx,dy),
+#                                                     (nlx,nly),
+#                                                     (xm,ym),
+#                                                     p000,
+#                                                     fetch=fetch)
+#    toc = time.time()
+#    plt.imshow(p0,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.title("Concentration at z0")
+#    plt.xlabel("x")
+#    plt.ylabel("y")
+#    plt.plot(xmx/2,ymx/2,'ro') 
+#    plt.colorbar()
+#    plt.show()
+#    plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.title("Concentration at zm")
+#    plt.xlabel("x")
+#    plt.ylabel("y")
+#    plt.plot(xmx/2,ymx/2,'ro') 
+#    plt.colorbar()
+#    plt.show()
+#    plt.imshow(qm,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.title("Vertical kinematic flux at zm")
+#    plt.xlabel("x")
+#    plt.ylabel("y")
+#    plt.plot(xmx/2,ymx/2,'ro') 
+#    plt.colorbar()
+#    plt.show()
+#    print('Direct method')
+#    print('exe time     = ',toc-tic,'s')
+#    print('pm00         = ',pm00)
+#    print('pm at xm,ym  = ',pm[ny//2,nx//2])
+#    print('qm at xm,ym  = ',qm[ny//2,nx//2])
+#    print()
+#
+#    # compute Green function by upgraded solver
+#    _, _, pg, qg = steady_state_transport_solver(q0,
+#                                               z,
+#                                               (u,v,K),
+#                                               (dx,dy),
+#                                               (nlx,nly),
+#                                               (xm,ym),
+#                                               footprint=True,
+#                                               fetch=fetch)
+#
+#    # compute solution by convolution with Green function
+#    tic = time.time()
+#    pm = p000 + point_measurement(q0,pg)
+#    qm = point_measurement(q0,qg)
+#    toc = time.time()
+#    print('Convolution with Green function')
+#    print('exe time      = ',toc-tic,'s')
+#    print('pm at xm,ym   = ',pm)
+#    print('qm at xm,ym   = ',qm)
+#    print()
+#
+#    # plt.imshow(qg,origin="lower")
+#    # plt.imshow(np.roll(pg,(ny//2,nx//2),axis=(0,1)),origin='lower',extent=[0,xmx,0,ymx])
+#    plt.imshow(pg,origin='lower',extent=[0,xmx,0,ymx])
+#    plt.title("Flipped Green's function for concentration at zm")
+#    plt.xlabel("x")
+#    plt.ylabel("y")
+#    plt.colorbar()
+#    plt.show()
+#
+#    plt.imshow(qg,origin='lower',extent=[0,xmx,0,ymx])
+#    # qg = np.where(qg<0.002,0.0,qg)
+#    # plt.contour(X,Y,qg)
+#    plt.title("Footprint")
+#    plt.xlabel("x")
+#    plt.ylabel("y")
+#    plt.colorbar()
+#    plt.show()
 

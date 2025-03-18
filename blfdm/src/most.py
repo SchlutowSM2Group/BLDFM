@@ -88,7 +88,7 @@ def vertical_profiles(
 def psi(x):
     '''
     Businger–Dyer relationship
-    x =  z / L 
+    x =  z / mol
     '''
     xi = np.where(x>0.0, 
                   np.nan, 
@@ -101,19 +101,11 @@ def psi(x):
 def phi(x):
     '''
     Businger–Dyer relationship
-    x =  z / L 
+    x =  z / mol 
     '''
     return np.where(x>0.0, 
                     1.0+5.0*x, 
                     np.power(1.0-16.0*x,-0.5,dtype=complex).real)
-
-
-def compute_wind_fields(u_rot, wind_dir):
-    wind_dir = np.deg2rad(wind_dir)
-    u = u_rot * np.sin(wind_dir)
-    v = u_rot * np.cos(wind_dir)
-
-    return u, v
 
 
 if __name__ == '__main__':
