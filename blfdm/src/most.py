@@ -75,9 +75,9 @@ def vertical_profiles(
 
     print('Stats from vertical_profiles')
     print('z0   = %.3f m' % z[0])
-    print('umax = %.3f ms-1, vmax = %.3f ms-1, Kmax = %.3f m2s-1' 
+    print('umax = %.3f m s-1, vmax = %.3f m s-1, Kmax = %.3f m2 s-1' 
           % (max(u), max(v), max(K)))
-    print('umin = %.3f ms-1, vmin = %.3f ms-1, Kmin = %.3f mss-1' 
+    print('umin = %.3f m s-1, vmin = %.3f m s-1, Kmin = %.3f m2 s-1' 
           % (min(u), min(v), min(K)))
     print()
 
