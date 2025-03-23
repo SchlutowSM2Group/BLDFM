@@ -23,7 +23,7 @@ z, profs = vertical_profiles(
         wind,
         ustar )
 
-p0, pm00, pm, qm = steady_state_transport_solver(
+p0, p00, p, q = steady_state_transport_solver(
         q0, 
         z, 
         profs, 
@@ -34,13 +34,13 @@ p0, pm00, pm, qm = steady_state_transport_solver(
         fetch = fetch
         )
 
-plt.imshow(pm,origin="lower",extent=[0,domain[0],0,domain[1]])
+plt.imshow(p,origin="lower",extent=[0,domain[0],0,domain[1]])
 plt.title("Concentration footprint")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.colorbar()
 plt.show()
-plt.imshow(qm,origin="lower",extent=[0,domain[0],0,domain[1]])
+plt.imshow(q,origin="lower",extent=[0,domain[0],0,domain[1]])
 plt.title("Flux footprint")
 plt.xlabel("x")
 plt.ylabel("y")
