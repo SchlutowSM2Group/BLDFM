@@ -1,4 +1,6 @@
 import numpy as np
+import scipy.fft as fft
+
 
 def compute_wind_fields(u_rot, wind_dir):
 
@@ -8,6 +10,30 @@ def compute_wind_fields(u_rot, wind_dir):
 
     return u, v
 
+def point_source(nxy, domain, srcpt):
+
+    xs, ys   = srcpt
+    nx, ny   = nxy
+    xmx, ymx = domain
+
+    dx, dy = xmx/nx, ymx/ny
+
+    # Fourier summation index
+    ilx = fft.fftfreq(nx, d=1.0/nx) 
+    ily = fft.fftfreq(ny, d=1.0/ny) 
+
+    # define zonal and meridional wavenumbers
+    lx = 2.0*np.pi/dx/nx * ilx 
+    ly = 2.0*np.pi/dy/ny * ily 
+
+    Lx, Ly = np.meshgrid(lx, ly)
+
+    fftq0 = np.ones((ny,nx),dtype=complex)/nx/ny
+    # shift to source point in Fourier space
+    fftq0 = fftq0 * np.exp(-1j * (Lx*xs + Ly*ys))
+
+    return fft.ifft2(fftq0,norm='forward').real
+
 
 def ideal_source(nxy, domain, shape='diamond'):
     """
@@ -15,7 +41,7 @@ def ideal_source(nxy, domain, shape='diamond'):
     Useful for testing.
     """
 
-    nx, ny = nxy
+    nx, ny   = nxy
     xmx, ymx = domain
 
     x = np.linspace(0.0, xmx, nx)

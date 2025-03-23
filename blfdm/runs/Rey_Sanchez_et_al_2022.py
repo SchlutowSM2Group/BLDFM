@@ -1,9 +1,14 @@
 import numpy as np
 import pandas as pd
+import scipy.io
+import matplotlib.pyplot as plt
 
 from ..src.most import vertical_profiles
+from ..src.utils import point_source
 from ..src.solver import steady_state_transport_solver
-import scipy.io
+
+nxy    = 512, 256
+domain = 1000.0, 500.0
 
 # df = pd.read_csv(file_path, na_values='<missing>')
 
@@ -19,7 +24,15 @@ ustar = df['data']['ustar'][0][0]
 mol   = df['data']['L'][0][0]
 
 # Metadata
+dist = 20.0  # [m] distance of release pipe from tower
+azi  = 253.0 # [deg] azimuth of release pipe
+vfr  = 1.75  # [L min-1] volumetric flow rate at release pipe
 
+srcpt = 100.0, 100.0
 
+q0 = point_source(nxy, domain, srcpt)
+
+plt.imshow(q0,origin="lower",extent=[0,domain[0],0,domain[1]])
+plt.show()
 
 
