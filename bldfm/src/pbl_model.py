@@ -5,7 +5,6 @@ def vertical_profiles(
         meas_height,
         wind,
         ustar,
-        tke = -1e9,
         mol = 1e9,
         prsc = 1.0,
         closure = "MOST",
@@ -33,7 +32,7 @@ def vertical_profiles(
         mol: scalar(float)
             Monin-Obukhov length
         prsc: scalar(float)
-            Prandtl to Schmidt number ratio depending on the scalar 
+            Prandtl or Schmidt number depending on the scalar 
             that is subject to atmospheric dispersion
         constant: scalar(bool)
             Switch for returning constant profiles
@@ -48,12 +47,25 @@ def vertical_profiles(
 
     zm, (um, vm) = meas_height, wind
 
+    # make function dimension-agnostic
+    # here, we create (Nts x Nz arrays)
+    um = np.array(um)
+    vm = np.array(vm)
+    ustar = np.array(ustar)
+
+    um = um[..., np.newaxis]
+    vm = vm[..., np.newaxis]
+    ustar = ustar[..., np.newaxis]
+
     kap = 0.4 # Karman constant
 
     if closure == "CONSTANT":
 
         Km = kap * ustar * zm / prsc
-        z = np.linspace( 0.0, zm, n )
+
+        z0 = np.zeros_like(um)
+        z = np.array([ np.linspace( z00, zm, n ) for z00 in z0 ]).squeeze()
+        
         u = um * np.ones(n)
         v = vm * np.ones(n)
         K = Km * np.ones(n)
@@ -77,7 +89,8 @@ def vertical_profiles(
             ustar = absum * kap / (np.log(zm/z0) + psi(zm/mol)) 
 
         # equidistant vertical grid
-        z = np.linspace( z0, zm, n )
+        # find a way to vectorize this properly
+        z = np.array([ np.linspace( z00, zm, n ) for z00 in z0 ]).squeeze()
 
         absu = ustar / kap * ( np.log( z/z0 ) + psi( z/mol ) ) 
 
@@ -125,8 +138,7 @@ def vertical_profiles(
           % (min(u), min(v), min(K)))
     print()
 
-    # we do the transpose here to make the time series the first axis
-    return z.T, (u.T, v.T, K.T)
+    return z.squeeze(), (u.squeeze(), v.squeeze(), K.squeeze())
 
 
 def psi(x):
