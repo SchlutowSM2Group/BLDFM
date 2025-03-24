@@ -10,9 +10,9 @@ def compute_wind_fields(u_rot, wind_dir):
 
     return u, v
 
-def point_source(nxy, domain, srcpt):
+def point_source(nxy, domain, src_pt):
 
-    xs, ys   = srcpt
+    xs, ys   = src_pt
     nx, ny   = nxy
     xmx, ymx = domain
 
