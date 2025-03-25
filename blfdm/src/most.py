@@ -1,14 +1,15 @@
 import numpy as np
 
-# def vertical_profiles(nz,zm,um,vm,ustar,mol=1e9,prsc=0.8,constant=False):
 def vertical_profiles(
         n,
         meas_height,
         wind,
         ustar,
-        mol=1e9,
-        prsc=0.8,
-        constant=False
+        mol = 1e9,
+        prsc = 0.8,
+        constant = False,
+        z0_min = 0.001,
+        z0_max = 5.0
         ):
     """ 
     Computes profiles of horizontal wind and eddy diffusivity 
@@ -62,6 +63,12 @@ def vertical_profiles(
 
         # roughness length
         z0 = zm * np.exp( -kap * absum / ustar + psi( zm/mol ) )
+
+        # sanity checks
+        if z0 > z0_max:
+            z0 = np.nan
+
+        z0 = max(z0, z0_min)
 
         # equidistant vertical grid
         z = np.linspace( z0, zm, n )
