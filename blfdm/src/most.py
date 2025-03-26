@@ -8,6 +8,7 @@ def vertical_profiles(
         mol = 1e9,
         prsc = 0.8,
         constant = False,
+        z0 = -1e9,
         z0_min = 0.001,
         z0_max = 5.0
         ):
@@ -61,14 +62,16 @@ def vertical_profiles(
         # absolute wind at zm
         absum = np.sqrt( um**2 + vm**2 ) 
 
-        # roughness length
-        z0 = zm * np.exp( -kap * absum / ustar + psi( zm/mol ) )
+        if z0 < 0.0:
 
-        # sanity checks
-        if z0 > z0_max:
-            z0 = np.nan
+            # roughness length
+            z0 = zm * np.exp( -kap * absum / ustar + psi( zm/mol ) )
 
-        z0 = max(z0, z0_min)
+            # sanity checks
+            if z0 > z0_max:
+                z0 = np.nan
+
+            z0 = max(z0, z0_min)
 
         # equidistant vertical grid
         z = np.linspace( z0, zm, n )
