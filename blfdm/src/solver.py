@@ -53,11 +53,11 @@ def steady_state_transport_solver(
     Returns:
         p0: array(float)
             2D field of surface concentrations at z=z0 [scalar_unit]
-        pm00: scalar(float) 
+        p00: scalar(float) 
             Background concentration at z=zm [scalar_unit]
-        pm: array(float) 
+        p: array(float) 
             2D field of concentration at z=zm or Green's function [scalar_unit]
-        qm: array(float) 
+        q: array(float) 
             2D field of kinematic flux at z=zm or Footprint [scalar_unit m s-1]
     """
     
@@ -140,11 +140,11 @@ def steady_state_transport_solver(
 
     # initialization
     tfftp0 = np.zeros((nly,nlx),dtype=complex) 
-    tfftpm = np.zeros((nly,nlx),dtype=complex) 
-    tfftqm = np.zeros((nly,nlx),dtype=complex)
+    tfftp = np.zeros((nly,nlx),dtype=complex) 
+    tfftq = np.zeros((nly,nlx),dtype=complex)
 
     tfftp0[0,0] = p000
-    tfftqm[0,0] = tfftq0[0,0] # conservation by design
+    tfftq[0,0] = tfftq0[0,0] # conservation by design
 
     if analytic:
 
@@ -152,9 +152,9 @@ def steady_state_transport_solver(
         # for validation purposes
         h = z[nz-1]-z[0]
         tfftp0[msk] = tfftq0[msk] * Kinv / eigval 
-        tfftpm[0,0] = p000 - tfftq0[0,0] * Kinv  * h
-        tfftqm[msk] = tfftq0[msk] * np.exp(-eigval * h)
-        tfftpm[msk] = tfftqm[msk] * Kinv / eigval 
+        tfftp[0,0] = p000 - tfftq0[0,0] * Kinv  * h
+        tfftq[msk] = tfftq0[msk] * np.exp(-eigval * h)
+        tfftp[msk] = tfftq[msk] * Kinv / eigval 
     
     else:                                        
     
@@ -169,54 +169,54 @@ def steady_state_transport_solver(
 
         # linear combination of the two solution of the IVP 
         tfftp0[msk] = alpha       
-        tfftpm[msk] = alpha * tfftp1 + tfftp2        
-        tfftqm[msk] = alpha * tfftq1 + tfftq2        
+        tfftp[msk] = alpha * tfftp1 + tfftp2        
+        tfftq[msk] = alpha * tfftq1 + tfftq2        
                                                  
         # solve degenerated problem for (n,m) =  (0,0)
         # with Euler forward method
-        tfftpm[0,0] = p000                         
+        tfftp[0,0] = p000                         
         for i in range(nz-1):                    
-            tfftpm[0,0] = tfftpm[0,0] - tfftq0[0,0] / K[i] * dz[i]
+            tfftp[0,0] = tfftp[0,0] - tfftq0[0,0] / K[i] * dz[i]
 
     # shift green function in Fourier space to measurement point
     if footprint:
         tfftp0 = tfftp0 * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
-        tfftpm = tfftpm * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
-        tfftqm = tfftqm * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
+        tfftp = tfftp * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
+        tfftq = tfftq * np.exp(1j * (Lx*(xm+fetch) + Ly*(ym+fetch)))
     # shift such that xm, ym are in the middle of the domain 
     elif xm**2 + ym**2 > 0.0:
         tfftp0 = tfftp0 * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
-        tfftpm = tfftpm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
-        tfftqm = tfftqm * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+        tfftp = tfftp * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
+        tfftq = tfftq * np.exp(1j * (Lx*(xm-xmx/2) + Ly*(ym-ymx/2)))
 
     # shift zero to center
     tfftp0  = fft.fftshift(tfftp0)
-    tfftpm  = fft.fftshift(tfftpm)
-    tfftqm  = fft.fftshift(tfftqm)
+    tfftp  = fft.fftshift(tfftp)
+    tfftq  = fft.fftshift(tfftq)
 
     # untruncate
     fftp0 = np.pad(tfftp0, ((dly,dly),(dlx,dlx)), mode='constant', constant_values=0.0)
-    fftpm = np.pad(tfftpm, ((dly,dly),(dlx,dlx)), mode='constant', constant_values=0.0)
-    fftqm = np.pad(tfftqm, ((dly,dly),(dlx,dlx)), mode='constant', constant_values=0.0)
+    fftp = np.pad(tfftp, ((dly,dly),(dlx,dlx)), mode='constant', constant_values=0.0)
+    fftq = np.pad(tfftq, ((dly,dly),(dlx,dlx)), mode='constant', constant_values=0.0)
 
     # unshift
     fftp0 = fft.ifftshift(fftp0)
-    fftpm = fft.ifftshift(fftpm)
-    fftqm = fft.ifftshift(fftqm)
+    fftp = fft.ifftshift(fftp)
+    fftq = fft.ifftshift(fftq)
 
     if footprint:
         # use fft to reverse sign, make green's function to footprint
         p0 = fft.fft2(fftp0,norm='backward').real # concentration  
-        pm = fft.fft2(fftpm,norm='backward').real # concentration  
-        qm = fft.fft2(fftqm,norm='backward').real # kinematic flux 
+        p = fft.fft2(fftp,norm='backward').real # concentration  
+        q = fft.fft2(fftq,norm='backward').real # kinematic flux 
     else: 
         # use ifft as usual
         p0 = fft.ifft2(fftp0,norm='forward').real # concentration  
-        pm = fft.ifft2(fftpm,norm='forward').real # concentration  
-        qm = fft.ifft2(fftqm,norm='forward').real # kinematic flux 
+        p = fft.ifft2(fftp,norm='forward').real # concentration  
+        q = fft.ifft2(fftq,norm='forward').real # kinematic flux 
 
-    return p0[py:ny-py,px:nx-px], fftpm[0,0].real, \
-           pm[py:ny-py,px:nx-px], qm[py:ny-py,px:nx-px]
+    return p0[py:ny-py,px:nx-px], fftp[0,0].real, \
+           p[py:ny-py,px:nx-px], q[py:ny-py,px:nx-px]
 
 
 def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
@@ -226,7 +226,7 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
     with the Fast Fourier Transform
     '''
 
-    fftpm, fftqm = np.copy(fftp0), np.copy(fftq0)
+    fftp, fftq = np.copy(fftp0), np.copy(fftq0)
 
     nz = len(z)
     dz = np.diff(z,axis=0)
@@ -240,9 +240,9 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
         # exponential integrator (exact) method
         if method == 'EI':
             eig = np.sqrt( Ti*Kinv )
-            dum = np.cos(eig*dzi) * fftpm - Kinv/eig*np.sin(eig*dzi) * fftqm
-            fftqm = Ti/eig*np.sin(eig*dzi) * fftpm + np.cos(eig*dzi) * fftqm
-            fftpm = dum
+            dum = np.cos(eig*dzi) * fftp - Kinv/eig*np.sin(eig*dzi) * fftq
+            fftq = Ti/eig*np.sin(eig*dzi) * fftp + np.cos(eig*dzi) * fftq
+            fftp = dum
 
         # Taylor series for exponential integrator method up to 3rd order
         if method == 'TSEI3':
@@ -251,22 +251,22 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
             c = Ti * dzi - 1.0/6.0 * Kinv * Ti**2 *dzi**3
             d = 1.0 - 0.5 * Kinv * Ti * dzi**2
 
-            dum   = a * fftpm + b * fftqm
-            fftqm = c * fftpm + d * fftqm
-            fftpm = dum
+            dum   = a * fftp + b * fftq
+            fftq = c * fftp + d * fftq
+            fftp = dum
 
         # Semi-implicit Euler method
         if method == 'SIE':
-            fftpm = fftpm - dzi * Kinv * fftqm
-            fftqm = fftqm + dzi * Ti * fftpm
+            fftp = fftp - dzi * Kinv * fftq
+            fftq = fftq + dzi * Ti * fftp
 
         # Explicit Euler method
         if method == 'EE':
-            dum = fftpm - dz[i]/K[i]*fftqm
-            fftqm = fftqm + dz[i]*Ti*fftpm
-            fftpm = dum
+            dum = fftp - dz[i]/K[i]*fftq
+            fftq = fftq + dz[i]*Ti*fftp
+            fftp = dum
 
-    return fftpm, fftqm
+    return fftp, fftq
 
 #if __name__=='__main__':
 #
@@ -302,7 +302,7 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
 #    tic = time.time()
 #    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
 #                                     ustar, mol, constant=False)
-#    p0, pm00, pm, qm = steady_state_transport_solver(q0, z, (u,v,K), (dx,dy))
+#    p0, p00, p, q = steady_state_transport_solver(q0, z, (u,v,K), (dx,dy))
 #    toc = time.time()
 #    print('Minimal example for stratified BL and default settings')
 #    print('exe time      = ',toc-tic,'s')
@@ -313,13 +313,13 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
 #    plt.ylabel("y")
 #    plt.colorbar()
 #    plt.show()
-#    plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.imshow(p,origin="lower",extent=[0,xmx,0,ymx])
 #    plt.title("Concentration at zm")
 #    plt.xlabel("x")
 #    plt.ylabel("y")
 #    plt.colorbar()
 #    plt.show()
-#    plt.imshow(qm,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.imshow(q,origin="lower",extent=[0,xmx,0,ymx])
 #    plt.title("Vertical kinematic flux at zm")
 #    plt.xlabel("x")
 #    plt.ylabel("y")
@@ -330,7 +330,7 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
 #    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
 #                                   ustar, constant=True)
 #    tic = time.time()
-#    p0, pm00, pm, qm = steady_state_transport_solver(q0,
+#    p0, p00, p, q = steady_state_transport_solver(q0,
 #                                                   z,
 #                                                   (u,v,K),
 #                                                   (dx,dy),
@@ -347,7 +347,7 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
 #    plt.plot(xmx/2,ymx/2,'ro') 
 #    plt.colorbar()
 #    plt.show()
-#    plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.imshow(p,origin="lower",extent=[0,xmx,0,ymx])
 #    # plt.contour(X,Y,p)
 #    plt.title("Concentration at zm for constant profile")
 #    plt.xlabel("x")
@@ -357,16 +357,16 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
 #    plt.show()
 #    print('Constant profile')
 #    print('exe time      = ',toc-tic,'s')
-#    print('pm00          = ',pm00)
-#    print('pm at xm,ym   = ',pm[ny//2,nx//2])
-#    print('qm at xm,ym   = ',qm[ny//2,nx//2])
+#    print('p00          = ',p00)
+#    print('p at xm,ym   = ',p[ny//2,nx//2])
+#    print('q at xm,ym   = ',q[ny//2,nx//2])
 #    print()
 #
 #    # direct computation 
 #    tic = time.time()
 #    z, (u, v, K) = vertical_profiles(nz, zm, (um, vm), 
 #                                   ustar, mol, constant=True)
-#    p0, pm00, pm, qm = steady_state_transport_solver(q0,
+#    p0, p00, p, q = steady_state_transport_solver(q0,
 #                                                     z,
 #                                                     (u,v,K),
 #                                                     (dx,dy),
@@ -382,14 +382,14 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
 #    plt.plot(xmx/2,ymx/2,'ro') 
 #    plt.colorbar()
 #    plt.show()
-#    plt.imshow(pm,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.imshow(p,origin="lower",extent=[0,xmx,0,ymx])
 #    plt.title("Concentration at zm")
 #    plt.xlabel("x")
 #    plt.ylabel("y")
 #    plt.plot(xmx/2,ymx/2,'ro') 
 #    plt.colorbar()
 #    plt.show()
-#    plt.imshow(qm,origin="lower",extent=[0,xmx,0,ymx])
+#    plt.imshow(q,origin="lower",extent=[0,xmx,0,ymx])
 #    plt.title("Vertical kinematic flux at zm")
 #    plt.xlabel("x")
 #    plt.ylabel("y")
@@ -398,7 +398,7 @@ def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
 #    plt.show()
 #    print('Direct method')
 #    print('exe time     = ',toc-tic,'s')
-#    print('pm00         = ',pm00)
+#    print('p00         = ',p00)
 #    print('pm at xm,ym  = ',pm[ny//2,nx//2])
 #    print('qm at xm,ym  = ',qm[ny//2,nx//2])
 #    print()
