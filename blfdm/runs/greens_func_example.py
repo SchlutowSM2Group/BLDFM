@@ -11,9 +11,9 @@ nz          = 10
 modes       = 512, 512
 domain      = 2000.0, 1000.0
 fetch       = 2000.0
-meas_pt     = 1500.0, 700.0
+meas_pt     = 300.0, 400.0
 meas_height = 6.0
-wind        = 4.0, 2.0
+wind        = -2.0, 2.0
 ustar       = 0.5
 surf_bg     = 1.0
 
