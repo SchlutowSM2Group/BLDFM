@@ -28,9 +28,13 @@ def point_source(nxy, domain, src_pt):
 
     Lx, Ly = np.meshgrid(lx, ly)
 
-    fftq0 = np.ones((ny,nx),dtype=complex)/nx/ny
+    fftq0 = np.ones((ny,nx),dtype=complex)
+    
     # shift to source point in Fourier space
-    fftq0 = fftq0 * np.exp(-1j * (Lx*xs + Ly*ys))
+    fftq0 = fftq0 * np.exp(-1j * (Lx*xs + Ly*ys))/nx/ny
+
+    # normalize
+    fftq0 = fftq0 / dx / dy
 
     return fft.ifft2(fftq0,norm='forward').real
 
@@ -55,7 +59,7 @@ def ideal_source(nxy, domain, shape='diamond'):
     # R = np.sqrt((X-xmx/2)**2 + (Y-ymx/2)**2)
 
     # Diamond source  
-    R = np.abs(X-xmx/2) + np.abs(Y-ymx/2)
+    R = np.abs(X-xmx/4) + np.abs(Y-ymx/4)
     
     R0  = xmx/12
 
