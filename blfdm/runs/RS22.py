@@ -11,17 +11,17 @@ from ..src.solver import steady_state_transport_solver
 
 nxy         = 256, 128
 nz          = 30
-modes       = 512, 512
+modes       = 1024, 1024
 domain      = 100.0, 50.0
-fetch       = 400.0
+fetch       = 600.0
 
 start_doy   = 228 # 228
 end_doy     = 230
-start_hour  = 9.0
-end_hour    = 18.0
+start_hour  = 6.0
+end_hour    = 21.0
 
 ustar_min   = 0.2
-flxo_min    = 600. # [nmol m-2 s-1]
+flxo_min    = 50.0 # [nmol m-2 s-1]
 
 meas_pt     = 50.0, 25.0
 meas_height = 3.9
