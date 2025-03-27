@@ -10,7 +10,7 @@ def vertical_profiles(
         constant = False,
         z0 = -1e9,
         z0_min = 0.001,
-        z0_max = 5.0
+        z0_max = 2.0
         ):
     """ 
     Computes profiles of horizontal wind and eddy diffusivity 
@@ -68,10 +68,12 @@ def vertical_profiles(
             z0 = zm * np.exp( -kap * absum / ustar + psi( zm/mol ) )
 
             # sanity checks
-            if z0 > z0_max:
-                z0 = np.nan
-
+            z0 = min(z0, z0_max)
             z0 = max(z0, z0_min)
+
+        else:
+
+            ustar = absum * kap / (np.log(zm/z0) + psi(zm/mol)) 
 
         # equidistant vertical grid
         z = np.linspace( z0, zm, n )
@@ -84,10 +86,11 @@ def vertical_profiles(
         K = kap * ustar * z / phi( z/mol ) / prsc
 
     print('Stats from vertical_profiles')
-    print('z0   = %.3f m' % z[0])
-    print('umax = %.3f m s-1, vmax = %.3f m s-1, Kmax = %.3f m2 s-1' 
+    print('z0    = %.3f m' % z[0])
+    print('ustar = %.3f m s-1' % ustar)
+    print('umax  = %.3f m s-1, vmax = %.3f m s-1, Kmax = %.3f m2 s-1' 
           % (max(u), max(v), max(K)))
-    print('umin = %.3f m s-1, vmin = %.3f m s-1, Kmin = %.3f m2 s-1' 
+    print('umin  = %.3f m s-1, vmin = %.3f m s-1, Kmin = %.3f m2 s-1' 
           % (min(u), min(v), min(K)))
     print()
 
