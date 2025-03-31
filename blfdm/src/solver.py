@@ -1,22 +1,21 @@
 import numpy as np
 import scipy.fft as fft
 import time
-from .most import vertical_profiles
 # from scipy.signal import convolve2d
 # import logging
 
 
 def steady_state_transport_solver(
-        surf_flx,
+        srf_flx,
         z, 
         profiles, 
         domain, 
-        modes     = (256, 256),
-        meas_pt   = (0.0, 0.0),
-        surf_bg   = 0.0, 
-        footprint = False, 
-        analytic  = False,
-        fetch     = -1e9 
+        modes       = (512, 512),
+        meas_pt     = (0.0, 0.0),
+        srf_bg_conc = 0.0, 
+        footprint   = False, 
+        analytic    = False,
+        fetch       = -1e9 
         ):
     """
     Solves the steady-state advection-diffusion equation for a concentration 
@@ -25,7 +24,7 @@ def steady_state_transport_solver(
     using the Fourier, linear shooting and semi-implicit Euler methods
 
     Parameters:
-        surf_flx: array(float)
+        srf_flx: array(float)
             2D field of surface kinematic flux at z=z0 [scalar_unit m s-1]
         z: array(float) 
             1D array of vertical grid points from z0 to zm [m]
@@ -34,7 +33,7 @@ def steady_state_transport_solver(
             and eddy diffusivity [m2 s-1]
         domain: scalar(float) 
             List of domain sizes xmax and ymax [m]
-        surf_bg: scalar(float), optional 
+        srf_bg_conc: scalar(float), optional 
             Surface background concentration at z=z0 [scalar_unit]
         modes: scalar(int) 
             List of number of zonal and meridional Fourier modes nlx and nly
@@ -51,18 +50,18 @@ def steady_state_transport_solver(
             fetch = 0.0, same as periodic boundaries.
 
     Returns:
-        p0: array(float)
+        srf_conc: array(float)
             2D field of surface concentrations at z=z0 [scalar_unit]
-        p00: scalar(float) 
+        bg_conc: scalar(float) 
             Background concentration at z=zm [scalar_unit]
-        p: array(float) 
+        conc: array(float) 
             2D field of concentration at z=zm or Green's function [scalar_unit]
-        q: array(float) 
+        flx: array(float) 
             2D field of kinematic flux at z=zm or Footprint [scalar_unit m s-1]
     """
     
-    q0       = surf_flx 
-    p000     = surf_bg
+    q0       = srf_flx 
+    p000     = srf_bg_conc
     u, v, K  = profiles
     xmx, ymx = domain
     nlx, nly = modes 
@@ -75,7 +74,7 @@ def steady_state_transport_solver(
     dx, dy = xmx/nx, ymx/ny
 
     if fetch < 0.0:
-        fetch = min(xmx,ymx)
+        fetch = max(xmx,ymx)
 
     # pad width
     px = int(fetch/dx) 
@@ -215,8 +214,12 @@ def steady_state_transport_solver(
         p = fft.ifft2(fftp,norm='forward').real # concentration  
         q = fft.ifft2(fftq,norm='forward').real # kinematic flux 
 
-    return p0[py:ny-py,px:nx-px], fftp[0,0].real, \
-           p[py:ny-py,px:nx-px], q[py:ny-py,px:nx-px]
+    srf_conc = p0[py:ny-py,px:nx-px]
+    bg_conc  = fftp[0,0].real
+    conc     = p[py:ny-py,px:nx-px] 
+    flx      = q[py:ny-py,px:nx-px]
+
+    return srf_conc, bg_conc, conc, flx
 
 
 def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):

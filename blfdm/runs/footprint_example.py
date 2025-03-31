@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ..src.most import vertical_profiles
+from ..src.pbl_model import vertical_profiles
 from ..src.utils import ideal_source
 from ..src.solver import steady_state_transport_solver
 from ..src.calc_footprint_FFP import FFP
@@ -28,7 +28,7 @@ z, profs = vertical_profiles(
         mol = mol,
         z0 = z0)
 
-p0, p00, p, q = steady_state_transport_solver(
+srf_flx, bg_conc, conc, flx = steady_state_transport_solver(
         surf_flx, 
         z, 
         profs, 
@@ -39,13 +39,13 @@ p0, p00, p, q = steady_state_transport_solver(
         fetch = fetch
         )
 
-plt.imshow(p,origin="lower",extent=[0,domain[0],0,domain[1]])
+plt.imshow(conc, origin="lower", extent=[0,domain[0],0,domain[1]])
 plt.title("Concentration footprint")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.colorbar()
 plt.show()
-plt.imshow(q,origin="lower",extent=[0,domain[0],0,domain[1]])
+plt.imshow(flx, origin="lower", extent=[0,domain[0],0,domain[1]])
 plt.title("BLDFM Flux footprint")
 plt.xlabel("x")
 plt.ylabel("y")

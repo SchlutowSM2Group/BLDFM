@@ -7,7 +7,7 @@ def vertical_profiles(
         ustar,
         mol = 1e9,
         prsc = 0.8,
-        constant = False,
+        model = "MOST",
         z0 = -1e9,
         z0_min = 0.001,
         z0_max = 2.0
@@ -49,7 +49,7 @@ def vertical_profiles(
 
     kap = 0.4 # Karman constant
 
-    if constant:
+    if model == "CONSTANT":
 
         Km = kap * ustar * zm / prsc
         z = np.linspace( 0.0, zm, n )
@@ -57,7 +57,7 @@ def vertical_profiles(
         v = vm * np.ones(n)
         K = Km * np.ones(n)
 
-    else:
+    if model == "MOST":
 
         # absolute wind at zm
         absum = np.sqrt( um**2 + vm**2 ) 

@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ..src.most import vertical_profiles
+from ..src.pbl_model import vertical_profiles
 from ..src.utils import ideal_source
 from ..src.utils import point_measurement
 from ..src.solver import steady_state_transport_solver
@@ -15,9 +15,9 @@ meas_pt     = 300.0, 400.0
 meas_height = 6.0
 wind        = -2.0, 2.0
 ustar       = 0.5
-surf_bg     = 1.0
+srf_bg_conc = 1.0
 
-q0 = ideal_source(nxy, domain)
+srf_flx = ideal_source(nxy, domain)
 
 z, profs = vertical_profiles(
         nz, 
@@ -26,26 +26,26 @@ z, profs = vertical_profiles(
         ustar )
 
 # Direct computation
-p0, p00, p, q = steady_state_transport_solver(
-        q0, 
+srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
+        srf_flx, 
         z, 
         profs, 
         domain,
         modes = modes,
-        surf_bg = surf_bg,
+        srf_bg_conc = srf_bg_conc,
         meas_pt = meas_pt,
         footprint = False,
         fetch = fetch
         )
 
-plt.imshow(p,origin="lower",extent=[0,domain[0],0,domain[1]])
+plt.imshow(conc,origin="lower",extent=[0,domain[0],0,domain[1]])
 plt.title("Concentration at zm")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.plot(domain[0]/2,domain[1]/2,'ro') 
 plt.colorbar()
 plt.show()
-plt.imshow(q,origin="lower",extent=[0,domain[0],0,domain[1]])
+plt.imshow(flx,origin="lower",extent=[0,domain[0],0,domain[1]])
 plt.title("Vertical kinematic flux at zm")
 plt.xlabel("x")
 plt.ylabel("y")
@@ -53,13 +53,13 @@ plt.plot(domain[0]/2,domain[1]/2,'ro')
 plt.colorbar()
 plt.show()
 print('Direct method')
-print('p at meas_pt  = ',p[nxy[1]//2,nxy[0]//2])
-print('q at meas_pt  = ',q[nxy[1]//2,nxy[0]//2])
+print('conc at meas_pt  = ',conc[nxy[1]//2,nxy[0]//2])
+print('flx  at meas_pt  = ',flx[nxy[1]//2,nxy[0]//2])
 print()
 
 # Computation with Green's function
-p0, p00, p, q = steady_state_transport_solver(
-        q0, 
+srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
+        srf_flx, 
         z, 
         profs, 
         domain,
@@ -69,12 +69,12 @@ p0, p00, p, q = steady_state_transport_solver(
         fetch = fetch
         )
 
-pm = surf_bg + point_measurement(q0,p)
-qm = point_measurement(q0,q)
+conc = srf_bg_conc + point_measurement(srf_flx, conc)
+flx  = point_measurement(srf_flx, flx)
 
 print('Convolution with Green function')
-print('p at meas_pt = ',pm)
-print('q at meas_pt = ',qm)
+print('conc at meas_pt = ',conc)
+print('flx at meas_pt = ',flx)
 print()
 
 
