@@ -3,10 +3,10 @@ import pandas as pd
 import scipy.io
 import matplotlib.pyplot as plt
 
-from ..src.most import vertical_profiles
 from ..src.utils import point_source
 from ..src.utils import point_measurement
 from ..src.utils import compute_wind_fields
+from ..src.pbl_model import vertical_profiles
 from ..src.solver import steady_state_transport_solver
 
 nxy         = 256, 128
@@ -90,14 +90,14 @@ Dy = dist * np.sin((90-azi) / 180.0 * np.pi)
 
 src_pt = meas_pt[0] + Dx, meas_pt[1] + Dy
 
-surf_flx = point_source(nxy, domain, src_pt) * nfr
+srf_flx = point_source(nxy, domain, src_pt) * nfr
 
 #ix = int(src_pt[0] / domain[0] * nxy[0])  
 #iy = int(src_pt[1] / domain[1] * nxy[1])  
 #surf_flx = np.zeros(nxy)
 #surf_flx[iy,ix] = 1.0
 
-plt.imshow(surf_flx, origin="lower", extent=[0,domain[0],0,domain[1]])
+plt.imshow(srf_flx, origin="lower", extent=[0,domain[0],0,domain[1]])
 plt.plot(meas_pt[0], meas_pt[1],"ro")
 plt.plot(src_pt[0], src_pt[1],"go")
 plt.colorbar()
@@ -128,7 +128,7 @@ for n in range(nt): #range(92,93):
          z0_max = 0.15)
  
     conc0, conc00, conc_footprint, flx_footprint = steady_state_transport_solver(
-         surf_flx,
+         srf_flx,
          z, 
          profs, 
          domain, 
@@ -138,7 +138,7 @@ for n in range(nt): #range(92,93):
          footprint = True)
 
     # taking the measurement
-    flxm[n] = point_measurement(flx_footprint, surf_flx) * 1e9
+    flxm[n] = point_measurement(flx_footprint, srf_flx) * 1e9
 
     #plt.imshow(flx, origin="lower", extent=[0,domain[0],0,domain[1]])
     #plt.plot(domain[0]/2, domain[1]/2,"ro")
