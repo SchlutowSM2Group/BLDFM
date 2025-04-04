@@ -150,3 +150,4 @@ cbar.set_label("$m^{-2}$")
 
 #plt.show()
 plt.savefig("comparison_footprint.png", dpi=300)
+
