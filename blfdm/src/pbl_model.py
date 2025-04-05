@@ -1,4 +1,6 @@
 import numpy as np
+from scipy.optimize import fsolve
+from scipy.optimize import newton
 
 def vertical_profiles(
         n,
@@ -85,6 +87,10 @@ def vertical_profiles(
 
         K = kap * ustar * z / phi( z/mol ) / prsc
 
+    # One-and-a-half order closure
+    # if model == "OAAHOC":
+
+
     print('Stats from vertical_profiles')
     print('z0    = %.3f m' % z[0])
     print('ustar = %.3f m s-1' % ustar)
@@ -103,39 +109,102 @@ def psi(x):
     Businger–Dyer relationship
     x =  z / mol
     '''
-    xi = np.where(x>0.0, 
-                  np.nan, 
-                  np.power(1.0-16.0*x,0.25,dtype=complex).real)
-    return np.where( x>0.0, 
-                     5.0*x, 
-                    -2.0*np.log(0.5*(1.0+xi))-np.log(0.5*(1.0+xi**2))
-                    +2.0*np.arctan(xi)-0.5*np.pi)
+    xi = np.where(
+            x > 0.0, 
+            np.nan, 
+            np.power(1.0 - 16.0 * x, 0.25, dtype = complex).real)
+    return np.where(
+            x > 0.0, 
+            5.0 * x, 
+            -2.0 * np.log(0.5 * (1.0 + xi)) - np.log(0.5 * (1.0 + xi**2))
+            +2.0 * np.arctan(xi) - 0.5 * np.pi)
 
 def phi(x):
     '''
     Businger–Dyer relationship
     x =  z / mol 
     '''
-    return np.where(x>0.0, 
-                    1.0+5.0*x, 
-                    np.power(1.0-16.0*x,-0.5,dtype=complex).real)
+    return np.where(
+            x > 0.0, 
+            1.0 + 5.0 * x, 
+            np.power(1.0 - 16.0 * x, -0.5, dtype = complex).real)
+
+
+def dudz(z0, zm, absum, ustar, tke, mol, n):
+
+    cl = 0.845
+    cm = 0.0856
+    tau = np.linspace(0.0, 1.0, n)
+    dtau = 1.0 / n
+    delz = zm - z0
+    x = np.ones(n)
+    y = np.ones(n)
+    x[n-1] = absum / ustar
+    y[n-1] = ustar / np.sqrt(tke)
+    for i in range(n-1, 1, -1):
+        print(i)
+        f = 1.0 / cm / cl / (tau[i-1] + z0/delz)
+        y[i-1] = newton(
+                tke_balance, 
+                y[i], 
+                tke_balance_prime, 
+                args=(z0, zm, mol, tau[i-1]),
+                maxiter = 100)
+        x[i-1] = x[i] - dtau * f * y[i-1]
+
+    return np.abs(x[0]*ustar)
+
+def tke_balance(y, z0, zm, mol, tau):
+
+    ce = 0.845
+    cl = 0.845
+    cm = 0.0856
+
+    delz = zm - z0
+
+    a = cm * cl * delz * (tau + z0/delz)
+    b = ce / cl
+
+    return y**4 + a * y**3 - b
+
+def tke_balance_prime(y, z0, zm, mol, tau):
+
+    ce = 0.845
+    cl = 0.845
+    cm = 0.0856
+
+    delz = zm - z0
+
+    a = cm * cl * delz * (tau + z0/delz)
+    b = ce / cl
+
+    return 4 * y**3 + 3 * a * y**2
+
 
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    fig, axs = plt.subplots(2)
-    for mol in [-500,-400,-100,-10,10,100,400,500,1000]:
-        z, (u, v, K) = vertical_profiles(
-                n=100,
-                meas_height=5.0,
-                wind=(3.0, 1.0),
-                ustar=0.25,
-                mol=mol)
-        axs[0].plot(u,z)
-        axs[0].set_xlabel('u [m/s]')
-        axs[0].set_ylabel('z [m]')
-        axs[1].plot(K,z)
-        axs[1].set_xlabel('K [m2 s-1]')
-        axs[1].set_ylabel('z [m]')
-    plt.show()
+
+    z0, zm, absum, ustar, tke, mol, n = 0.1, 6.0, 3.0, 0.4, 0.4, -50, 30
+    u = dudz(z0, zm, absum, ustar, tke, mol, n)
+
+    #print(tke_balance(ustar/np.sqrt(tke), z0, zm, mol, 1.0))
+    print(u)
+
+
+#    fig, axs = plt.subplots(2)
+#    for mol in [-500,-400,-100,-10,10,100,400,500,1000]:
+#        z, (u, v, K) = vertical_profiles(
+#                n=100,
+#                meas_height=5.0,
+#                wind=(3.0, 1.0),
+#                ustar=0.25,
+#                mol=mol)
+#        axs[0].plot(u,z)
+#        axs[0].set_xlabel('u [m/s]')
+#        axs[0].set_ylabel('z [m]')
+#        axs[1].plot(K,z)
+#        axs[1].set_xlabel('K [m2 s-1]')
+#        axs[1].set_ylabel('z [m]')
+#    plt.show()
 
