@@ -6,7 +6,7 @@ def vertical_profiles(
         wind,
         ustar,
         mol = 1e9,
-        prsc = 0.8,
+        prsc = 1.0,
         model = "MOST",
         z0 = -1e9,
         z0_min = 0.001,
@@ -32,7 +32,7 @@ def vertical_profiles(
         mol: scalar(float)
             Monin-Obukhov length
         prsc: scalar(float)
-            Prandtl or Schmidt number depending on the scalar 
+            Prandtl to Schmidt number ratio depending on the scalar 
             that is subject to atmospheric dispersion
         constant: scalar(bool)
             Switch for returning constant profiles
