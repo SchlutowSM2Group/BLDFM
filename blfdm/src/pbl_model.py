@@ -130,67 +130,70 @@ def phi(x):
             np.power(1.0 - 16.0 * x, -0.5, dtype = complex).real)
 
 
-def dudz(z0, zm, absum, ustar, tke, mol, n):
+def absu_oaahoc(z0, zm, absum, ustar, tke, mol, n):
 
     cl = 0.845
     cm = 0.0856
-    tau = np.linspace(0.0, 1.0, n)
-    dtau = 1.0 / n
-    delz = zm - z0
+    z = np.linspace(z0, zm, n)
+    dz = np.diff(z,axis=0)
+
     x = np.ones(n)
     y = np.ones(n)
-    x[n-1] = absum / ustar
-    y[n-1] = ustar / np.sqrt(tke)
-    for i in range(n-1, 1, -1):
+
+    tke0 = 0.2
+    x[0] = 0.0
+    y[0] = ustar / np.sqrt(tke0)
+
+    for i in range(n-1):
+
         print(i)
-        f = 1.0 / cm / cl / (tau[i-1] + z0/delz)
-        y[i-1] = newton(
+        y[i+1] = newton(
                 tke_balance, 
                 y[i], 
                 tke_balance_prime, 
-                args=(z0, zm, mol, tau[i-1]),
+                args=(mol, z[i+1]),
                 maxiter = 100)
-        x[i-1] = x[i] - dtau * f * y[i-1]
+        x[i+1] = x[i] + dz[i] / cm / cl / z[i+1] * y[i+1]
 
-    return np.abs(x[0]*ustar)
+    absu = x * ustar
+    tke  = (ustar / y)**2
 
-def tke_balance(y, z0, zm, mol, tau):
+    return z, absu, tke
+
+def tke_balance(y, mol, z):
 
     ce = 0.845
     cl = 0.845
     cm = 0.0856
 
-    delz = zm - z0
-
-    a = cm * cl * delz * (tau + z0/delz)
+    a = cm * cl * z / mol
     b = ce / cl
 
     return y**4 + a * y**3 - b
 
-def tke_balance_prime(y, z0, zm, mol, tau):
+def tke_balance_prime(y, mol, z):
 
     ce = 0.845
     cl = 0.845
     cm = 0.0856
 
-    delz = zm - z0
-
-    a = cm * cl * delz * (tau + z0/delz)
+    a = cm * cl * z / mol
     b = ce / cl
 
-    return 4 * y**3 + 3 * a * y**2
+    return 4.0 * y**3 + 3.0 * a * y**2
 
 
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
-    z0, zm, absum, ustar, tke, mol, n = 0.1, 6.0, 3.0, 0.4, 0.4, -50, 30
-    u = dudz(z0, zm, absum, ustar, tke, mol, n)
+    z0, zm, absum, ustar, tke, mol, n = 0.10, 6.0, 3.0, 0.2, 10.0, -200, 100
+    z, u, tke = absu_oaahoc(z0, zm, absum, ustar, tke, mol, n)
 
     #print(tke_balance(ustar/np.sqrt(tke), z0, zm, mol, 1.0))
-    print(u)
 
+    plt.plot(u,z)
+    plt.show()
 
 #    fig, axs = plt.subplots(2)
 #    for mol in [-500,-400,-100,-10,10,100,400,500,1000]:
