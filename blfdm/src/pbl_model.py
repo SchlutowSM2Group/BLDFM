@@ -7,9 +7,15 @@ def vertical_profiles(
         meas_height,
         wind,
         ustar,
+        tke = -1e9,
         mol = 1e9,
+<<<<<<< HEAD
         prsc = 1.0,
         model = "MOST",
+=======
+        prsc = 0.8,
+        closure = "MOST",
+>>>>>>> eb96e41 (OAAHOC running and tested.)
         z0 = -1e9,
         z0_min = 0.001,
         z0_max = 2.0
@@ -51,7 +57,7 @@ def vertical_profiles(
 
     kap = 0.4 # Karman constant
 
-    if model == "CONSTANT":
+    if closure == "CONSTANT":
 
         Km = kap * ustar * zm / prsc
         z = np.linspace( 0.0, zm, n )
@@ -59,7 +65,7 @@ def vertical_profiles(
         v = vm * np.ones(n)
         K = Km * np.ones(n)
 
-    if model == "MOST":
+    if closure == "MOST":
 
         # absolute wind at zm
         absum = np.sqrt( um**2 + vm**2 ) 
@@ -88,7 +94,33 @@ def vertical_profiles(
         K = kap * ustar * z / phi( z/mol ) / prsc
 
     # One-and-a-half order closure
-    # if model == "OAAHOC":
+    # according to Schumann-Lilly closure (Schumann, 1991) 
+    if closure == "OAAHOC":
+
+        cl = 0.845
+        cm = 0.0856
+        ch = 0.204
+
+        # compute tke from mol by tke balance equation
+        if tke < 0.0:
+            print("Warning: No tke available. Setting TKE to 1.0.")
+            tke = 1.0
+
+        # absolute wind at zm
+        absum = np.sqrt( um**2 + vm**2 ) 
+
+        # roughness length
+        z0 = zm * np.exp(-cm * cl * absum * np.sqrt(tke) / ustar**2)
+
+        # equidistant vertical grid
+        z = np.linspace( z0, zm, n )
+
+        absu = ustar**2 / cm / cl / np.sqrt(tke) * np.log(z / z0)
+
+        u = um / absum * absu
+        v = vm / absum * absu
+
+        K = ch * cl * z * np.sqrt(tke)
 
 
     print('Stats from vertical_profiles')
@@ -130,84 +162,43 @@ def phi(x):
             np.power(1.0 - 16.0 * x, -0.5, dtype = complex).real)
 
 
-def absu_oaahoc(z0, zm, absum, ustar, tke, mol, n):
-
-    cl = 0.845
-    cm = 0.0856
-    z = np.linspace(z0, zm, n)
-    dz = np.diff(z,axis=0)
-
-    x = np.ones(n)
-    y = np.ones(n)
-
-    tke0 = 0.2
-    x[0] = 0.0
-    y[0] = ustar / np.sqrt(tke0)
-
-    for i in range(n-1):
-
-        print(i)
-        y[i+1] = newton(
-                tke_balance, 
-                y[i], 
-                tke_balance_prime, 
-                args=(mol, z[i+1]),
-                maxiter = 100)
-        x[i+1] = x[i] + dz[i] / cm / cl / z[i+1] * y[i+1]
-
-    absu = x * ustar
-    tke  = (ustar / y)**2
-
-    return z, absu, tke
-
-def tke_balance(y, mol, z):
-
-    ce = 0.845
-    cl = 0.845
-    cm = 0.0856
-
-    a = cm * cl * z / mol
-    b = ce / cl
-
-    return y**4 + a * y**3 - b
-
-def tke_balance_prime(y, mol, z):
-
-    ce = 0.845
-    cl = 0.845
-    cm = 0.0856
-
-    a = cm * cl * z / mol
-    b = ce / cl
-
-    return 4.0 * y**3 + 3.0 * a * y**2
-
-
-
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
 
-    z0, zm, absum, ustar, tke, mol, n = 0.10, 6.0, 3.0, 0.2, 10.0, -200, 100
-    z, u, tke = absu_oaahoc(z0, zm, absum, ustar, tke, mol, n)
 
-    #print(tke_balance(ustar/np.sqrt(tke), z0, zm, mol, 1.0))
-
-    plt.plot(u,z)
+    fig, axs = plt.subplots(2)
+    for mol in [-1000,-500,-400,-100,-40,40,100,400,500,1000]:
+        z, (u, v, K) = vertical_profiles(
+                n=100,
+                meas_height=5.0,
+                wind=(3.0, 1.0),
+                ustar=0.4,
+                closure = "MOST",
+                mol=mol)
+        axs[0].plot(u,z)
+        axs[0].set_xlabel('u [m/s]')
+        axs[0].set_ylabel('z [m]')
+        axs[0].set_title('Profiles for MOST')
+        axs[1].plot(K,z)
+        axs[1].set_xlabel('K [m2 s-1]')
+        axs[1].set_ylabel('z [m]')
     plt.show()
 
-#    fig, axs = plt.subplots(2)
-#    for mol in [-500,-400,-100,-10,10,100,400,500,1000]:
-#        z, (u, v, K) = vertical_profiles(
-#                n=100,
-#                meas_height=5.0,
-#                wind=(3.0, 1.0),
-#                ustar=0.25,
-#                mol=mol)
-#        axs[0].plot(u,z)
-#        axs[0].set_xlabel('u [m/s]')
-#        axs[0].set_ylabel('z [m]')
-#        axs[1].plot(K,z)
-#        axs[1].set_xlabel('K [m2 s-1]')
-#        axs[1].set_ylabel('z [m]')
-#    plt.show()
+    fig, axs = plt.subplots(2)
+    for tke in [0.2,0.5,1.0,1.5,2.0,2.5]:
+        z, (u, v, K) = vertical_profiles(
+                n=100,
+                meas_height=5.0,
+                wind=(3.0, 1.0),
+                ustar=0.4,
+                closure = "OAAHOC",
+                tke = tke)
+        axs[0].plot(u,z)
+        axs[0].set_xlabel('u [m/s]')
+        axs[0].set_ylabel('z [m]')
+        axs[0].set_title('Profiles for One-and-a-half-order closure')
+        axs[1].plot(K,z)
+        axs[1].set_xlabel('K [m2 s-1]')
+        axs[1].set_ylabel('z [m]')
+    plt.show()
 
