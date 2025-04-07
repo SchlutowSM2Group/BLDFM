@@ -8,7 +8,6 @@ def vertical_profiles(
         tke = -1e9,
         mol = 1e9,
         prsc = 1.0,
-        prsc = 0.8,
         closure = "MOST",
         z0 = -1e9,
         z0_min = 0.001,
