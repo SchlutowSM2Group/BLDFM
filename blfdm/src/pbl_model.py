@@ -1,6 +1,4 @@
 import numpy as np
-from scipy.optimize import fsolve
-from scipy.optimize import newton
 
 def vertical_profiles(
         n,
