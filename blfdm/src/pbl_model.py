@@ -7,13 +7,9 @@ def vertical_profiles(
         ustar,
         tke = -1e9,
         mol = 1e9,
-<<<<<<< HEAD
         prsc = 1.0,
-        model = "MOST",
-=======
         prsc = 0.8,
         closure = "MOST",
->>>>>>> eb96e41 (OAAHOC running and tested.)
         z0 = -1e9,
         z0_min = 0.001,
         z0_max = 2.0
