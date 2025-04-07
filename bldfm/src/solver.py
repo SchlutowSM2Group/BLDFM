@@ -15,7 +15,8 @@ def steady_state_transport_solver(
         srf_bg_conc = 0.0, 
         footprint   = False, 
         analytic    = False,
-        fetch       = -1e9 
+        fetch       = -1e9, 
+        ivp_method  = "SIE"
         ):
     """
     Solves the steady-state advection-diffusion equation for a concentration 
@@ -160,8 +161,17 @@ def steady_state_transport_solver(
         # solve non-degenerated problem for (n,m) =/= (0,0)
         # by linear shooting method
         # use two auxillary initial value problems  
-        tfftp1, tfftq1 = ivp_solver(one, zero,       u,v,K,z,Lx[msk],Ly[msk])
-        tfftp2, tfftq2 = ivp_solver(zero,tfftq0[msk],u,v,K,z,Lx[msk],Ly[msk])
+        tfftp1, tfftq1 = ivp_solver(
+                (one, zero),
+                profiles, z,
+                Lx[msk], Ly[msk],
+                method = ivp_method)
+
+        tfftp2, tfftq2 = ivp_solver(
+                (zero, tfftq0[msk]),
+                profiles, z,
+                Lx[msk], Ly[msk],
+                method = ivp_method)
                                                  
         alpha = -(tfftq2 - K[nz-1]*eigval*tfftp2) \
                / (tfftq1 - K[nz-1]*eigval*tfftp1)
@@ -222,12 +232,15 @@ def steady_state_transport_solver(
     return srf_conc, bg_conc, conc, flx
 
 
-def ivp_solver( fftp0, fftq0, u, v, K, z, Lx, Ly, method='SIE' ):
+def ivp_solver( fftpq, profiles, z, Lx, Ly, method='SIE' ):
     '''
     Solves the initial value problem resulting from 
     the discretization of the steady-state advection-diffusion equation
     with the Fast Fourier Transform
     '''
+
+    fftp0, fftq0 = fftpq
+    u, v, K = profiles
 
     fftp, fftq = np.copy(fftp0), np.copy(fftq0)
 
