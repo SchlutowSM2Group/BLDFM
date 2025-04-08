@@ -45,8 +45,11 @@ srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
         fetch = fetch,
         ivp_method = "TSEI3")
 
-diff_conc = (conc - conc_ana) / np.mean(conc_ana)
-diff_flx  = (flx - flx_ana) / np.mean(flx_ana)
+#diff_conc = (conc - conc_ana) / np.mean(conc_ana)
+#diff_flx  = (flx - flx_ana) / np.mean(flx_ana)
+
+diff_conc = (conc - conc_ana) / np.max(conc_ana)
+diff_flx  = (flx - flx_ana) / np.max(flx_ana)
 
 shrink = 0.7
 cmap = "turbo"
@@ -71,6 +74,7 @@ axs[0,0].xaxis.set_tick_params(labelbottom=False)
 cbar = fig.colorbar(plot, ax=axs[0,0], shrink=shrink, location='bottom')
 cbar.formatter.set_powerlimits((0, 0))
 cbar.formatter.set_useMathText(True)
+cbar.set_label("a.u.")
 
 plot = axs[0,1].imshow(
         flx, 
@@ -85,6 +89,7 @@ axs[0,1].yaxis.set_tick_params(labelleft=False)
 cbar = fig.colorbar(plot, ax=axs[0,1], shrink=shrink, location='bottom')
 cbar.formatter.set_powerlimits((0, 0))
 cbar.formatter.set_useMathText(True)
+cbar.set_label("a.u. m/s")
 
 cmap = "turbo"
 
@@ -95,7 +100,7 @@ plot = axs[1,0].imshow(
         extent=[0,domain[0],0,domain[1]])
 
 #axs[1,0].plot(src_pt[0],src_pt[1],'ro')
-axs[1,0].set_title("Relative difference to analytic")
+axs[1,0].set_title("Relative difference to analytic concentration")
 axs[1,0].set_xlabel("x [m]")
 axs[1,0].set_ylabel("y [m]")
 cbar = fig.colorbar(plot, ax=axs[1,0], shrink=shrink, location='bottom')
@@ -110,7 +115,7 @@ plot = axs[1,1].imshow(
         extent=[0,domain[0],0,domain[1]])
 
 #axs[1,1].plot(src_pt[0],src_pt[1],'ro')
-axs[1,1].set_title("Relative difference to analytic")
+axs[1,1].set_title("Relative difference to analytic flux")
 axs[1,1].set_xlabel("x [m]")
 axs[1,1].yaxis.set_tick_params(labelleft=False)
 cbar = fig.colorbar(plot, ax=axs[1,1], shrink=shrink, location='bottom')
