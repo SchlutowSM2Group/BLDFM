@@ -46,9 +46,34 @@ plt.ylabel("y")
 plt.colorbar()
 plt.show()
 plt.imshow(flx, origin="lower", extent=[0,domain[0],0,domain[1]])
-plt.title("Flux footprint")
+plt.title("BLDFM Flux footprint")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.colorbar()
 plt.show()
+
+############################################################
+
+umean = np.sqrt(wind[0]**2+wind[1]**2)
+
+FFP_res = FFP(
+        zm = meas_height, 
+        z0 = z0, 
+        umean = umean,
+        h=200., 
+        ol = mol, 
+        sigmav=0.6, 
+        ustar = 0.437, 
+        wind_dir = 0.0,
+        nx = 1000,
+        rs= [20., 40., 60., 80.],
+        fig = False)
+
+plt.imshow(FFP_res["f_2d"],origin="lower",extent=[0,domain[0],0,domain[1]])
+plt.title("FFP Flux footprint")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.colorbar()
+plt.show()
+
 
