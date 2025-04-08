@@ -160,7 +160,7 @@ if __name__ == '__main__':
 
 
     fig, axs = plt.subplots(2)
-    for mol in [-1000,-500,-400,-100,-40,40,100,400,500,1000]:
+    for mol in [-1000,-500,-400,-100,-30,30,100,400,500,1000]:
         z, (u, v, K) = vertical_profiles(
                 n=100,
                 meas_height=5.0,
