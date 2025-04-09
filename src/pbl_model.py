@@ -63,8 +63,9 @@ def vertical_profiles(
 
         Km = kap * ustar * zm / prsc
 
-        z0 = np.zeros_like(um)
-        z = np.array([ np.linspace( z00, zm, n ) for z00 in z0 ]).squeeze()
+        #z0 = np.zeros_like(um)
+        #z = np.array([ np.linspace( z00, zm, n ) for z00 in z0 ]).squeeze() # not working
+        z = np.linspace( 0.0, zm, n )
         
         u = um * np.ones(n)
         v = vm * np.ones(n)
@@ -90,7 +91,8 @@ def vertical_profiles(
 
         # equidistant vertical grid
         # find a way to vectorize this properly
-        z = np.array([ np.linspace( z00, zm, n ) for z00 in z0 ]).squeeze()
+        # z = np.array([ np.linspace( z00, zm, n ) for z00 in z0 ]).squeeze() # not working 
+        z = np.linspace( z0, zm, n ) 
 
         absu = ustar / kap * ( np.log( z/z0 ) + psi( z/mol ) ) 
 
