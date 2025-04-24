@@ -29,7 +29,7 @@ def vertical_profiles(
     z0=-1e9,
     z0_min=0.001,
     z0_max=2.0,
-    tke=None
+    tke=None,
 ):
     """
     Computes vertical profiles of horizontal wind components and eddy diffusivity in the planetary boundary layer (PBL) based on Monin-Obukhov Similarity Theory (MOST) or other closure models.

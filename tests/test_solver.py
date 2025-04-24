@@ -14,6 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from src.solver import steady_state_transport_solver
 
+
 def test_steady_state_transport_solver():
     """
     Tests the `steady_state_transport_solver` function against an analytical solution for the steady-state advection-diffusion equation with a point source at the center of the domain.
@@ -41,26 +42,36 @@ def test_steady_state_transport_solver():
     srf_flx[ny // 4, nx // 4] = Q
 
     # Call the solver with analytic=True
-    srf_conc_analytic, bg_conc_analytic, conc_analytic, flx_analytic = steady_state_transport_solver(
-        srf_flx, z, profiles, domain, analytic=True
+    srf_conc_analytic, bg_conc_analytic, conc_analytic, flx_analytic = (
+        steady_state_transport_solver(srf_flx, z, profiles, domain, analytic=True)
     )
 
     # Call the solver with analytic=False
-    srf_conc_numeric, bg_conc_numeric, conc_numeric, flx_numeric = steady_state_transport_solver(
-        srf_flx, z, profiles, domain, analytic=False
+    srf_conc_numeric, bg_conc_numeric, conc_numeric, flx_numeric = (
+        steady_state_transport_solver(srf_flx, z, profiles, domain, analytic=False)
     )
 
     # Assertions to validate numeric output shapes
     assert srf_conc_numeric.shape == (ny, nx), "Surface concentration shape mismatch"
-    assert isinstance(bg_conc_numeric, float), "Background concentration should be a float"
+    assert isinstance(
+        bg_conc_numeric, float
+    ), "Background concentration should be a float"
     assert conc_numeric.shape == (ny, nx), "Concentration shape mismatch"
     assert flx_numeric.shape == (ny, nx), "Flux shape mismatch"
 
     # Compare the results
-    assert np.allclose(srf_conc_analytic, srf_conc_numeric, atol=1e-2), "Surface concentration mismatch between analytic and numeric"
-    assert np.isclose(bg_conc_analytic, bg_conc_numeric, atol=1e-2), "Background concentration mismatch between analytic and numeric"
-    assert np.allclose(conc_analytic, conc_numeric, atol=1e-2), "Concentration mismatch between analytic and numeric"
-    assert np.allclose(flx_analytic, flx_numeric, atol=1e-2), "Flux mismatch between analytic and numeric"
+    assert np.allclose(
+        srf_conc_analytic, srf_conc_numeric, atol=1e-2
+    ), "Surface concentration mismatch between analytic and numeric"
+    assert np.isclose(
+        bg_conc_analytic, bg_conc_numeric, atol=1e-2
+    ), "Background concentration mismatch between analytic and numeric"
+    assert np.allclose(
+        conc_analytic, conc_numeric, atol=1e-2
+    ), "Concentration mismatch between analytic and numeric"
+    assert np.allclose(
+        flx_analytic, flx_numeric, atol=1e-2
+    ), "Flux mismatch between analytic and numeric"
 
     # Plot solutions
     plt.figure(figsize=(12, 6))
@@ -68,13 +79,17 @@ def test_steady_state_transport_solver():
     # Plot numerical solution
     plt.subplot(1, 2, 1)
     plt.title("Numerical Solution")
-    plt.imshow(srf_conc_numeric, origin="lower", extent=[x.min(), x.max(), y.min(), y.max()])
+    plt.imshow(
+        srf_conc_numeric, origin="lower", extent=[x.min(), x.max(), y.min(), y.max()]
+    )
     plt.colorbar()
 
     # Plot analytical solution
     plt.subplot(1, 2, 2)
     plt.title("Analytical Solution")
-    plt.imshow(srf_conc_analytic, origin="lower", extent=[x.min(), x.max(), y.min(), y.max()])
+    plt.imshow(
+        srf_conc_analytic, origin="lower", extent=[x.min(), x.max(), y.min(), y.max()]
+    )
     plt.colorbar()
     plt.savefig("plots/analytical_vs_numerical_solution.png")
 
