@@ -11,6 +11,7 @@ import pytest
 import numpy as np
 from src.pbl_model import vertical_profiles
 
+
 @pytest.mark.parametrize(
     "n, meas_height, wind, ustar, prsc",
     [
@@ -40,7 +41,9 @@ def test_constant_closure(n, meas_height, wind, ustar, prsc):
     # # Check that the profiles are constant
     np.testing.assert_array_almost_equal(u, np.full(n, wind[0]))
     np.testing.assert_array_almost_equal(v, np.full(n, wind[1]))
-    np.testing.assert_array_almost_equal(K, np.full(n, 0.4 * ustar * meas_height / prsc))
+    np.testing.assert_array_almost_equal(
+        K, np.full(n, 0.4 * ustar * meas_height / prsc)
+    )
 
 
 @pytest.mark.parametrize(
