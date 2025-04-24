@@ -1,10 +1,8 @@
-import numpy as np
 import matplotlib.pyplot as plt
 
-from ..src.pbl_model import vertical_profiles
-from ..src.utils import ideal_source
-from ..src.solver import steady_state_transport_solver
-from ..src.calc_footprint_FFP import FFP
+from src.pbl_model import vertical_profiles
+from src.utils import ideal_source
+from src.solver import steady_state_transport_solver
 
 nxy = 512, 256
 nz = 100
@@ -33,15 +31,20 @@ srf_flx, bg_conc, conc, flx = steady_state_transport_solver(
     fetch=fetch,
 )
 
+plt.figure()
 plt.imshow(conc, origin="lower", extent=[0, domain[0], 0, domain[1]])
 plt.title("Concentration footprint")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.colorbar()
-plt.show()
+plt.savefig("plots/concentration_footprint.png")
+
+plt.figure()
 plt.imshow(flx, origin="lower", extent=[0, domain[0], 0, domain[1]])
 plt.title("Flux footprint")
 plt.xlabel("x")
 plt.ylabel("y")
 plt.colorbar()
-plt.show()
+plt.savefig("plots/flux_footprint.png")
+
+# %%
