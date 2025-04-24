@@ -73,10 +73,12 @@ def vertical_profiles(
     # here, we create (Nts x Nz arrays)
     um = np.array(um)
     vm = np.array(vm)
+    zm = np.array(zm)
     ustar = np.array(ustar)
 
     um = um[..., np.newaxis]
     vm = vm[..., np.newaxis]
+    zm = zm[..., np.newaxis]
     ustar = ustar[..., np.newaxis]
 
     kap = 0.4  # Karman constant
@@ -103,11 +105,11 @@ def vertical_profiles(
             z0 = zm * np.exp(-kap * absum / ustar + psi(zm / mol))
 
             # sanity checks
-            z0[...] = min(min(z0), z0_max)
-            z0[...] = max(max(z0), z0_min)
+            z0[...] = np.clip(z0, z0_min, z0_max)
 
         else:
 
+            z0 = np.array(z0)[..., np.newaxis]
             ustar = absum * kap / (np.log(zm / z0) + psi(zm / mol))
 
         # equidistant vertical grid
