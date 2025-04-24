@@ -1,5 +1,66 @@
+"""
+solver.py
+
+This module provides solvers for steady-state advection-diffusion equations, following the numerical solution of the Boundary Layer Dispersion and Footprint Model (BLDFM).
+It includes
+methods for solving the equations using Fourier transforms, linear shooting,
+and various numerical integration techniques.
+
+Functions:
+----------
+
+1. steady_state_transport_solver:
+   Solves the steady-state advection-diffusion equation for concentration fields
+   with flux boundary conditions. It supports both numerical and analytical
+   solutions and can compute footprints (Green's functions) for surface fluxes.
+
+   Key Features:
+   - Handles vertical profiles of wind and eddy diffusivity.
+   - Supports Fourier-based truncation for efficient computation.
+   - Allows for different numerical methods for solving initial value problems.
+
+2. ivp_solver:
+   Solves the initial value problem (IVP) for the advection-diffusion equation
+   using various numerical methods, including:
+   - Semi-Implicit Euler (SIE)
+   - Exponential Integrator (EI)
+   - Taylor Series Exponential Integrator (TSEI3)
+   - Explicit Euler (EE)
+
+   This function is used internally by the `steady_state_transport_solver` to
+   compute solutions for non-degenerate systems.
+
+Usage:
+------
+The `steady_state_transport_solver` function is the primary entry point for solving these equations.
+
+Example:
+--------
+```python
+import numpy as np
+from solver import steady_state_transport_solver
+
+# Define inputs
+srf_flx = np.random.rand(100, 100)  # Surface flux field
+z = np.linspace(0, 1000, 50)        # Vertical grid points
+profiles = (np.ones(50), np.ones(50), np.ones(50))  # Wind and diffusivity profiles
+domain = (1000, 1000)               # Domain size
+
+# Solve the transport equation
+srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
+    srf_flx, z, profiles, domain
+)
+
+print("Surface concentration:", srf_conc)
+
+Dependencies:
+- numpy
+- scipy.fft
+"""
+
 import numpy as np
 import scipy.fft as fft
+
 
 def steady_state_transport_solver(
     srf_flx,
