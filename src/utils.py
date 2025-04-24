@@ -1,9 +1,35 @@
+"""
+utils.py
+
+This module provides utility functions for the Boundary Layer Dispersion and Footprint Model (BLDFM).
+It includes functions for generating wind fields, creating source fields for
+testing, and performing point measurements using convolution.
+
+Functions:
+- compute_wind_fields: Computes the zonal and meridional wind components.
+- point_source: Generates a point source field in Fourier space.
+- ideal_source: Creates a circular or diamond-shaped source field for testing.
+- point_measurement: Computes the convolution of two 2D arrays at a specific point.
+"""
+
 import numpy as np
 import scipy.fft as fft
 
 
 def compute_wind_fields(u_rot, wind_dir):
+    """
+    Computes the zonal (u) and meridional (v) wind components from a rotated
+    wind speed and direction.
 
+    Parameters:
+    - u_rot (float): Rotated wind speed.
+    - wind_dir (float): Wind direction in degrees (clockwise from north).
+
+    Returns:
+    - tuple: A tuple (u, v) where:
+        - u (float): Zonal wind component (east-west).
+        - v (float): Meridional wind component (north-south).
+    """
     wind_dir = np.deg2rad(wind_dir)
     u = u_rot * np.sin(wind_dir)
     v = u_rot * np.cos(wind_dir)
@@ -12,10 +38,22 @@ def compute_wind_fields(u_rot, wind_dir):
 
 
 def point_source(nxy, domain, src_pt):
+    """
+    Generates a point source field in Fourier space and transforms it back
+    to the spatial domain.
 
-    xs, ys = src_pt
+    Parameters:
+    - nxy (tuple): Number of grid points in the x and y directions (nx, ny).
+    - domain (tuple): Physical dimensions of the domain (xmax, ymax).
+    - src_pt (tuple): Coordinates of the source point (xs, ys).
+
+    Returns:
+    - numpy.ndarray: A 2D array representing the point source field in the
+      spatial domain.
+    """
     nx, ny = nxy
     xmx, ymx = domain
+    xs, ys = src_pt
 
     dx, dy = xmx / nx, ymx / ny
 
@@ -42,8 +80,17 @@ def point_source(nxy, domain, src_pt):
 
 def ideal_source(nxy, domain, shape="diamond"):
     """
-    Returns a circle or diamond shaped surface flux source field.
-    Useful for testing.
+    Creates a synthetic source field in the shape of a circle or diamond.
+    Useful for testing purposes.
+
+    Parameters:
+    - nxy (tuple): Number of grid points in the x and y directions (nx, ny).
+    - domain (tuple): Physical dimensions of the domain (xmax, ymax).
+    - shape (str): Shape of the source field. Options are "circle" or "diamond".
+      Default is "diamond".
+
+    Returns:
+    - numpy.ndarray: A 2D array representing the source field.
     """
 
     nx, ny = nxy
@@ -71,8 +118,14 @@ def ideal_source(nxy, domain, shape="diamond"):
 
 def point_measurement(f, g):
     """
-    Computes the convolution of two 2D arrays evaluated at xm, ym.
-    scipy.convolve2d(...,mode='valid') is slighly faster,
-    but gives less precise results.
+    Computes the convolution of two 2D arrays evaluated at a specific point.
+
+    Parameters:
+    - f (numpy.ndarray): First 2D array.
+    - g (numpy.ndarray): Second 2D array.
+
+    Returns:
+    - float: The result of the convolution at the specified point.
     """
+
     return np.sum(f * g)
