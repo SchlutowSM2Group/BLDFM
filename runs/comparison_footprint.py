@@ -1,11 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ..src.pbl_model import vertical_profiles
-from ..src.utils import ideal_source
-from ..src.solver import steady_state_transport_solver
-from ..src.calc_footprint_FFP import FFP
-from ..src.ffm_kormann_meixner import estimateFootprint as FKM
+from src.pbl_model import vertical_profiles
+from src.utils import ideal_source
+from src.solver import steady_state_transport_solver
+from src.ffm_kormann_meixner import estimateFootprint as FKM
 
 nxy = 512, 512
 nz = 128
@@ -20,7 +19,7 @@ ustar = 0.4
 z0 = 0.1
 mol = -20.0
 
-wd = np.atan(wind[0] / wind[1]) * 180.0 / np.pi
+wd = np.arctan(wind[0] / wind[1]) * 180.0 / np.pi
 umean = np.sqrt(wind[0] ** 2 + wind[1] ** 2)
 
 ############################################################
@@ -136,4 +135,4 @@ cbar.formatter.set_useMathText(True)
 cbar.set_label("$m^{-2}$")
 
 # plt.show()
-plt.savefig("comparison_footprint.png", dpi=300)
+plt.savefig("plots/comparison_footprint.png", dpi=300)
