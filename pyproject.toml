@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "BLDFM"
+version = "0.1.0"
+description = "Boundary Layer Footprint Dispersion Model"
+authors = [
+    { name = "Mark Schlutow", email = "mschlutow@bgc-jena.mpg.de" },
+    { name = "Ray Chew", email = "chew@caltech.edu" },
+    { name = "Mathias Göckede", email = "mgoeck@bgc-jena.mpg.de" },
+
+]
+license = { text = "PolyForm Noncommercial License 1.0.0" }
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "scipy"
+]
+
+[tool.setuptools]
+packages = ["src"]
