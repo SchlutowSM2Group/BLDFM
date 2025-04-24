@@ -3,8 +3,8 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "BLFDM"
-version = "0.1.0"
+name = "BLDFM"
+version = "0.9.0"
 description = "Boundary Layer Footprint Dispersion Model"
 authors = [
     { name = "Mark Schlutow", email = "mschlutow@bgc-jena.mpg.de" },
@@ -17,6 +17,13 @@ dependencies = [
     "numpy",
     "matplotlib",
     "scipy"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",  # For testing
+    "sphinx",  # For documentation
+    "black",  # Optional: for code formatting
 ]
 
 [tool.setuptools]
