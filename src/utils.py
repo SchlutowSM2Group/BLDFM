@@ -1,15 +1,15 @@
 """
 utils.py
 
-This module provides utility functions for the Boundary Layer Dispersion and Footprint Model (BLDFM).
-It includes functions for generating wind fields, creating source fields for
-testing, and performing point measurements using convolution.
+This module provides utility functions for the Boundary Layer Dispersion and Footprint Model (BLDFM). It includes functions for generating wind fields, creating source fields for testing, and performing point measurements using convolution.
 
 Functions:
+----------
 - compute_wind_fields: Computes the zonal and meridional wind components.
 - point_source: Generates a point source field in Fourier space.
 - ideal_source: Creates a circular or diamond-shaped source field for testing.
 - point_measurement: Computes the convolution of two 2D arrays at a specific point.
+
 """
 
 import numpy as np
@@ -22,13 +22,13 @@ def compute_wind_fields(u_rot, wind_dir):
     wind speed and direction.
 
     Parameters:
-    - u_rot (float): Rotated wind speed.
-    - wind_dir (float): Wind direction in degrees (clockwise from north).
+        u_rot (float): Rotated wind speed.
+        wind_dir (float): Wind direction in degrees (clockwise from north).
 
     Returns:
-    - tuple: A tuple (u, v) where:
-        - u (float): Zonal wind component (east-west).
-        - v (float): Meridional wind component (north-south).
+        tuple: A tuple (u, v) where:
+            - u (float): Zonal wind component (east-west).
+            - v (float): Meridional wind component (north-south).
     """
     wind_dir = np.deg2rad(wind_dir)
     u = u_rot * np.sin(wind_dir)
@@ -43,13 +43,12 @@ def point_source(nxy, domain, src_pt):
     to the spatial domain.
 
     Parameters:
-    - nxy (tuple): Number of grid points in the x and y directions (nx, ny).
-    - domain (tuple): Physical dimensions of the domain (xmax, ymax).
-    - src_pt (tuple): Coordinates of the source point (xs, ys).
+        nxy (tuple): Number of grid points in the x and y directions (nx, ny).
+        domain (tuple): Physical dimensions of the domain (xmax, ymax).
+        src_pt (tuple): Coordinates of the source point (xs, ys).
 
     Returns:
-    - numpy.ndarray: A 2D array representing the point source field in the
-      spatial domain.
+        numpy.ndarray: A 2D array representing the point source field in the spatial domain.
     """
     nx, ny = nxy
     xmx, ymx = domain
@@ -84,13 +83,12 @@ def ideal_source(nxy, domain, shape="diamond"):
     Useful for testing purposes.
 
     Parameters:
-    - nxy (tuple): Number of grid points in the x and y directions (nx, ny).
-    - domain (tuple): Physical dimensions of the domain (xmax, ymax).
-    - shape (str): Shape of the source field. Options are "circle" or "diamond".
-      Default is "diamond".
+        nxy (tuple): Number of grid points in the x and y directions (nx, ny).
+        domain (tuple): Physical dimensions of the domain (xmax, ymax).
+        shape (str): Shape of the source field. Options are "circle" or "diamond". Default is "diamond".
 
     Returns:
-    - numpy.ndarray: A 2D array representing the source field.
+        numpy.ndarray: A 2D array representing the source field.
     """
 
     nx, ny = nxy
@@ -121,11 +119,11 @@ def point_measurement(f, g):
     Computes the convolution of two 2D arrays evaluated at a specific point.
 
     Parameters:
-    - f (numpy.ndarray): First 2D array.
-    - g (numpy.ndarray): Second 2D array.
+        f (numpy.ndarray): First 2D array.
+        g (numpy.ndarray): Second 2D array.
 
     Returns:
-    - float: The result of the convolution at the specified point.
+        float: The result of the convolution at the specified point.
     """
 
     return np.sum(f * g)
