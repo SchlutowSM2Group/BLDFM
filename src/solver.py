@@ -38,7 +38,7 @@ The `steady_state_transport_solver` function is the primary entry point for solv
 Example:
 --------
 .. code-block:: python
-    
+
     import numpy as np
     from solver import steady_state_transport_solver
 
