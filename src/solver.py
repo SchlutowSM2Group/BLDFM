@@ -8,27 +8,28 @@ and various numerical integration techniques.
 
 Functions:
 ----------
+steady_state_transport_solver
+    Solves the steady-state advection-diffusion equation for concentration fields with
+    flux boundary conditions. It supports both numerical and analytical solutions and
+    can compute footprints (Green's functions) for surface fluxes.
 
-1. steady_state_transport_solver:
-   Solves the steady-state advection-diffusion equation for concentration fields
-   with flux boundary conditions. It supports both numerical and analytical
-   solutions and can compute footprints (Green's functions) for surface fluxes.
+    Key features:
+    - Handles vertical profiles of wind and eddy diffusivity.
+    - Supports Fourier-based truncation for efficient computation.
+    - Allows for different numerical methods for solving initial value problems.
 
-   Key Features:
-   - Handles vertical profiles of wind and eddy diffusivity.
-   - Supports Fourier-based truncation for efficient computation.
-   - Allows for different numerical methods for solving initial value problems.
+ivp_solver
+    Solves the initial value problem (IVP) for the advection-diffusion equation
+    using various numerical methods.
 
-2. ivp_solver:
-   Solves the initial value problem (IVP) for the advection-diffusion equation
-   using various numerical methods, including:
-   - Semi-Implicit Euler (SIE)
-   - Exponential Integrator (EI)
-   - Taylor Series Exponential Integrator (TSEI3)
-   - Explicit Euler (EE)
+    Supported methods:
+    - Semi-Implicit Euler (SIE)
+    - Exponential Integrator (EI)
+    - Taylor Series Exponential Integrator (TSEI3)
+    - Explicit Euler (EE)
 
-   This function is used internally by the `steady_state_transport_solver` to
-   compute solutions for non-degenerate systems.
+    This function is used internally by `steady_state_transport_solver` to
+    compute solutions for non-degenerate systems.
 
 Usage:
 ------
@@ -36,24 +37,27 @@ The `steady_state_transport_solver` function is the primary entry point for solv
 
 Example:
 --------
-```python
-import numpy as np
-from solver import steady_state_transport_solver
+.. code-block:: python
+    
+    import numpy as np
+    from solver import steady_state_transport_solver
 
-# Define inputs
-srf_flx = np.random.rand(100, 100)  # Surface flux field
-z = np.linspace(0, 1000, 50)        # Vertical grid points
-profiles = (np.ones(50), np.ones(50), np.ones(50))  # Wind and diffusivity profiles
-domain = (1000, 1000)               # Domain size
+    # Define inputs
+    srf_flx = np.random.rand(100, 100)  # Surface flux field
+    z = np.linspace(0, 100, 1)          # Vertical grid points
+    profiles = (np.ones(100), np.ones(100), np.ones(100))  # Wind and diffusivity profiles
+    domain = (100, 100)                 # Domain size
 
-# Solve the transport equation
-srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
-    srf_flx, z, profiles, domain
-)
+    # Solve the transport equation
+    srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
+        srf_flx, z, profiles, domain
+    )
 
-print("Surface concentration:", srf_conc)
+    print("Surface concentration:", srf_conc)
+
 
 Dependencies:
+-------------
 - numpy
 - scipy.fft
 """

@@ -4,14 +4,16 @@ pbl_model.py
 This module provides functions to compute vertical profiles of horizontal wind and eddy diffusivity in the planetary boundary layer (PBL). The calculations are based on Monin-Obukhov Similarity Theory (MOST) and other closure models.
 
 Functions:
+----------
     - vertical_profiles: Computes vertical profiles of wind and eddy diffusivity.
     - psi: Stability correction function for MOST.
     - phi: Stability correction function for eddy diffusivity.
 
 References:
-    - Kormann, R., & Meixner, F. X. (2001). An analytical footprint model for non-neutral stratification. Boundary-Layer Meteorology, 99(2), 207–224.
-    https://doi.org/10.1023/A:1018991015119
+-----------
+    - Kormann, R., & Meixner, F. X. (2001). An analytical footprint model for non-neutral stratification. Boundary-Layer Meteorology, 99(2), 207–224. https://doi.org/10.1023/A:1018991015119
     - Schumann, U. (1991). Subgrid length-scales for large-eddy simulation of stratified turbulence. Theoretical and Computational Fluid Dynamics, 2(5), 279–290.
+
 """
 
 import logging
@@ -61,8 +63,7 @@ def vertical_profiles(
         - The "MOST" closure uses Monin-Obukhov Similarity Theory.
 
     References:
-        - Kormann, R., & Meixner, F. X. (2001). An analytical footprint model for non-neutral stratification. Boundary-Layer Meteorology, 99(2), 207–224.
-        https://doi.org/10.1023/A:1018991015119
+        - Kormann, R., & Meixner, F. X. (2001). An analytical footprint model for non-neutral stratification. Boundary-Layer Meteorology, 99(2), 207–224. https://doi.org/10.1023/A:1018991015119
         - Schumann, U. (1991). Subgrid length-scales for large-eddy simulation of stratified turbulence. Theoretical and Computational Fluid Dynamics, 2, 279–290.
 
     """
@@ -185,6 +186,7 @@ def psi(x):
     Notes:
         - For stable conditions (x > 0), a linear relationship is used.
         - For unstable conditions (x < 0), the Businger-Dyer formulation is applied.
+
     """
     xi = np.where(x > 0.0, np.nan, np.power(1.0 - 16.0 * x, 0.25, dtype=complex).real)
     return np.where(
@@ -210,44 +212,8 @@ def phi(x):
     Notes:
         - For stable conditions (x > 0), a linear relationship is used.
         - For unstable conditions (x < 0), the Businger-Dyer formulation is applied.
+
     """
     return np.where(
         x > 0.0, 1.0 + 5.0 * x, np.power(1.0 - 16.0 * x, -0.5, dtype=complex).real
     )
-
-
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-
-    fig, axs = plt.subplots(2)
-    for mol in [-1000, -500, -400, -100, -30, 30, 100, 400, 500, 1000]:
-        z, (u, v, K) = vertical_profiles(
-            n=100, meas_height=5.0, wind=(3.0, 1.0), ustar=0.4, closure="MOST", mol=mol
-        )
-        axs[0].plot(u, z)
-        axs[0].set_xlabel("u [m/s]")
-        axs[0].set_ylabel("z [m]")
-        axs[0].set_title("Profiles for MOST")
-        axs[1].plot(K, z)
-        axs[1].set_xlabel("K [m2 s-1]")
-        axs[1].set_ylabel("z [m]")
-    plt.show()
-
-    fig, axs = plt.subplots(2)
-    for tke in [0.2, 0.5, 1.0, 1.5, 2.0, 2.5]:
-        z, (u, v, K) = vertical_profiles(
-            n=100,
-            meas_height=5.0,
-            wind=(3.0, 1.0),
-            ustar=0.4,
-            closure="OAAHOC",
-            tke=tke,
-        )
-        axs[0].plot(u, z)
-        axs[0].set_xlabel("u [m/s]")
-        axs[0].set_ylabel("z [m]")
-        axs[0].set_title("Profiles for One-and-a-half-order closure")
-        axs[1].plot(K, z)
-        axs[1].set_xlabel("K [m2 s-1]")
-        axs[1].set_ylabel("z [m]")
-    plt.show()
