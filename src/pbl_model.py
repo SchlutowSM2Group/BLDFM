@@ -40,14 +40,14 @@ def vertical_profiles(
         n (int): Number of vertical grid points.
         meas_height (float): Measurement height above the ground.
         wind (tuple of floats): Zonal (u) and meridional (v) wind components at the measurement height.
-        ustar (float or numpy.ndarray): Friction velocity (in m/s).
+        ustar (float or numpy.ndarray): Friction velocity [m/s].
         mol (float or numpy.ndarray, optional): Monin-Obukhov length. Default is 1e9 (neutral conditions).
         prsc (float, optional): Prandtl or Schmidt number. Default is 1.0.
         closure (str, optional): Closure model to use. Options are "MOST", "CONSTANT", or "OAAHOC". Default is "MOST".
         z0 (float or numpy.ndarray, optional): Roughness length. Default is -1e9 (auto-calculated).
         z0_min (float, optional): Minimum allowable roughness length. Default is 0.001.
         z0_max (float, optional): Maximum allowable roughness length. Default is 2.0.
-        tke (float or numpy.ndarray, optional): Turbulent kinetic energy (in m²/s²) for the "OAAHOC" closure. If not provided, it will default to 1.0.
+        tke (float or numpy.ndarray, optional): Turbulent kinetic energy [m²/s²] for the "OAAHOC" closure. If not provided, it will default to 1.0.
 
     Returns:
         tuple:
