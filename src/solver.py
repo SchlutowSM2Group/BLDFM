@@ -8,21 +8,23 @@ and various numerical integration techniques.
 
 Functions:
 ----------
-steady_state_transport_solver
+- steady_state_transport_solver
     Solves the steady-state advection-diffusion equation for concentration fields with
     flux boundary conditions. It supports both numerical and analytical solutions and
     can compute footprints (Green's functions) for surface fluxes.
 
     Key features:
+
     - Handles vertical profiles of wind and eddy diffusivity.
     - Supports Fourier-based truncation for efficient computation.
     - Allows for different numerical methods for solving initial value problems.
 
-ivp_solver
+- ivp_solver
     Solves the initial value problem (IVP) for the advection-diffusion equation
     using various numerical methods.
 
     Supported methods:
+    
     - Semi-Implicit Euler (SIE)
     - Exponential Integrator (EI)
     - Taylor Series Exponential Integrator (TSEI3)
@@ -87,12 +89,12 @@ def steady_state_transport_solver(
     Parameters
     ----------
     srf_flx : ndarray of float
-        2D field of surface kinematic flux at z=z0 [scalar_unit m s-1].
+        2D field of surface kinematic flux at z=z0 [m/s].
     z : ndarray of float
         1D array of vertical grid points from z0 to zm [m].
     profiles : tuple of ndarray
-        Tuple containing 1D arrays of vertical profiles of zonal wind, meridional wind [m s-1],
-        and eddy diffusivity [m2 s-1].
+        Tuple containing 1D arrays of vertical profiles of zonal wind, meridional wind [m/s],
+        and eddy diffusivity [m²/s].
     domain : tuple of float
         Tuple containing domain sizes (xmax, ymax) [m].
     modes : tuple of int, optional
@@ -118,13 +120,13 @@ def steady_state_transport_solver(
     Returns
     -------
     srf_conc : ndarray of float
-        2D field of surface concentrations at z=z0 [scalar_unit].
+        2D field of surface concentrations at z=z0.
     bg_conc : float
-        Background concentration at z=zm [scalar_unit].
+        Background concentration at z=zm.
     conc : ndarray of float
-        2D field of concentration at z=zm or Green's function [scalar_unit].
+        2D field of concentration at z=zm or Green's function.
     flx : ndarray of float
-        2D field of kinematic flux at z=zm or footprint [scalar_unit m s-1].
+        2D field of kinematic flux at z=zm or footprint.
     """
 
     q0 = srf_flx
@@ -310,8 +312,8 @@ def ivp_solver(fftpq, profiles, z, Lx, Ly, method="SIE"):
     fftpq : tuple of ndarray
         Tuple containing the initial Fourier-transformed pressure and flux fields (fftp0, fftq0).
     profiles : tuple of ndarray
-        Tuple containing 1D arrays of vertical profiles of zonal wind, meridional wind [m s-1],
-        and eddy diffusivity [m2 s-1].
+        Tuple containing 1D arrays of vertical profiles of zonal wind, meridional wind [m/s],
+        and eddy diffusivity [m²/s].
     z : ndarray of float
         1D array of vertical grid points from z0 to zm [m].
     Lx : ndarray of float
