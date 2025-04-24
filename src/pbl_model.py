@@ -95,7 +95,7 @@ def vertical_profiles(
         v = vm * np.ones(n)
         K = Km * np.ones(n)
 
-    if closure == "MOST":
+    elif closure == "MOST":
 
         # absolute wind at zm
         absum = np.sqrt(um**2 + vm**2)
@@ -126,7 +126,7 @@ def vertical_profiles(
 
     # One-and-a-half order closure
     # according to Schumann-Lilly closure (Schumann, 1991)
-    if closure == "OAAHOC":
+    elif closure == "OAAHOC":
 
         cl = 0.845
         cm = 0.0856
@@ -153,6 +153,12 @@ def vertical_profiles(
         v = vm / absum * absu
 
         K = ch * cl * z * np.sqrt(tke)
+
+    else:
+        raise ValueError(
+            f"Invalid closure type: {closure}. "
+            "Supported closures are 'MOST', 'CONSTANT', and 'OAAHOC'."
+        )
 
     logging.info("Stats from vertical_profiles")
     logging.info("z0    = %.3f m", z[0])
