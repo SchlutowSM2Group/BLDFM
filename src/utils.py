@@ -1,17 +1,3 @@
-"""
-utils.py
-
-This module provides utility functions for the Boundary Layer Dispersion and Footprint Model (BLDFM). It includes functions for generating wind fields, creating source fields for testing, and performing point measurements using convolution.
-
-Functions:
-----------
-- compute_wind_fields: Computes the zonal and meridional wind components.
-- point_source: Generates a point source field in Fourier space.
-- ideal_source: Creates a circular or diamond-shaped source field for testing.
-- point_measurement: Computes the convolution of two 2D arrays at a specific point.
-
-"""
-
 import numpy as np
 import scipy.fft as fft
 
