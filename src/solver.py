@@ -291,7 +291,7 @@ def ivp_solver(fftpq, profiles, z, Lx, Ly, method="SIE"):
             fftp = dum
 
         # Taylor series for exponential integrator method up to 3rd order
-        if method == "TSEI3":
+        elif method == "TSEI3":
             a = 1.0 - 0.5 * Kinv * Ti * dzi**2
             b = -Kinv * dzi - 1.0 / 6.0 * Kinv**2 * Ti * dzi**3
             c = Ti * dzi - 1.0 / 6.0 * Kinv * Ti**2 * dzi**3
@@ -302,14 +302,19 @@ def ivp_solver(fftpq, profiles, z, Lx, Ly, method="SIE"):
             fftp = dum
 
         # Semi-implicit Euler method
-        if method == "SIE":
+        elif method == "SIE":
             fftp = fftp - dzi * Kinv * fftq
             fftq = fftq + dzi * Ti * fftp
 
         # Explicit Euler method
-        if method == "EE":
+        elif method == "EE":
             dum = fftp - dz[i] / K[i] * fftq
             fftq = fftq + dz[i] * Ti * fftp
             fftp = dum
+
+        else:
+            raise ValueError(
+                "Invalid method. Choose from 'SIE', 'EI', 'TSEI3', or 'EE'."
+            )
 
     return fftp, fftq
