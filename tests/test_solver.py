@@ -1,6 +1,4 @@
 """
-test_solver.py
-
 This module contains unit tests for the `steady_state_transport_solver` function from the `solver.py` module. It validates the numerical solver against the analytical solution for the steady-state advection-diffusion equation.
 
 The tests ensure that the numerical solution matches the analytical solution within a specified tolerance and that the outputs have the correct shapes and types.
@@ -20,8 +18,8 @@ def test_steady_state_transport_solver():
     Tests the `steady_state_transport_solver` function against an analytical solution for the steady-state advection-diffusion equation with a point source at the center of the domain.
 
     The test validates:
-    - The shape and type of the solver's outputs.
-    - The numerical accuracy of the solver by comparing its results to the analytical solution within a specified tolerance.
+        - The shape and type of the solver's outputs.
+        - The numerical accuracy of the solver by comparing its results to the analytical solution within a specified tolerance.
 
     Raises:
     - AssertionError: If any of the output shapes, types, or numerical accuracy checks fail.
