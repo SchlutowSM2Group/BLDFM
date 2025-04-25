@@ -6,9 +6,9 @@
 Welcome to BLDFM's Documentation!
 ==================================
 
-The **Boundary Layer Dispersion and Footprint Model (BLDFM)** is a cutting-edge atmospheric dispersion and footprint model designed for microscale applications in the planetary boundary layer (PBL). It numerically solves the three-dimensional steady-state advection-diffusion equation in Eulerian form, providing robust tools for modeling scalar transport under various turbulent regimes.
+The **Boundary Layer Dispersion and Footprint Model (BLDFM)** is a atmospheric dispersion and footprint model designed for microscale applications in the planetary boundary layer (PBL). It numerically solves the three-dimensional steady-state advection-diffusion equation in Eulerian form, providing robust tools for modeling scalar transport under various turbulent regimes.
 
-This documentation serves as a guide to understanding, configuring, and extending BLDFM for your specific use cases. This documentation aims to be accessible to researchers, developers, or practitioners. If not, feel free to reach out with a contribution or an issue!
+This documentation serves as a guide to understanding, configuring, and extending BLDFM for your specific use cases. This documentation aims to be accessible to researchers, developers, or practitioners. If you spot a feature gap in BLDFM or space for improvement in the documentation, feel free to reach out with a contribution or an issue!
 
 
 Key Features
@@ -63,9 +63,9 @@ For more details, visit the `GitHub repository <https://github.com/SchlutowSM2Gr
 
 
 .. toctree::
-   :maxdepth: 1
-   :titlesonly:
+   :maxdepth: 2
    :hidden:
+   :includehidden:
 
    Home <self>
    quickstart
@@ -75,9 +75,9 @@ For more details, visit the `GitHub repository <https://github.com/SchlutowSM2Gr
 
 
 .. toctree::
-   :maxdepth: 1
-   :titlesonly:
+   :maxdepth: 2
    :hidden:
+   :includehidden:
 
    runs
    tests

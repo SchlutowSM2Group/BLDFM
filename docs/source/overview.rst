@@ -2,10 +2,10 @@ Package overview
 ================
 This package provides a modular framework for modeling atmospheric dispersion processes, focusing on the planetary boundary layer (PBL) and scalar transport. It includes three core modules in `src` for computing vertical profiles, solving advection-diffusion equations, and providing utility functions for diagnostics and input generation. Example run scripts and a test suite are also included to demonstrate usage and ensure reliability.
 
-The ``src`` subpackage
-----------------------
+Core modules in the ``src`` subpackage
+--------------------------------------
 
-1. ``src.pbl_model``
+1. :py:mod:`src.pbl_model`
     Computes vertical profiles of horizontal wind and eddy diffusivity in the planetary boundary layer using Monin-Obukhov Similarity Theory (MOST).
 
     **Features:**
@@ -18,7 +18,7 @@ The ``src`` subpackage
         - :py:func:`src.pbl_model.psi`
         - :py:func:`src.pbl_model.phi`
 
-2. ``src.solver``
+2. :py:mod:`src.solver`
     Solves the steady-state advection-diffusion equation for scalar concentration fields using FFT-based methods and numerical integration schemes.
 
     **Features:**
@@ -30,7 +30,7 @@ The ``src`` subpackage
        - :py:func:`src.solver.steady_state_transport_solver`
        - :py:func:`src.solver.ivp_solver`
 
-3. ``utils``
+3. :py:mod:`src.utils`
     Provides utility functions for preprocessing, synthetic input generation, and diagnostics.
 
     **Features:**
@@ -44,7 +44,7 @@ The ``src`` subpackage
        - :py:func:`src.utils.ideal_source`
        - :py:func:`src.utils.point_measurement`
 
-Additional Subpackages
+Additional subpackages
 ----------------------
 
 1. ``runs``

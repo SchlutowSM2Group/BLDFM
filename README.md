@@ -7,12 +7,12 @@
 <h2 align="center">Boundary Layer Dispersion and Footprint Model (BLDFM)</h2>
 
 <p align="center">
-<a href="https://github.com/SchlutowSM2Group/BLDFM/actions/workflows/tests.yml">
-<img alt="GitHub Actions: tests" src="https://img.shields.io/github/actions/workflow/status/SchlutowSM2Group/BLDFM/tests.yml?logo=github&label=tests">
+<a href="https://github.com/SchlutowSM2Group/BLDFM/actions/workflows/ci.yml">
+<img alt="GitHub Actions: CI" src="https://img.shields.io/github/actions/workflow/status/SchlutowSM2Group/BLDFM/ci.yml?logo=github&label=ci">
 </a>
-<!-- <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">
+<a href="https://polyformproject.org/licenses/noncommercial/1.0.0">
 <img alt="License: PolyForm NC 1.0.0" src="https://img.shields.io/badge/License-PolyForm%20NC%201.0.0-blue.svg">
-</a> -->
+</a>
 <a href="https://github.com/psf/black">
 <img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg">
 </a>
@@ -68,7 +68,7 @@ $ python -m runs.example_script_name
 Replace `example_script_name` with the desired script, such as `comparison_footprint`.
 
 ### Execution without installation
-To execute a specific example with first installing BLDFM, navigate to the `runs` directory and run the script. For example:
+To execute a specific example without first installing BLDFM, clone the repository and run the script. For example:
 ```bash
 # BLDFM root directory
 $ python -m runs.comparison_footprint

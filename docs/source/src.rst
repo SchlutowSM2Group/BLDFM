@@ -14,7 +14,7 @@ Modules
 -------
 
 src.pbl\_model module
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: src.pbl_model
    :members:
@@ -22,7 +22,7 @@ src.pbl\_model module
    :show-inheritance:
 
 src.solver module
------------------
+^^^^^^^^^^^^^^^^^
 
 .. automodule:: src.solver
    :members:
@@ -30,7 +30,7 @@ src.solver module
    :show-inheritance:
 
 src.utils module
-----------------
+^^^^^^^^^^^^^^^^
 
 .. automodule:: src.utils
    :members:
