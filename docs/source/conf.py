@@ -52,6 +52,7 @@ extensions = [
     "sphinx.ext.napoleon",  # For parsing NumPy/Google-style docstrings
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
+    "sphinxcontrib.tikz"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -96,11 +97,15 @@ html_theme = "alabaster"
 # documentation.
 #
 # html_theme_options = {}
+html_theme_options = {
+    "logo": "logo.png",
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -111,6 +116,7 @@ html_static_path = ["_static"]
 # 'searchbox.html']``.
 #
 # html_sidebars = {}
+
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
@@ -189,6 +195,9 @@ intersphinx_mapping = {"https://docs.python.org/": None}
 autodoc_default_options = {
     "exclude-members": "calc_footprint_FFP, ffm_kormann",
 }
+
+# -- Options for autodoc extension ----------------------------------------------
+tikz_proc_suite = "ImageMagick"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
