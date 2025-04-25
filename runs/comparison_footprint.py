@@ -96,43 +96,43 @@ grid_x, grid_y, grid_ffm = FKM(
 ############################################################
 ### plotting
 ############################################################
+if __name__ == "__main__":
+    shrink = 0.5
+    cmap = "turbo"
 
-shrink = 0.5
-cmap = "turbo"
+    fig, axs = plt.subplots(1, 2, figsize=[6, 8], sharey=True, layout="constrained")
 
-fig, axs = plt.subplots(1, 2, figsize=[6, 8], sharey=True, layout="constrained")
+    # BLDFM
+    plot = axs[0].imshow(
+        flx, origin="lower", cmap=cmap, extent=[0, domain[0], 0, domain[1]]
+    )
 
-# BLDFM
-plot = axs[0].imshow(
-    flx, origin="lower", cmap=cmap, extent=[0, domain[0], 0, domain[1]]
-)
+    axs[0].set_title("BLDFM")
+    axs[0].set_xlabel("x [m]")
+    axs[0].set_ylabel("y [m]")
 
-axs[0].set_title("BLDFM")
-axs[0].set_xlabel("x [m]")
-axs[0].set_ylabel("y [m]")
+    # FFP
+    # plot = axs[1].pcolormesh(x_2d, y_2d, f_2d)
+    # plot = axs[1].imshow(
+    #        f_2d,
+    #        origin="lower",
+    #        cmap=cmap,
+    #        extent=[0,domain[0],0,domain[1]])
+    #
+    # axs[1].set_title("FFP")
+    # axs[1].set_xlabel("x [m]")
 
-# FFP
-# plot = axs[1].pcolormesh(x_2d, y_2d, f_2d)
-# plot = axs[1].imshow(
-#        f_2d,
-#        origin="lower",
-#        cmap=cmap,
-#        extent=[0,domain[0],0,domain[1]])
-#
-# axs[1].set_title("FFP")
-# axs[1].set_xlabel("x [m]")
+    # FKM
+    plot = axs[1].imshow(
+        grid_ffm, origin="upper", cmap=cmap, extent=[0, domain[0], 0, domain[1]]
+    )
 
-# FKM
-plot = axs[1].imshow(
-    grid_ffm, origin="upper", cmap=cmap, extent=[0, domain[0], 0, domain[1]]
-)
+    axs[1].set_title("FKM")
+    axs[1].set_xlabel("x [m]")
+    cbar = fig.colorbar(plot, ax=axs, shrink=shrink, location="bottom")
+    cbar.formatter.set_powerlimits((0, 0))
+    cbar.formatter.set_useMathText(True)
+    cbar.set_label("$m^{-2}$")
 
-axs[1].set_title("FKM")
-axs[1].set_xlabel("x [m]")
-cbar = fig.colorbar(plot, ax=axs, shrink=shrink, location="bottom")
-cbar.formatter.set_powerlimits((0, 0))
-cbar.formatter.set_useMathText(True)
-cbar.set_label("$m^{-2}$")
-
-# plt.show()
-plt.savefig("plots/comparison_footprint.png", dpi=300)
+    # plt.show()
+    plt.savefig("plots/comparison_footprint.png", dpi=300)
