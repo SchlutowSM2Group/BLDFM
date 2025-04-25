@@ -52,7 +52,7 @@ extensions = [
     "sphinx.ext.napoleon",  # For parsing NumPy/Google-style docstrings
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
-    "sphinxcontrib.tikz"
+    "sphinxcontrib.tikz",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -116,7 +116,6 @@ html_css_files = ["custom.css"]
 # 'searchbox.html']``.
 #
 # html_sidebars = {}
-
 
 
 # -- Options for HTMLHelp output ---------------------------------------------
