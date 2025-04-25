@@ -8,11 +8,11 @@ All tests in this subpackage can be run using the command:
    # BLDFM root directory
    $ pytest -v tests
 
-Modules
--------
+Unit tests
+----------
 
 tests.test\_pbl\_model module
------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: tests.test_pbl_model
    :members:
@@ -20,9 +20,12 @@ tests.test\_pbl\_model module
    :show-inheritance:
 
 tests.test\_solver module
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: tests.test_solver
    :members:
    :undoc-members:
    :show-inheritance:
+
+Integration tests
+-----------------

@@ -1,5 +1,5 @@
 """
-This module contains unit tests for the `vertical_profiles` function in the `pbl_model` module. The tests validate the behavior of the function under different closure schemes, including:
+This module contains unit tests for the :py:func:`src.pbl_model.vertical_profiles` function in the :py:mod:`src.pbl_model` module. The tests validate the behavior of the function under different closure schemes, including:
 
 - `CONSTANT` Closure: Ensures the profiles for velocity and eddy diffusivity are constant and match expected values.
 - `MOST` (Monin-Obukhov Similarity Theory) Closure: Verifies that the profiles vary with height and are physically reasonable.
@@ -20,7 +20,11 @@ from src.pbl_model import vertical_profiles
     ],
 )
 def test_constant_closure(n, meas_height, wind, ustar, prsc):
-    """Test the CONSTANT closure for scalar inputs."""
+    """Test the CONSTANT closure for scalar inputs.
+    
+    Raises:
+        AssertionError: If the output shapes do not match the expected dimensions or if the profiles are not constant.
+    """
     closure = "CONSTANT"
 
     z, (u, v, K) = vertical_profiles(
@@ -54,7 +58,11 @@ def test_constant_closure(n, meas_height, wind, ustar, prsc):
     ],
 )
 def test_most_closure(n, meas_height, wind, ustar, mol):
-    """Test the MOST closure for scalar inputs."""
+    """Test the MOST closure for scalar inputs.
+    
+    Raises:
+        AssertionError: If the output shapes do not match the expected dimensions or if the profiles are not physically reasonable.
+    """
     closure = "MOST"
 
     z, (u, v, K) = vertical_profiles(

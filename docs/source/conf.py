@@ -99,6 +99,13 @@ html_theme = "alabaster"
 # html_theme_options = {}
 html_theme_options = {
     "logo": "logo.png",
+    "logo_name": True,
+    "description": "A Python dispersion and footprint model",
+    "logo_text_align": "center",
+    "body_max_width": "none",
+    "page_width": "75%",
+    "fixed_sidebar": True,
+    "body_text_align": "left",
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,

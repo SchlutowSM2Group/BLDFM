@@ -46,7 +46,7 @@ def vertical_profiles(
 
     References:
         - Kormann, R., & Meixner, F. X. (2001). An analytical footprint model for non-neutral stratification. Boundary-Layer Meteorology, 99(2), 207–224. https://doi.org/10.1023/A:1018991015119
-        - Schumann, U. (1991). Subgrid length-scales for large-eddy simulation of stratified turbulence. Theoretical and Computational Fluid Dynamics, 2(5), 279–290.
+        - Schumann, U. (1991). Subgrid length-scales for large-eddy simulation of stratified turbulence. Theoretical and Computational Fluid Dynamics, 2(5), 279–290. https://doi.org/10.1007/BF00271468
 
     """
 

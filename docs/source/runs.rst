@@ -3,29 +3,32 @@ The ``runs`` subpackage
 
 This subpackage contains the examples and user-defined run-scripts for use with BLDFM.
 
-Modules
--------
+Examples
+--------
 
 runs.minimal\_example module
-------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: runs.minimal_example
    :members:
    :undoc-members:
    :show-inheritance:
 
-runs.comparison\_footprint module
----------------------------------
+runs.footprint\_example module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: runs.comparison_footprint
+.. automodule:: runs.footprint_example
    :members:
    :undoc-members:
    :show-inheritance:
 
-runs.footprint\_example module
-------------------------------
+Comparisons
+-----------
 
-.. automodule:: runs.footprint_example
+runs.comparison\_footprint module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: runs.comparison_footprint
    :members:
    :undoc-members:
    :show-inheritance:
