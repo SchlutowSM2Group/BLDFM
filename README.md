@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/SchlutowSM2Group/BLFDM">
-  <img alt="BLDFM Logo" src="docs/source/_static/logo.png" width=100px>
+  <img alt="BLDFM Logo" src="docs/source/_static/logo.png" width=150px>
   </a>
 </p>
 
@@ -56,14 +56,14 @@ Install the package using pip:
 
 ```bash
 # BLDFM root directory
-pip install -e .
+$ pip install -e .
 ```
 
 ### Running Example Scripts
 The example scripts are located in the `runs` subdirectory. After installation, you can run them as follows:
 ```bash
 # BLDFM root directory
-python -m runs.example_script_name
+$ python -m runs.example_script_name
 ```
 Replace `example_script_name` with the desired script, such as `comparison_footprint`.
 
@@ -71,7 +71,7 @@ Replace `example_script_name` with the desired script, such as `comparison_footp
 To execute a specific example with first installing BLDFM, navigate to the `runs` directory and run the script. For example:
 ```bash
 # BLDFM root directory
-python -m runs.comparison_footprint
+$ python -m runs.comparison_footprint
 ```
 
 Refer to the documentation for details on available APIs and how to create custom experiments.
@@ -80,7 +80,7 @@ Refer to the documentation for details on available APIs and how to create custo
 Additional dependencies for documentation or testing can be found under `optional-dependencies` in `pyproject.toml`. These dependencies can be installed via
 ```bash
 # BLDFM root directory
-pip install '.[dev]'
+$ pip install '.[dev]'
 ```
 
 ## License

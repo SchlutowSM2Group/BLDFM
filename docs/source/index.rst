@@ -14,7 +14,7 @@ This documentation serves as a guide to understanding, configuring, and extendin
 Key Features
 ------------
 
-- **Numerical Solver**: Efficiently solves the steady-state advection-diffusion equation using Fourier transforms and advanced numerical methods like the Semi-Implicit Euler (SIE) and Exponential Integrator (EI).
+- **Numerical Solver**: Efficiently solves the steady-state advection-diffusion equation using Fourier transforms and numerical methods like the Semi-Implicit Euler (SIE) and Exponential Integrator (EI).
 - **Atmospheric Stability**: Computes vertical profiles of mean wind and eddy diffusivity using Monin-Obukhov Similarity Theory (MOST).
 - **Customizability**: Easily extendable with additional turbulence closures and parameterizations.
 - **Validation**: Tested against analytical solutions and benchmark models, ensuring accuracy and reliability.
