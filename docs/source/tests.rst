@@ -30,8 +30,8 @@ tests.test\_solver module
 Integration tests
 -----------------
 
-tests.test\_integration
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests.test\_integration module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: tests.test_integration
    :members:

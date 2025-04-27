@@ -1,3 +1,7 @@
+"""
+Minimal example module showcasing basic usage of the BLDFM framework.
+"""
+
 import matplotlib.pyplot as plt
 
 from src.pbl_model import vertical_profiles

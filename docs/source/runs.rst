@@ -1,7 +1,11 @@
 The ``runs`` subpackage
 =======================
 
-This subpackage contains the examples and user-defined run-scripts for use with BLDFM.
+This subpackage provides example workflows and pre-configured scripts to demonstrate the usage of BLDFM. These scripts showcase how to combine the core modules (`pbl_model`, `solver`, and `utils`) for practical applications, such as footprint modeling, dispersion analysis, and validation against analytical solutions and other models.
+
+**Features:**
+   - Example configurations for common use cases.
+   - Demonstrates integration of vertical profiles, transport solvers, and diagnostics.
 
 Examples
 --------
@@ -24,6 +28,15 @@ runs.footprint\_example module
 
 Comparisons
 -----------
+
+runs.comparison\_analytic module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: runs.comparison_analytic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 runs.comparison\_footprint module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -1,3 +1,7 @@
+"""
+Module for comparing BLDFM and Kormann-Meixner footprint models.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -42,40 +46,6 @@ srf_flx, bg_conc, conc, flx = steady_state_transport_solver(
 )
 
 ############################################################
-###  Kljun's FFP footprint model
-############################################################
-
-#
-# FFP_res = FFP(
-#        zm = meas_height,
-#        z0 = z0,
-#        umean = umean,
-#        h = 2000.,
-#        ol = mol,
-#        sigmav = 0.2,
-#        ustar = 0.437,
-#        wind_dir = 180.0,
-#        nx = 1000,
-#        rs= [20., 40., 60., 80.],
-#        fig = False,
-#        crop = 0)
-#
-# msk  = (FFP_res["y_2d"] <= domain[0]/2) & \
-#       (FFP_res["y_2d"] >= -domain[0]/2) & \
-#       (FFP_res["x_2d"] >=  0.0) & \
-#       (FFP_res["x_2d"] <=  domain[1])
-#
-# f_2d = np.ma.masked_array(FFP_res["f_2d"], msk)
-##f_2d = FFP_res["f_2d"][msk]
-##x_2d = FFP_res["x_2d"][msk]
-##y_2d = FFP_res["y_2d"][msk]
-#
-# print(f_2d.shape)
-##print(x_2d.shape)
-##print(y_2d.shape)
-
-#
-############################################################
 ### Korman and Meixner's footprint model
 ############################################################
 
@@ -110,17 +80,6 @@ if __name__ == "__main__":
     axs[0].set_title("BLDFM")
     axs[0].set_xlabel("x [m]")
     axs[0].set_ylabel("y [m]")
-
-    # FFP
-    # plot = axs[1].pcolormesh(x_2d, y_2d, f_2d)
-    # plot = axs[1].imshow(
-    #        f_2d,
-    #        origin="lower",
-    #        cmap=cmap,
-    #        extent=[0,domain[0],0,domain[1]])
-    #
-    # axs[1].set_title("FFP")
-    # axs[1].set_xlabel("x [m]")
 
     # FKM
     plot = axs[1].imshow(
