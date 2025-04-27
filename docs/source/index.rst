@@ -88,5 +88,6 @@ For more details, visit the `GitHub repository <https://github.com/SchlutowSM2Gr
    :titlesonly:
    :hidden:
 
+   acknowledgments
    Glossary Index <genindex>
    Module Index <modindex>
