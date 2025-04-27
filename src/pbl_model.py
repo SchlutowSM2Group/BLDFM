@@ -6,7 +6,7 @@ def vertical_profiles(
     n,
     meas_height,
     wind,
-    ustar,
+    ustar=0.2,
     mol=1e9,
     prsc=1.0,
     closure="MOST",
