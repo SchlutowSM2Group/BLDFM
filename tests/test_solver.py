@@ -23,7 +23,7 @@ def test_steady_state_transport_solver():
 
     Raises:
         AssertionError: If any of the output shapes, types, or numerical accuracy checks fail.
-    
+
     """
     # Define test inputs
     nx, ny = 50, 50  # Grid size

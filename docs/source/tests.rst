@@ -29,3 +29,11 @@ tests.test\_solver module
 
 Integration tests
 -----------------
+
+tests.test\_integration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: tests.test_integration
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -11,13 +11,13 @@ nz = 128
 modes = 1024, 1024
 # modes       = 128, 128
 domain = 200.0, 600.0
-fetch = 1000.0
+fetch = 1024 + 256
 meas_pt = 100.0, 0.0
 meas_height = 10.0
 wind = 0.0, -6.0
-ustar = 0.4
+ustar = 0.2
 z0 = 0.1
-mol = 20.0
+mol = -20.0
 
 wd = np.arctan(wind[0] / wind[1]) * 180.0 / np.pi
 umean = np.sqrt(wind[0] ** 2 + wind[1] ** 2)
