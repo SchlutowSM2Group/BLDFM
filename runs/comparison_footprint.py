@@ -14,10 +14,10 @@ domain = 200.0, 600.0
 fetch = 1000.0
 meas_pt = 100.0, 0.0
 meas_height = 10.0
-wind = 0.0, -1.0
+wind = 0.0, -6.0
 ustar = 0.4
 z0 = 0.1
-mol = -20.0
+mol = 20.0
 
 wd = np.arctan(wind[0] / wind[1]) * 180.0 / np.pi
 umean = np.sqrt(wind[0] ** 2 + wind[1] ** 2)
