@@ -21,7 +21,7 @@ from src.pbl_model import vertical_profiles
 )
 def test_constant_closure(n, meas_height, wind, ustar, prsc):
     """Test the CONSTANT closure for scalar inputs.
-    
+
     Raises:
         AssertionError: If the output shapes do not match the expected dimensions or if the profiles are not constant.
     """
@@ -59,7 +59,7 @@ def test_constant_closure(n, meas_height, wind, ustar, prsc):
 )
 def test_most_closure(n, meas_height, wind, ustar, mol):
     """Test the MOST closure for scalar inputs.
-    
+
     Raises:
         AssertionError: If the output shapes do not match the expected dimensions or if the profiles are not physically reasonable.
     """
