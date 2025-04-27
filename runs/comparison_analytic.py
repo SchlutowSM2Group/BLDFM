@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ..src.pbl_model import vertical_profiles
-from ..src.utils import point_source
-from ..src.solver import steady_state_transport_solver
+from src.pbl_model import vertical_profiles
+from src.utils import point_source
+from src.solver import steady_state_transport_solver
 
 nxy = 512, 256
 modes = 1024, 1024
@@ -98,4 +98,4 @@ cbar.formatter.set_powerlimits((0, 0))
 cbar.formatter.set_useMathText(True)
 
 # plt.show()
-plt.savefig("comparison_analytic.png", dpi=300)
+plt.savefig("plots/comparison_analytic.png", dpi=300)
