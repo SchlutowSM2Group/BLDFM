@@ -40,7 +40,7 @@ srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
 diff_conc = (conc - conc_ana) / np.max(conc_ana)
 diff_flx = (flx - flx_ana) / np.max(flx_ana)
 
-if '__name__' == "__main__":
+if "__name__" == "__main__":
     shrink = 0.7
     cmap = "turbo"
 
