@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import scipy.fft as fft
 
@@ -113,3 +115,10 @@ def point_measurement(f, g):
     """
 
     return np.sum(f * g)
+
+
+def setup_logging():
+    """Set up logging configuration."""
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    )
