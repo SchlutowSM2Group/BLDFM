@@ -47,15 +47,15 @@ Core modules in the ``src`` subpackage
 Additional subpackages
 ----------------------
 
-1. ``runs``
-    Provides example workflows and pre-configured scripts to demonstrate the usage of the package. These scripts showcase how to combine the core modules (`pbl_model`, `solver`, and `utils`) for practical applications, such as footprint modeling or dispersion analysis.
+1.  :ref:`runs <runs>`
+    provides example workflows and pre-configured scripts to demonstrate the usage of the package. These scripts showcase how to combine the core modules (:py:mod:`src.pbl_model`, :py:mod:`src.solver`, and :py:mod:`src.utils`) for practical applications, such as footprint modeling or dispersion analysis.
 
     **Features:**
        - Example configurations for common use cases.
        - Demonstrates integration of vertical profiles, transport solvers, and diagnostics.
 
-2. ``tests``
-    Contains the test suite for validating the functionality and accuracy of the package. The tests ensure that the core modules (`pbl_model`, `solver`, and `utils`) work as expected and provide a framework for extending test coverage.
+2.  :ref:`tests <tests>`
+    contains the test suite for validating the functionality and accuracy of the package. The tests ensure that the core modules (:py:mod:`src.pbl_model`, :py:mod:`src.solver`, and :py:mod:`src.utils`) work as expected and provide a framework for extending test coverage.
 
     **Features:**
        - Unit tests for individual functions.
@@ -65,11 +65,11 @@ Additional subpackages
 Module interactions
 -------------------
 
-- ``pbl_model`` provides the vertical profiles required by the ``solver`` module.
-- ``solver`` handles the core transport computation, optionally using Green's functions for convolution with surface fluxes.
-- ``utils`` supports both ``pbl_model`` and ``solver`` with reusable tools for test generation and output diagnostics.
-- ``runs`` contains ....
-- ``tests`` ensures the reliability and correctness of the package.
+- :py:mod:`src.pbl_model` provides the vertical profiles required by the :py:mod:`src.solver` module.
+- :py:mod:`src.solver` handles the core transport computation, optionally using Green's functions for convolution with surface fluxes.
+- :py:mod:`src.utils` supports both :py:mod:`src.pbl_model` and :py:mod:`src.solver` with reusable tools for test generation and output diagnostics.
+- :ref:`runs <runs>` contains examples and user-defined run scripts that utilize the core modules.
+- :ref:`tests <tests>` ensures the reliability and correctness of the package.
 
 API reference
 -------------

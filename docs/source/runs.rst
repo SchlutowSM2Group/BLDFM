@@ -1,3 +1,5 @@
+.. _runs:
+
 The ``runs`` subpackage
 =======================
 
