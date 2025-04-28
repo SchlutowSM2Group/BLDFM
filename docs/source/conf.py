@@ -106,6 +106,7 @@ html_theme_options = {
     "page_width": "75%",
     "fixed_sidebar": True,
     "body_text_align": "left",
+    "show_relbars": True
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -192,7 +193,10 @@ texinfo_documents = [
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {"https://docs.python.org/": None}
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+}
 
 # -- Options for todo extension ----------------------------------------------
 
