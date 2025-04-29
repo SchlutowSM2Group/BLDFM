@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Package overview &#8212; BLDFM 0.9.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=56c4699f" />
+    <script src="_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The src subpackage" href="src.html" />
+    <link rel="prev" title="Quickstart guide" href="quickstart.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Package overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#core-modules-in-the-src-subpackage">Core modules in the <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#additional-subpackages">Additional subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-interactions">Module interactions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api-reference">API reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="runs.html">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="quickstart.html" title="previous chapter">Quickstart guide</a></li>
+      <li>Next: <a href="src.html" title="next chapter">The <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="quickstart.html" title="Previous document">Quickstart guide</a>
+        </li>
+        <li>
+          <a href="src.html" title="Next document">The <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <section id="package-overview">
+<h1>Package overview<a class="headerlink" href="#package-overview" title="Link to this heading">¶</a></h1>
+<p>This package provides a modular framework for modeling atmospheric dispersion processes, focusing on the planetary boundary layer (PBL) and scalar transport. It includes three core modules in <cite>src</cite> for computing vertical profiles, solving advection-diffusion equations, and providing utility functions for diagnostics and input generation. Example run scripts and a test suite are also included to demonstrate usage and ensure reliability.</p>
+<section id="core-modules-in-the-src-subpackage">
+<h2>Core modules in the <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage<a class="headerlink" href="#core-modules-in-the-src-subpackage" title="Link to this heading">¶</a></h2>
+<ol class="arabic">
+<li><dl>
+<dt><a class="reference internal" href="src.html#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a></dt><dd><p>Computes vertical profiles of horizontal wind and eddy diffusivity in the planetary boundary layer using Monin-Obukhov Similarity Theory (MOST).</p>
+<dl class="simple">
+<dt><strong>Features:</strong></dt><dd><ul class="simple">
+<li><p>Implements surface-layer closure via stability corrections.</p></li>
+<li><p>Supports parameterizations of <code class="docutils literal notranslate"><span class="pre">u_h(z)</span></code>, <code class="docutils literal notranslate"><span class="pre">K_h(z)</span></code>, and <code class="docutils literal notranslate"><span class="pre">K_z(z)</span></code>.</p></li>
+<li><p>Easy to extend with more sophisticated turbulence closures.</p></li>
+</ul>
+</dd>
+<dt><strong>Key functions:</strong></dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="src.html#src.pbl_model.vertical_profiles" title="src.pbl_model.vertical_profiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.vertical_profiles()</span></code></a></p></li>
+<li><p><a class="reference internal" href="src.html#src.pbl_model.psi" title="src.pbl_model.psi"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.psi()</span></code></a></p></li>
+<li><p><a class="reference internal" href="src.html#src.pbl_model.phi" title="src.pbl_model.phi"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.phi()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt><a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a></dt><dd><p>Solves the steady-state advection-diffusion equation for scalar concentration fields using FFT-based methods and numerical integration schemes.</p>
+<dl class="simple">
+<dt><strong>Features:</strong></dt><dd><ul class="simple">
+<li><p>Supports Fourier-transformed formulation for horizontal advection-diffusion.</p></li>
+<li><p>Uses linear shooting for boundary value problems in the vertical.</p></li>
+<li><p>Implements Green’s function solver for footprint modeling.</p></li>
+</ul>
+</dd>
+<dt><strong>Key functions:</strong></dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="src.html#src.solver.steady_state_transport_solver" title="src.solver.steady_state_transport_solver"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code></a></p></li>
+<li><p><a class="reference internal" href="src.html#src.solver.ivp_solver" title="src.solver.ivp_solver"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.ivp_solver()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt><a class="reference internal" href="src.html#module-src.utils" title="src.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code></a></dt><dd><p>Provides utility functions for preprocessing, synthetic input generation, and diagnostics.</p>
+<dl class="simple">
+<dt><strong>Features:</strong></dt><dd><ul class="simple">
+<li><p>Source field generation (e.g., circular/point sources).</p></li>
+<li><p>Wind field constructors and FFT utilities.</p></li>
+<li><p>Pointwise convolution for footprint validation.</p></li>
+</ul>
+</dd>
+<dt><strong>Key functions:</strong></dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="src.html#src.utils.compute_wind_fields" title="src.utils.compute_wind_fields"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.compute_wind_fields()</span></code></a></p></li>
+<li><p><a class="reference internal" href="src.html#src.utils.point_source" title="src.utils.point_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.point_source()</span></code></a></p></li>
+<li><p><a class="reference internal" href="src.html#src.utils.ideal_source" title="src.utils.ideal_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.ideal_source()</span></code></a></p></li>
+<li><p><a class="reference internal" href="src.html#src.utils.point_measurement" title="src.utils.point_measurement"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.point_measurement()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="additional-subpackages">
+<h2>Additional subpackages<a class="headerlink" href="#additional-subpackages" title="Link to this heading">¶</a></h2>
+<ol class="arabic">
+<li><p><a class="reference internal" href="runs.html#runs"><span class="std std-ref">runs</span></a>
+provides example workflows and pre-configured scripts to demonstrate the usage of the package. These scripts showcase how to combine the core modules (<a class="reference internal" href="src.html#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a>, <a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a>, and <a class="reference internal" href="src.html#module-src.utils" title="src.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code></a>) for practical applications, such as footprint modeling or dispersion analysis.</p>
+<dl class="simple">
+<dt><strong>Features:</strong></dt><dd><ul class="simple">
+<li><p>Example configurations for common use cases.</p></li>
+<li><p>Demonstrates integration of vertical profiles, transport solvers, and diagnostics.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p><a class="reference internal" href="tests.html#tests"><span class="std std-ref">tests</span></a>
+contains the test suite for validating the functionality and accuracy of the package. The tests ensure that the core modules (<a class="reference internal" href="src.html#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a>, <a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a>, and <a class="reference internal" href="src.html#module-src.utils" title="src.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code></a>) work as expected and provide a framework for extending test coverage.</p>
+<dl class="simple">
+<dt><strong>Features:</strong></dt><dd><ul class="simple">
+<li><p>Unit tests for individual functions.</p></li>
+<li><p>Integration tests for workflows combining multiple modules.</p></li>
+<li><p>Easy-to-run test scripts for contributors.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="module-interactions">
+<h2>Module interactions<a class="headerlink" href="#module-interactions" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="src.html#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a> provides the vertical profiles required by the <a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a> module.</p></li>
+<li><p><a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a> handles the core transport computation, optionally using Green’s functions for convolution with surface fluxes.</p></li>
+<li><p><a class="reference internal" href="src.html#module-src.utils" title="src.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code></a> supports both <a class="reference internal" href="src.html#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a> and <a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a> with reusable tools for test generation and output diagnostics.</p></li>
+<li><p><a class="reference internal" href="runs.html#runs"><span class="std std-ref">runs</span></a> contains examples and user-defined run scripts that utilize the core modules.</p></li>
+<li><p><a class="reference internal" href="tests.html#tests"><span class="std std-ref">tests</span></a> ensures the reliability and correctness of the package.</p></li>
+</ul>
+</section>
+<section id="api-reference">
+<h2>API reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h2>
+<p>For detailed information on functions and usage, refer to the <a class="reference internal" href="src.html#src"><span class="std std-ref">API Documentation</span></a>.</p>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="quickstart.html" title="Previous document">Quickstart guide</a>
+        </li>
+        <li>
+          <a href="src.html" title="Next document">The <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/overview.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

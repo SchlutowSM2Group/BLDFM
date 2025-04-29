@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Welcome to BLDFM’s Documentation! &#8212; BLDFM 0.9.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=56c4699f" />
+    <script src="_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quickstart guide" href="quickstart.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="#">
+    <img class="logo" src="_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="runs.html">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="quickstart.html" title="next chapter">Quickstart guide</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          <a href="quickstart.html" title="Next document">Quickstart guide</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <section id="welcome-to-bldfm-s-documentation">
+<h1>Welcome to BLDFM’s Documentation!<a class="headerlink" href="#welcome-to-bldfm-s-documentation" title="Link to this heading">¶</a></h1>
+<p>The <strong>Boundary Layer Dispersion and Footprint Model (BLDFM)</strong> is a atmospheric dispersion and footprint model designed for microscale applications in the planetary boundary layer (PBL). It numerically solves the three-dimensional steady-state advection-diffusion equation in Eulerian form, providing robust tools for modeling scalar transport under various turbulent regimes.</p>
+<p>This documentation serves as a guide to understanding, configuring, and extending BLDFM for your specific use cases. This documentation aims to be accessible to researchers, developers, or practitioners. If you spot a feature gap in BLDFM or space for improvement in the documentation, feel free to reach out with a contribution or an issue!</p>
+<section id="key-features">
+<h2>Key Features<a class="headerlink" href="#key-features" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Numerical Solver</strong>: Efficiently solves the steady-state advection-diffusion equation using Fourier transforms and numerical methods like the Semi-Implicit Euler (SIE) and Exponential Integrator (EI).</p></li>
+<li><p><strong>Atmospheric Stability</strong>: Computes vertical profiles of mean wind and eddy diffusivity using Monin-Obukhov Similarity Theory (MOST).</p></li>
+<li><p><strong>Customizability</strong>: Easily extendable with additional turbulence closures and parameterizations.</p></li>
+<li><p><strong>Validation</strong>: Tested against analytical solutions and benchmark models, ensuring accuracy and reliability.</p></li>
+<li><p><strong>Example Workflows</strong>: Includes pre-configured scripts for footprint modeling and dispersion analysis.</p></li>
+</ul>
+</section>
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading">¶</a></h2>
+<p>To begin using BLDFM, follow these steps in the root directory of the repository:</p>
+<ol class="arabic">
+<li><p><strong>Installation</strong>:
+Install the package using pip:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</li>
+<li><p><strong>Run Example Scripts</strong>:
+Explore the example workflows in the runs subpackage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>runs.comparison_footprint
+</pre></div>
+</div>
+</li>
+<li><p><strong>Dive into the Documentation</strong>:
+Use the navigation links below to explore the package structure, API reference, and example workflows.</p></li>
+</ol>
+</section>
+<section id="navigation">
+<h2>Navigation<a class="headerlink" href="#navigation" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="quickstart.html">Quickstart Guide</a>: A step-by-step guide to installing and running BLDFM.</p></li>
+<li><p><a class="reference external" href="overview.html">Package Overview</a>: Learn about the core modules and their interactions.</p></li>
+<li><p><a class="reference external" href="runs.html">Example Workflows</a>: Explore pre-configured scripts in the <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage.</p></li>
+<li><p><a class="reference external" href="tests.html">Test Suite</a>: Understand how BLDFM ensures reliability through rigorous testing.</p></li>
+<li><p><a class="reference external" href="src.html">API Reference</a>: Detailed documentation for all core modules and functions.</p></li>
+</ul>
+</section>
+<section id="about-bldfm">
+<h2>About BLDFM<a class="headerlink" href="#about-bldfm" title="Link to this heading">¶</a></h2>
+<p>BLDFM is developed by Mark Schlutow, Ray Chew, and Mathias Göckede. It is licensed under the GNU License and is provided as an open-source software package to support research and development in atmospheric sciences.</p>
+<p>For more details, visit the <a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a>.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          <a href="quickstart.html" title="Next document">Quickstart guide</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

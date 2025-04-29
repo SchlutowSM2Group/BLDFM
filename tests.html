@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The tests subpackage &#8212; BLDFM 0.9.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=56c4699f" />
+    <script src="_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Acknowledgments" href="acknowledgments.html" />
+    <link rel="prev" title="The runs subpackage" href="runs.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="runs.html">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#unit-tests">Unit tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-tests">Integration tests</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="runs.html" title="previous chapter">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a></li>
+      <li>Next: <a href="acknowledgments.html" title="next chapter">Acknowledgments</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="runs.html" title="Previous document">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a>
+        </li>
+        <li>
+          <a href="acknowledgments.html" title="Next document">Acknowledgments</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <section id="the-tests-subpackage">
+<span id="tests"></span><h1>The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage<a class="headerlink" href="#the-tests-subpackage" title="Link to this heading">¶</a></h1>
+<p>All tests in this subpackage can be run using the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># BLDFM root directory</span>
+$<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span>tests
+</pre></div>
+</div>
+<section id="unit-tests">
+<h2>Unit tests<a class="headerlink" href="#unit-tests" title="Link to this heading">¶</a></h2>
+<section id="module-tests.test_pbl_model">
+<span id="tests-test-pbl-model-module"></span><h3>tests.test_pbl_model module<a class="headerlink" href="#module-tests.test_pbl_model" title="Link to this heading">¶</a></h3>
+<p>This module contains unit tests for the <a class="reference internal" href="src.html#src.pbl_model.vertical_profiles" title="src.pbl_model.vertical_profiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.vertical_profiles()</span></code></a> function in the <a class="reference internal" href="src.html#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a> module. The tests validate the behavior of the function under different closure schemes, including:</p>
+<ul class="simple">
+<li><p><cite>CONSTANT</cite> Closure: Ensures the profiles for velocity and eddy diffusivity are constant and match expected values.</p></li>
+<li><p><cite>MOST</cite> (Monin-Obukhov Similarity Theory) Closure: Verifies that the profiles vary with height and are physically reasonable.</p></li>
+</ul>
+<p>The tests use parameterized inputs to check the function’s output shapes, values, and physical consistency across various scenarios.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_pbl_model.test_constant_closure">
+<span class="sig-prename descclassname"><span class="pre">tests.test_pbl_model.</span></span><span class="sig-name descname"><span class="pre">test_constant_closure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ustar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prsc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_pbl_model.html#test_constant_closure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_pbl_model.test_constant_closure" title="Link to this definition">¶</a></dt>
+<dd><p>Test the CONSTANT closure for scalar inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AssertionError" title="(in Python v3.13)"><strong>AssertionError</strong></a> – If the output shapes do not match the expected dimensions or if the profiles are not constant.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_pbl_model.test_most_closure">
+<span class="sig-prename descclassname"><span class="pre">tests.test_pbl_model.</span></span><span class="sig-name descname"><span class="pre">test_most_closure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ustar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_pbl_model.html#test_most_closure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_pbl_model.test_most_closure" title="Link to this definition">¶</a></dt>
+<dd><p>Test the MOST closure for scalar inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AssertionError" title="(in Python v3.13)"><strong>AssertionError</strong></a> – If the output shapes do not match the expected dimensions or if the profiles are not physically reasonable.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-tests.test_solver">
+<span id="tests-test-solver-module"></span><h3>tests.test_solver module<a class="headerlink" href="#module-tests.test_solver" title="Link to this heading">¶</a></h3>
+<p>This module contains unit tests for the <a class="reference internal" href="src.html#src.solver.steady_state_transport_solver" title="src.solver.steady_state_transport_solver"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code></a> function from the <a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a> module. It validates the numerical solver against the analytical solution for the steady-state advection-diffusion equation.</p>
+<p>The tests ensure that the numerical solution matches the analytical solution within a specified tolerance and that the outputs have the correct shapes and types.</p>
+<section id="functions">
+<h4>Functions:<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>test_steady_state_transport_solver: Tests the solver against an analytical solution.</p></li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_solver.test_steady_state_transport_solver">
+<span class="sig-prename descclassname"><span class="pre">tests.test_solver.</span></span><span class="sig-name descname"><span class="pre">test_steady_state_transport_solver</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_solver.html#test_steady_state_transport_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_solver.test_steady_state_transport_solver" title="Link to this definition">¶</a></dt>
+<dd><p>Tests the <a class="reference internal" href="src.html#src.solver.steady_state_transport_solver" title="src.solver.steady_state_transport_solver"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code></a> function against an analytical solution for the steady-state advection-diffusion equation with a point source at the center of the domain.</p>
+<dl class="simple">
+<dt>The test validates:</dt><dd><ul class="simple">
+<li><p>The shape and type of the solver’s outputs.</p></li>
+<li><p>The numerical accuracy of the solver by comparing its results to the analytical solution within a specified tolerance.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AssertionError" title="(in Python v3.13)"><strong>AssertionError</strong></a> – If any of the output shapes, types, or numerical accuracy checks fail.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="integration-tests">
+<h2>Integration tests<a class="headerlink" href="#integration-tests" title="Link to this heading">¶</a></h2>
+<section id="module-tests.test_integration">
+<span id="tests-test-integration-module"></span><h3>tests.test_integration module<a class="headerlink" href="#module-tests.test_integration" title="Link to this heading">¶</a></h3>
+<p>This module contains an integration test for the interaction between the <cite>pbl_model</cite>, <cite>utils</cite>, and <cite>solver</cite> components.</p>
+<p>The test validates the combined behavior of these components by comparing the numerical and analytical solutions for the steady-state advection-diffusion equation.
+Currently, this test is similar to combining the <cite>pbl_model</cite> and <cite>solver</cite> tests, but it is designed to serve as a foundation for future extensions.</p>
+<section id="id1">
+<h4>Functions:<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>test_integration: Tests the combined behavior of the <cite>pbl_model</cite>, <cite>utils</cite>, and <cite>solver</cite> components.</p></li>
+</ul>
+</section>
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_integration">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_integration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_integration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_integration" title="Link to this definition">¶</a></dt>
+<dd><p>Tests the combined behavior of the <cite>pbl_model</cite>, <cite>utils</cite>, and <cite>solver</cite> components.</p>
+<dl class="simple">
+<dt>The test validates:</dt><dd><ul class="simple">
+<li><p>The interaction between the components.</p></li>
+<li><p>The numerical accuracy of the solver by comparing its results to the analytical solution within a specified tolerance.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AssertionError" title="(in Python v3.13)"><strong>AssertionError</strong></a> – If the numerical and analytical solutions differ beyond the specified tolerance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="runs.html" title="Previous document">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a>
+        </li>
+        <li>
+          <a href="acknowledgments.html" title="Next document">Acknowledgments</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/tests.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

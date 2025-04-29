@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The src subpackage &#8212; BLDFM 0.9.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=56c4699f" />
+    <script src="_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The runs subpackage" href="runs.html" />
+    <link rel="prev" title="Package overview" href="overview.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Package overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#modules">Modules</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="runs.html">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="overview.html" title="previous chapter">Package overview</a></li>
+      <li>Next: <a href="runs.html" title="next chapter">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="overview.html" title="Previous document">Package overview</a>
+        </li>
+        <li>
+          <a href="runs.html" title="Next document">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <section id="the-src-subpackage">
+<span id="src"></span><h1>The <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage<a class="headerlink" href="#the-src-subpackage" title="Link to this heading">¶</a></h1>
+<p>This subpackage contains the main code for the BLDFM model. It includes modules for the PBL model, the solver, and utility functions.</p>
+<dl class="simple">
+<dt>It is organized into three main modules:</dt><dd><ol class="arabic simple">
+<li><p><a class="reference internal" href="#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a>: Computes vertical profiles of horizontal wind and eddy diffusivity in the planetary boundary layer using Monin-Obukhov Similarity Theory (MOST).</p></li>
+<li><p><a class="reference internal" href="#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a>: Solves the steady-state advection-diffusion equation for scalar concentration fields using FFT-based methods and numerical integration schemes.</p></li>
+<li><p><a class="reference internal" href="#module-src.utils" title="src.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code></a>: Provides utility functions for preprocessing, synthetic input generation, and diagnostics.</p></li>
+</ol>
+</dd>
+</dl>
+<section id="modules">
+<h2>Modules<a class="headerlink" href="#modules" title="Link to this heading">¶</a></h2>
+<section id="module-src.pbl_model">
+<span id="src-pbl-model-module"></span><h3>src.pbl_model module<a class="headerlink" href="#module-src.pbl_model" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.pbl_model.phi">
+<span class="sig-prename descclassname"><span class="pre">src.pbl_model.</span></span><span class="sig-name descname"><span class="pre">phi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/pbl_model.html#phi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.pbl_model.phi" title="Link to this definition">¶</a></dt>
+<dd><p>Stability correction function for eddy diffusivity in Monin-Obukhov Similarity Theory (MOST).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> or </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Dimensionless stability parameter (z / mol).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Stability correction factor for eddy diffusivity.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>For stable conditions (x &gt; 0), a linear relationship is used.</p></li>
+<li><p>For unstable conditions (x &lt; 0), the Businger-Dyer formulation is applied.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.pbl_model.psi">
+<span class="sig-prename descclassname"><span class="pre">src.pbl_model.</span></span><span class="sig-name descname"><span class="pre">psi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/pbl_model.html#psi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.pbl_model.psi" title="Link to this definition">¶</a></dt>
+<dd><p>Stability correction function for Monin-Obukhov Similarity Theory (MOST).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>x</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> or </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Dimensionless stability parameter (z / mol).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Stability correction factor for momentum.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>For stable conditions (x &gt; 0), a linear relationship is used.</p></li>
+<li><p>For unstable conditions (x &lt; 0), the Businger-Dyer formulation is applied.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.pbl_model.vertical_profiles">
+<span class="sig-prename descclassname"><span class="pre">src.pbl_model.</span></span><span class="sig-name descname"><span class="pre">vertical_profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ustar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prsc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">closure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'MOST'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z0_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tke</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/pbl_model.html#vertical_profiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.pbl_model.vertical_profiles" title="Link to this definition">¶</a></dt>
+<dd><p>Computes vertical profiles of horizontal wind components and eddy diffusivity in the planetary boundary layer (PBL) based on Monin-Obukhov Similarity Theory (MOST) or other closure models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of vertical grid points.</p></li>
+<li><p><strong>meas_height</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Measurement height above the ground.</p></li>
+<li><p><strong>wind</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><em>floats</em>) – Zonal (u) and meridional (v) wind components at the measurement height.</p></li>
+<li><p><strong>ustar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> or </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Friction velocity [m/s].</p></li>
+<li><p><strong>mol</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> or </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a><em>, </em><em>optional</em>) – Monin-Obukhov length. Default is 1e9 (neutral conditions).</p></li>
+<li><p><strong>prsc</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Prandtl or Schmidt number. Default is 1.0.</p></li>
+<li><p><strong>closure</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Closure model to use. Options are “MOST”, “CONSTANT”, or “OAAHOC”. Default is “MOST”.</p></li>
+<li><p><strong>z0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> or </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a><em>, </em><em>optional</em>) – Roughness length. Default is -1e9 (auto-calculated).</p></li>
+<li><p><strong>z0_min</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Minimum allowable roughness length. Default is 0.001.</p></li>
+<li><p><strong>z0_max</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Maximum allowable roughness length. Default is 2.0.</p></li>
+<li><p><strong>tke</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> or </em><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a><em>, </em><em>optional</em>) – Turbulent kinetic energy [m²/s²] for the “OAAHOC” closure. If not provided, it will default to 1.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p>z (numpy.ndarray): 1D array of vertical grid points.</p></li>
+<li><p>profiles (tuple of numpy.ndarray): 1D arrays of horizontal wind components (u, v)
+and eddy diffusivity (K) at each vertical grid point.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><strong>ValueError</strong></a> – If invalid closure type is provided.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The “OAAHOC” closure uses a one-and-a-half order closure model based on Schumann-Lilly.</p></li>
+<li><p>The “MOST” closure uses Monin-Obukhov Similarity Theory.</p></li>
+</ul>
+<p class="rubric">References</p>
+<ul class="simple">
+<li><p>Kormann, R., &amp; Meixner, F. X. (2001). An analytical footprint model for non-neutral stratification. Boundary-Layer Meteorology, 99(2), 207–224. <a class="reference external" href="https://doi.org/10.1023/A:1018991015119">https://doi.org/10.1023/A:1018991015119</a></p></li>
+<li><p>Schumann, U. (1991). Subgrid length-scales for large-eddy simulation of stratified turbulence. Theoretical and Computational Fluid Dynamics, 2(5), 279–290. <a class="reference external" href="https://doi.org/10.1007/BF00271468">https://doi.org/10.1007/BF00271468</a></p></li>
+</ul>
+</dd></dl>
+
+</section>
+<section id="module-src.solver">
+<span id="src-solver-module"></span><h3>src.solver module<a class="headerlink" href="#module-src.solver" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.solver.ivp_solver">
+<span class="sig-prename descclassname"><span class="pre">src.solver.</span></span><span class="sig-name descname"><span class="pre">ivp_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fftpq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Lx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ly</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SIE'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/solver.html#ivp_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.solver.ivp_solver" title="Link to this definition">¶</a></dt>
+<dd><p>Solves the initial value problem resulting from the discretization of the
+steady-state advection-diffusion equation using the Fast Fourier Transform.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fftpq</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><em>ndarray</em>) – Tuple containing the initial Fourier-transformed pressure and flux fields (fftp0, fftq0).</p></li>
+<li><p><strong>profiles</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><em>ndarray</em>) – Tuple containing 1D arrays of vertical profiles of zonal wind, meridional wind [m/s],
+and eddy diffusivity [m²/s].</p></li>
+<li><p><strong>z</strong> (<em>ndarray</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – 1D array of vertical grid points from z0 to zm [m].</p></li>
+<li><p><strong>Lx</strong> (<em>ndarray</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – 2D array of zonal wavenumbers.</p></li>
+<li><p><strong>Ly</strong> (<em>ndarray</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – 2D array of meridional wavenumbers.</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – <dl class="simple">
+<dt>Method for solving the initial value problem. Options are:</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">SIE</span></code> (Semi-Implicit Euler, default)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EI</span></code> (Exponential Integrator)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">TSEI3</span></code> (Taylor Series Exponential Integrator, 3rd order)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">EE</span></code> (Explicit Euler)</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fftp</strong> (<em>ndarray of complex</em>) – Fourier-transformed pressure field after solving the IVP.</p></li>
+<li><p><strong>fftq</strong> (<em>ndarray of complex</em>) – Fourier-transformed flux field after solving the IVP.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.solver.steady_state_transport_solver">
+<span class="sig-prename descclassname"><span class="pre">src.solver.</span></span><span class="sig-name descname"><span class="pre">steady_state_transport_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">srf_flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profiles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(512,</span> <span class="pre">512)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_pt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0.0,</span> <span class="pre">0.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srf_bg_conc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">footprint</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">analytic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fetch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ivp_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SIE'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/solver.html#steady_state_transport_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.solver.steady_state_transport_solver" title="Link to this definition">¶</a></dt>
+<dd><p>Solves the steady-state advection-diffusion equation for a concentration
+with flux boundary condition given vertical profiles of wind and eddy diffusivity
+using the Fourier, linear shooting, and semi-implicit Euler methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>srf_flx</strong> (<em>ndarray</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – 2D field of surface kinematic flux at z=z0 [m/s].</p></li>
+<li><p><strong>z</strong> (<em>ndarray</em><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – 1D array of vertical grid points from z0 to zm [m].</p></li>
+<li><p><strong>profiles</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><em>ndarray</em>) – Tuple containing 1D arrays of vertical profiles of zonal wind, meridional wind [m/s],
+and eddy diffusivity [m²/s].</p></li>
+<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Tuple containing domain sizes (xmax, ymax) [m].</p></li>
+<li><p><strong>modes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) – Tuple containing the number of zonal and meridional Fourier modes (nlx, nly).
+Default is (512, 512).</p></li>
+<li><p><strong>meas_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Coordinates of the measurement point (xm, ym) [m] relative to <cite>srf_flx</cite>,
+where the origin is at <cite>srf_flx[0, 0]</cite>. Default is (0.0, 0.0).</p></li>
+<li><p><strong>srf_bg_conc</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Surface background concentration at z=z0 [scalar_unit]. Default is 0.0.</p></li>
+<li><p><strong>footprint</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, activates footprints (Green’s function) for output. Default is False.</p></li>
+<li><p><strong>analytic</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – If True, uses the analytic solution for constant wind and eddy diffusivity.
+Default is False.</p></li>
+<li><p><strong>fetch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Width of the zero-flux halo around the domain [m]. Default is -1e9, which sets
+the fetch to <cite>max(xmax, ymax)</cite>.</p></li>
+<li><p><strong>ivp_method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Method for solving the initial value problem. Options are “SIE” (default),
+“EI”, “TSEI3”, or “EE”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>srf_conc</strong> (<em>ndarray of float</em>) – 2D field of surface concentrations at z=z0.</p></li>
+<li><p><strong>bg_conc</strong> (<em>float</em>) – Background concentration at z=zm.</p></li>
+<li><p><strong>conc</strong> (<em>ndarray of float</em>) – 2D field of concentration at z=zm or Green’s function.</p></li>
+<li><p><strong>flx</strong> (<em>ndarray of float</em>) – 2D field of kinematic flux at z=zm or footprint.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-src.utils">
+<span id="src-utils-module"></span><h3>src.utils module<a class="headerlink" href="#module-src.utils" title="Link to this heading">¶</a></h3>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.utils.compute_wind_fields">
+<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">compute_wind_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u_rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/utils.html#compute_wind_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.utils.compute_wind_fields" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the zonal (u) and meridional (v) wind components from a rotated
+wind speed and direction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u_rot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Rotated wind speed.</p></li>
+<li><p><strong>wind_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – Wind direction in degrees (clockwise from north).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>A tuple (u, v) where:</dt><dd><ul class="simple">
+<li><p>u (float): Zonal wind component (east-west).</p></li>
+<li><p>v (float): Meridional wind component (north-south).</p></li>
+</ul>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.utils.ideal_source">
+<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">ideal_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nxy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'diamond'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/utils.html#ideal_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.utils.ideal_source" title="Link to this definition">¶</a></dt>
+<dd><p>Creates a synthetic source field in the shape of a circle or diamond.
+Useful for testing purposes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nxy</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a>) – Number of grid points in the x and y directions (nx, ny).</p></li>
+<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a>) – Physical dimensions of the domain (xmax, ymax).</p></li>
+<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Shape of the source field. Options are “circle” or “diamond”. Default is “diamond”.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A 2D array representing the source field.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.utils.point_measurement">
+<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">point_measurement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/utils.html#point_measurement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.utils.point_measurement" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the convolution of two 2D arrays evaluated at a specific point.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>f</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – First 2D array.</p></li>
+<li><p><strong>g</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><em>numpy.ndarray</em></a>) – Second 2D array.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the convolution at the specified point.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.utils.point_source">
+<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">point_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nxy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_pt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/utils.html#point_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.utils.point_source" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a point source field in Fourier space and transforms it back
+to the spatial domain.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nxy</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a>) – Number of grid points in the x and y directions (nx, ny).</p></li>
+<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a>) – Physical dimensions of the domain (xmax, ymax).</p></li>
+<li><p><strong>src_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a>) – Coordinates of the source point (xs, ys).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A 2D array representing the point source field in the spatial domain.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)">numpy.ndarray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.utils.setup_logging">
+<span class="sig-prename descclassname"><span class="pre">src.utils.</span></span><span class="sig-name descname"><span class="pre">setup_logging</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/utils.html#setup_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.utils.setup_logging" title="Link to this definition">¶</a></dt>
+<dd><p>Set up logging configuration.</p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="overview.html" title="Previous document">Package overview</a>
+        </li>
+        <li>
+          <a href="runs.html" title="Next document">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/src.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
