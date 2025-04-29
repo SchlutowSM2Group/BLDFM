@@ -84,7 +84,7 @@ $ pip install '.[dev]'
 ```
 
 ## License
-This project is licensed under the GNU License. See the [LICENSE file]() for details.
+This project is licensed under the GNU License. See the [LICENSE file](https://github.com/SchlutowSM2Group/BLDFM/blob/main/LICENSE) for details.
 
 ## Contributions
 Contributions are welcome! Refer to the open issues for tasks that require attention. Submit changes, improvements, or bug fixes via pull requests from a fork or branch.
