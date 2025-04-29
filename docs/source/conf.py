@@ -52,7 +52,6 @@ extensions = [
     "sphinx.ext.napoleon",  # For parsing NumPy/Google-style docstrings
     "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
-    "sphinxcontrib.tikz",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -106,7 +105,7 @@ html_theme_options = {
     "page_width": "75%",
     "fixed_sidebar": True,
     "body_text_align": "left",
-    "show_relbars": True
+    "show_relbars": True,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -194,8 +193,8 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3', None),
-    'numpy': ('https://numpy.org/doc/stable/', None),
+    "python": ("https://docs.python.org/3", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
 }
 
 # -- Options for todo extension ----------------------------------------------
@@ -205,9 +204,6 @@ intersphinx_mapping = {
 autodoc_default_options = {
     "exclude-members": "calc_footprint_FFP, ffm_kormann",
 }
-
-# -- Options for autodoc extension ----------------------------------------------
-tikz_proc_suite = "ImageMagick"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True

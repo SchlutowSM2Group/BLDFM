@@ -39,7 +39,7 @@ toc = time.time()
 
 t = toc - tic
 
-print("Elapsed time for numerical solver %d s"% t)
+print("Elapsed time for numerical solver %d s" % t)
 
 # diff_conc = (conc - conc_ana) / np.mean(conc_ana)
 # diff_flx  = (flx - flx_ana) / np.mean(flx_ana)
