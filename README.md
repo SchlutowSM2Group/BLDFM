@@ -23,7 +23,7 @@ The Boundary Layer Dispersion and Footprint Model (BLDFM) is a novel atmospheric
 ---
 
 <p align="center">
-  <a href="https://github.com/SchlutowSM2Group/BLFDM/wiki" style="font-size: 1.5em; font-weight: bold;">
+  <a href="https://schlutowsm2group.github.io/BLDFM/" style="font-size: 1.5em; font-weight: bold;">
     Read the documentation here
   </a>
 </p>
