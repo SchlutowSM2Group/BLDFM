@@ -19,7 +19,7 @@ fetch = 1024 + 256
 meas_pt = 100.0, 0.0
 meas_height = 10.0
 wind = 0.0, -6.0
-ustar = 0.2
+ustar = 0.63
 z0 = 0.1
 mol = -20.0
 

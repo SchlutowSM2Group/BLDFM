@@ -4,13 +4,14 @@ Run script for comparing numerical and analytic solutions of concentration and f
 
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 from src.pbl_model import vertical_profiles
 from src.utils import point_source
 from src.solver import steady_state_transport_solver
 
 nxy = 512, 256
-modes = 1024, 1024
+modes = 512, 512
 nz = 512
 # nxy         = 128, 64
 # modes       = 128, 128
@@ -30,9 +31,15 @@ srf_conc_ana, bg_conc_ana, conc_ana, flx_ana = steady_state_transport_solver(
     srf_flx, z, profs, domain, modes=modes, fetch=fetch, analytic=True
 )
 
+tic = time.time()
 srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
     srf_flx, z, profs, domain, modes=modes, fetch=fetch, ivp_method="TSEI3"
 )
+toc = time.time()
+
+t = toc - tic
+
+print("Elapsed time for numerical solver %d s"% t)
 
 # diff_conc = (conc - conc_ana) / np.mean(conc_ana)
 # diff_flx  = (flx - flx_ana) / np.mean(flx_ana)
