@@ -23,7 +23,7 @@ The Boundary Layer Dispersion and Footprint Model (BLDFM) is a novel atmospheric
 ---
 
 <p align="center">
-  <a href="https://github.com/SchlutowSM2Group/BLFDM/wiki" style="font-size: 1.5em; font-weight: bold;">
+  <a href="https://schlutowsm2group.github.io/BLDFM/" style="font-size: 1.5em; font-weight: bold;">
     Read the documentation here
   </a>
 </p>
@@ -84,7 +84,7 @@ $ pip install '.[dev]'
 ```
 
 ## License
-This project is licensed under the GNU License. See the [LICENSE file]() for details.
+This project is licensed under the GNU License. See the [LICENSE file](https://github.com/SchlutowSM2Group/BLDFM/blob/main/LICENSE) for details.
 
 ## Contributions
 Contributions are welcome! Refer to the open issues for tasks that require attention. Submit changes, improvements, or bug fixes via pull requests from a fork or branch.
