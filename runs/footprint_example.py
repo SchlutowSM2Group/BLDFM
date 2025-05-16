@@ -12,7 +12,7 @@ nxy = 512, 256
 nz = 100
 modes = 512, 512
 domain = 1000.0, 700.0
-fetch = 2000.0
+halo = 2000.0
 meas_pt = 500.0, 0.0
 meas_height = 6.0
 wind = 0.0, -6.0
@@ -32,7 +32,7 @@ srf_flx, bg_conc, conc, flx = steady_state_transport_solver(
     modes=modes,
     meas_pt=meas_pt,
     footprint=True,
-    fetch=fetch,
+    halo=halo,
 )
 
 if __name__ == "__main__":

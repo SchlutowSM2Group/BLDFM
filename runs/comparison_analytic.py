@@ -18,7 +18,7 @@ nz = 512
 # nz          = 16
 domain = 200.0, 100.0
 src_pt = 10.0, 10.0
-fetch = 1000.0
+halo = 1000.0
 meas_height = 10.0
 wind = 4.0, 1.0
 ustar = 0.4
@@ -28,12 +28,12 @@ srf_flx = point_source(nxy, domain, src_pt)
 z, profs = vertical_profiles(nz, meas_height, wind, ustar, closure="CONSTANT")
 
 srf_conc_ana, bg_conc_ana, conc_ana, flx_ana = steady_state_transport_solver(
-    srf_flx, z, profs, domain, modes=modes, fetch=fetch, analytic=True
+    srf_flx, z, profs, domain, modes=modes, halo=halo, analytic=True
 )
 
 tic = time.time()
 srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
-    srf_flx, z, profs, domain, modes=modes, fetch=fetch, ivp_method="TSEI3"
+    srf_flx, z, profs, domain, modes=modes, halo=halo, ivp_method="TSEI3"
 )
 toc = time.time()
 

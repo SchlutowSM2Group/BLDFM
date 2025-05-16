@@ -18,7 +18,7 @@ nz = 128
 modes = 1024, 1024
 # modes       = 128, 128
 domain = 200.0, 600.0
-fetch = 2000.0
+halo = 2000.0
 meas_pt = 100.0, 0.0
 meas_height = 10.0
 wind = 0.0, -6.0
@@ -45,7 +45,7 @@ srf_flx, bg_conc, conc, flx = steady_state_transport_solver(
     modes=modes,
     meas_pt=meas_pt,
     footprint=True,
-    fetch=fetch,
+    halo=halo,
 )
 
 ############################################################
