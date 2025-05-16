@@ -35,7 +35,7 @@ def test_integration():
     # nz          = 16
     domain = 100.0, 50.0
     src_pt = 5.0, 5.0
-    fetch = 500.0
+    halo = 500.0
     meas_height = 5.0
     wind = 4.0, 1.0
     ustar = 0.2
@@ -46,10 +46,10 @@ def test_integration():
 
     # Solve using the solver
     _, _, conc_ana, flx_ana = steady_state_transport_solver(
-        srf_flx, z, profs, domain, modes=modes, fetch=fetch, analytic=True
+        srf_flx, z, profs, domain, modes=modes, halo=halo, analytic=True
     )
     _, _, conc, flx = steady_state_transport_solver(
-        srf_flx, z, profs, domain, modes=modes, fetch=fetch, ivp_method="TSEI3"
+        srf_flx, z, profs, domain, modes=modes, halo=halo, ivp_method="TSEI3"
     )
 
     # Validate results
