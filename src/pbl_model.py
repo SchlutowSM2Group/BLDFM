@@ -142,22 +142,11 @@ def vertical_profiles(
             "Supported closures are 'MOST', 'CONSTANT', and 'OAAHOC'."
         )
 
-    if len(z) <= 1:
-        logging.info("Stats from vertical_profiles")
-        logging.info("z0    = %.3f m", z[0])
-        logging.info("ustar = %.3f m s-1", ustar)
-        logging.info(
-            "umax  = %.3f m s-1, vmax = %.3f m s-1, Kmax = %.3f m2 s-1",
-            max(u),
-            max(v),
-            max(K),
-        )
-        logging.info(
-            "umin  = %.3f m s-1, vmin = %.3f m s-1, Kmin = %.3f m2 s-1",
-            min(u),
-            min(v),
-            min(K),
-        )
+    print("Stats from vertical_profiles")
+    print("z0    = %.3f m"% z[0])
+    print("ustar = %.3f m s-1"% ustar)
+    print("umax  = %.3f m s-1, vmax = %.3f m s-1, Kmax = %.3f m2 s-1"% (max(u),max(v),max(K)))
+    print("umin  = %.3f m s-1, vmin = %.3f m s-1, Kmin = %.3f m2 s-1"% (min(u),min(v),min(K)))
 
     return z.squeeze(), (u.squeeze(), v.squeeze(), K.squeeze())
 
