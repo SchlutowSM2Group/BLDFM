@@ -12,8 +12,8 @@ def steady_state_transport_solver(
     srf_bg_conc=0.0,
     footprint=False,
     analytic=False,
-    fetch=-1e9,
-    ivp_method="SIE",
+    halo=-1e9,
+    ivp_method="TSEI3",
 ):
     """
     Solves the steady-state advection-diffusion equation for a concentration
@@ -44,11 +44,11 @@ def steady_state_transport_solver(
     analytic : bool, optional
         If True, uses the analytic solution for constant wind and eddy diffusivity.
         Default is False.
-    fetch : float, optional
+    halo : float, optional
         Width of the zero-flux halo around the domain [m]. Default is -1e9, which sets
-        the fetch to `max(xmax, ymax)`.
+        the halo to `max(xmax, ymax)`.
     ivp_method : str, optional
-        Method for solving the initial value problem. Options are "SIE" (default),
+        Method for solving the initial value problem. Options are "TSEI3" (default),
         "EI", "TSEI3", or "EE".
 
     Returns
@@ -76,12 +76,12 @@ def steady_state_transport_solver(
     # grid increments
     dx, dy = xmx / nx, ymx / ny
 
-    if fetch < 0.0:
-        fetch = max(xmx, ymx)
+    if halo < 0.0:
+        halo = max(xmx, ymx)
 
     # pad width
-    px = int(fetch / dx)
-    py = int(fetch / dy)
+    px = int(halo / dx)
+    py = int(halo / dy)
 
     # construct zero-flux halo by padding
     q0 = np.pad(q0, ((py, py), (px, px)), mode="constant", constant_values=0.0)
@@ -191,9 +191,9 @@ def steady_state_transport_solver(
 
     # shift green function in Fourier space to measurement point
     if footprint:
-        tfftp0 = tfftp0 * np.exp(1j * (Lx * (xm + fetch) + Ly * (ym + fetch)))
-        tfftp = tfftp * np.exp(1j * (Lx * (xm + fetch) + Ly * (ym + fetch)))
-        tfftq = tfftq * np.exp(1j * (Lx * (xm + fetch) + Ly * (ym + fetch)))
+        tfftp0 = tfftp0 * np.exp(1j * (Lx * (xm + halo) + Ly * (ym + halo)))
+        tfftp = tfftp * np.exp(1j * (Lx * (xm + halo) + Ly * (ym + halo)))
+        tfftq = tfftq * np.exp(1j * (Lx * (xm + halo) + Ly * (ym + halo)))
     # shift such that xm, ym are in the middle of the domain
     elif xm**2 + ym**2 > 0.0:
         tfftp0 = tfftp0 * np.exp(1j * (Lx * (xm - xmx / 2) + Ly * (ym - ymx / 2)))
@@ -236,7 +236,7 @@ def steady_state_transport_solver(
     return srf_conc, bg_conc, conc, flx
 
 
-def ivp_solver(fftpq, profiles, z, Lx, Ly, method="SIE"):
+def ivp_solver(fftpq, profiles, z, Lx, Ly, method="TSEI3"):
     """
     Solves the initial value problem resulting from the discretization of the
     steady-state advection-diffusion equation using the Fast Fourier Transform.
