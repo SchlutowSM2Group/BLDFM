@@ -119,8 +119,8 @@
     <span class="n">srf_bg_conc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
     <span class="n">footprint</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">analytic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">fetch</span><span class="o">=-</span><span class="mf">1e9</span><span class="p">,</span>
-    <span class="n">ivp_method</span><span class="o">=</span><span class="s2">&quot;SIE&quot;</span><span class="p">,</span>
+    <span class="n">halo</span><span class="o">=-</span><span class="mf">1e9</span><span class="p">,</span>
+    <span class="n">ivp_method</span><span class="o">=</span><span class="s2">&quot;TSEI3&quot;</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Solves the steady-state advection-diffusion equation for a concentration</span>
@@ -151,11 +151,11 @@
 <span class="sd">    analytic : bool, optional</span>
 <span class="sd">        If True, uses the analytic solution for constant wind and eddy diffusivity.</span>
 <span class="sd">        Default is False.</span>
-<span class="sd">    fetch : float, optional</span>
+<span class="sd">    halo : float, optional</span>
 <span class="sd">        Width of the zero-flux halo around the domain [m]. Default is -1e9, which sets</span>
-<span class="sd">        the fetch to `max(xmax, ymax)`.</span>
+<span class="sd">        the halo to `max(xmax, ymax)`.</span>
 <span class="sd">    ivp_method : str, optional</span>
-<span class="sd">        Method for solving the initial value problem. Options are &quot;SIE&quot; (default),</span>
+<span class="sd">        Method for solving the initial value problem. Options are &quot;TSEI3&quot; (default),</span>
 <span class="sd">        &quot;EI&quot;, &quot;TSEI3&quot;, or &quot;EE&quot;.</span>
 
 <span class="sd">    Returns</span>
@@ -183,12 +183,12 @@
     <span class="c1"># grid increments</span>
     <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">xmx</span> <span class="o">/</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ymx</span> <span class="o">/</span> <span class="n">ny</span>
 
-    <span class="k">if</span> <span class="n">fetch</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
-        <span class="n">fetch</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">xmx</span><span class="p">,</span> <span class="n">ymx</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">halo</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">halo</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">xmx</span><span class="p">,</span> <span class="n">ymx</span><span class="p">)</span>
 
     <span class="c1"># pad width</span>
-    <span class="n">px</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fetch</span> <span class="o">/</span> <span class="n">dx</span><span class="p">)</span>
-    <span class="n">py</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fetch</span> <span class="o">/</span> <span class="n">dy</span><span class="p">)</span>
+    <span class="n">px</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">halo</span> <span class="o">/</span> <span class="n">dx</span><span class="p">)</span>
+    <span class="n">py</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">halo</span> <span class="o">/</span> <span class="n">dy</span><span class="p">)</span>
 
     <span class="c1"># construct zero-flux halo by padding</span>
     <span class="n">q0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">q0</span><span class="p">,</span> <span class="p">((</span><span class="n">py</span><span class="p">,</span> <span class="n">py</span><span class="p">),</span> <span class="p">(</span><span class="n">px</span><span class="p">,</span> <span class="n">px</span><span class="p">)),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="n">constant_values</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
@@ -298,9 +298,9 @@
 
     <span class="c1"># shift green function in Fourier space to measurement point</span>
     <span class="k">if</span> <span class="n">footprint</span><span class="p">:</span>
-        <span class="n">tfftp0</span> <span class="o">=</span> <span class="n">tfftp0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">Lx</span> <span class="o">*</span> <span class="p">(</span><span class="n">xm</span> <span class="o">+</span> <span class="n">fetch</span><span class="p">)</span> <span class="o">+</span> <span class="n">Ly</span> <span class="o">*</span> <span class="p">(</span><span class="n">ym</span> <span class="o">+</span> <span class="n">fetch</span><span class="p">)))</span>
-        <span class="n">tfftp</span> <span class="o">=</span> <span class="n">tfftp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">Lx</span> <span class="o">*</span> <span class="p">(</span><span class="n">xm</span> <span class="o">+</span> <span class="n">fetch</span><span class="p">)</span> <span class="o">+</span> <span class="n">Ly</span> <span class="o">*</span> <span class="p">(</span><span class="n">ym</span> <span class="o">+</span> <span class="n">fetch</span><span class="p">)))</span>
-        <span class="n">tfftq</span> <span class="o">=</span> <span class="n">tfftq</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">Lx</span> <span class="o">*</span> <span class="p">(</span><span class="n">xm</span> <span class="o">+</span> <span class="n">fetch</span><span class="p">)</span> <span class="o">+</span> <span class="n">Ly</span> <span class="o">*</span> <span class="p">(</span><span class="n">ym</span> <span class="o">+</span> <span class="n">fetch</span><span class="p">)))</span>
+        <span class="n">tfftp0</span> <span class="o">=</span> <span class="n">tfftp0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">Lx</span> <span class="o">*</span> <span class="p">(</span><span class="n">xm</span> <span class="o">+</span> <span class="n">halo</span><span class="p">)</span> <span class="o">+</span> <span class="n">Ly</span> <span class="o">*</span> <span class="p">(</span><span class="n">ym</span> <span class="o">+</span> <span class="n">halo</span><span class="p">)))</span>
+        <span class="n">tfftp</span> <span class="o">=</span> <span class="n">tfftp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">Lx</span> <span class="o">*</span> <span class="p">(</span><span class="n">xm</span> <span class="o">+</span> <span class="n">halo</span><span class="p">)</span> <span class="o">+</span> <span class="n">Ly</span> <span class="o">*</span> <span class="p">(</span><span class="n">ym</span> <span class="o">+</span> <span class="n">halo</span><span class="p">)))</span>
+        <span class="n">tfftq</span> <span class="o">=</span> <span class="n">tfftq</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">Lx</span> <span class="o">*</span> <span class="p">(</span><span class="n">xm</span> <span class="o">+</span> <span class="n">halo</span><span class="p">)</span> <span class="o">+</span> <span class="n">Ly</span> <span class="o">*</span> <span class="p">(</span><span class="n">ym</span> <span class="o">+</span> <span class="n">halo</span><span class="p">)))</span>
     <span class="c1"># shift such that xm, ym are in the middle of the domain</span>
     <span class="k">elif</span> <span class="n">xm</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">ym</span><span class="o">**</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
         <span class="n">tfftp0</span> <span class="o">=</span> <span class="n">tfftp0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="p">(</span><span class="n">Lx</span> <span class="o">*</span> <span class="p">(</span><span class="n">xm</span> <span class="o">-</span> <span class="n">xmx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">Ly</span> <span class="o">*</span> <span class="p">(</span><span class="n">ym</span> <span class="o">-</span> <span class="n">ymx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)))</span>
@@ -346,7 +346,7 @@
 
 <div class="viewcode-block" id="ivp_solver">
 <a class="viewcode-back" href="../../src.html#src.solver.ivp_solver">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ivp_solver</span><span class="p">(</span><span class="n">fftpq</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">Lx</span><span class="p">,</span> <span class="n">Ly</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;SIE&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ivp_solver</span><span class="p">(</span><span class="n">fftpq</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">Lx</span><span class="p">,</span> <span class="n">Ly</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;TSEI3&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Solves the initial value problem resulting from the discretization of the</span>
 <span class="sd">    steady-state advection-diffusion equation using the Fast Fourier Transform.</span>
