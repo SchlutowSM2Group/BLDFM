@@ -12,7 +12,7 @@ from src.solver import steady_state_transport_solver
 
 nxy = 512, 256
 modes = 512, 512
-nz = 512
+nz = 256
 # nxy         = 128, 64
 # modes       = 128, 128
 # nz          = 16
