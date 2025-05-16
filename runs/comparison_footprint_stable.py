@@ -5,6 +5,9 @@ Module for comparing BLDFM and Kormann-Meixner footprint models.
 import numpy as np
 import matplotlib.pyplot as plt
 
+import logging
+logging.basicConfig(level = logging.INFO)
+
 from src.pbl_model import vertical_profiles
 from src.utils import ideal_source
 from src.solver import steady_state_transport_solver
@@ -15,13 +18,13 @@ nz = 128
 modes = 1024, 1024
 # modes       = 128, 128
 domain = 200.0, 600.0
-fetch = 1000.0
+fetch = 2000.0
 meas_pt = 100.0, 0.0
 meas_height = 10.0
 wind = 0.0, -6.0
-ustar = 0.63
+ustar = 0.338
 z0 = 0.1
-mol = -20.0
+mol = 20.0
 
 wd = np.arctan(wind[0] / wind[1]) * 180.0 / np.pi
 umean = np.sqrt(wind[0] ** 2 + wind[1] ** 2)
