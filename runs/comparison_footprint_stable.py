@@ -15,7 +15,7 @@ nz = 128
 modes = 1024, 1024
 # modes       = 128, 128
 domain = 200.0, 600.0
-fetch = 1024 + 256
+fetch = 1000.0
 meas_pt = 100.0, 0.0
 meas_height = 10.0
 wind = 0.0, -6.0
@@ -94,4 +94,4 @@ if __name__ == "__main__":
     cbar.set_label("$m^{-2}$")
 
     # plt.show()
-    plt.savefig("plots/comparison_footprint.png", dpi=300)
+    plt.savefig("plots/comparison_footprint_stable.png", dpi=300)

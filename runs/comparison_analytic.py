@@ -47,7 +47,7 @@ print("Elapsed time for numerical solver %d s" % t)
 diff_conc = (conc - conc_ana) / np.max(conc_ana)
 diff_flx = (flx - flx_ana) / np.max(flx_ana)
 
-if "__name__" == "__main__":
+if __name__ == "__main__":
     shrink = 0.7
     cmap = "turbo"
 
