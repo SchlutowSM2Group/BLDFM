@@ -6,7 +6,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import logging
-logging.basicConfig(level = logging.INFO)
+
+logging.basicConfig(level=logging.INFO)
 
 from src.pbl_model import vertical_profiles
 from src.utils import ideal_source
