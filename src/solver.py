@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.fft as fft
+from numba import njit
 
 
 def steady_state_transport_solver(
@@ -13,7 +14,6 @@ def steady_state_transport_solver(
     footprint=False,
     analytic=False,
     halo=-1e9,
-    ivp_method="TSEI3",
 ):
     """
     Solves the steady-state advection-diffusion equation for a concentration
@@ -47,9 +47,6 @@ def steady_state_transport_solver(
     halo : float, optional
         Width of the zero-flux halo around the domain [m]. Default is -1e9, which sets
         the halo to `max(xmax, ymax)`.
-    ivp_method : str, optional
-        Method for solving the initial value problem. Options are "TSEI3" (default),
-        "EI", "TSEI3", or "EE".
 
     Returns
     -------
@@ -167,11 +164,11 @@ def steady_state_transport_solver(
         # by linear shooting method
         # use two auxillary initial value problems
         tfftp1, tfftq1 = ivp_solver(
-            (one, zero), profiles, z, Lx[msk], Ly[msk], method=ivp_method
+            (one, zero), profiles, z, Lx[msk], Ly[msk]
         )
 
         tfftp2, tfftq2 = ivp_solver(
-            (zero, tfftq0[msk]), profiles, z, Lx[msk], Ly[msk], method=ivp_method
+            (zero, tfftq0[msk]), profiles, z, Lx[msk], Ly[msk]
         )
 
         alpha = -(tfftq2 - K[nz - 1] * eigval * tfftp2) / (
@@ -235,8 +232,8 @@ def steady_state_transport_solver(
 
     return srf_conc, bg_conc, conc, flx
 
-
-def ivp_solver(fftpq, profiles, z, Lx, Ly, method="TSEI3"):
+@njit(parallel=True)
+def ivp_solver(fftpq, profiles, z, Lx, Ly):
     """
     Solves the initial value problem resulting from the discretization of the
     steady-state advection-diffusion equation using the Fast Fourier Transform.
@@ -275,7 +272,7 @@ def ivp_solver(fftpq, profiles, z, Lx, Ly, method="TSEI3"):
     fftp, fftq = np.copy(fftp0), np.copy(fftq0)
 
     nz = len(z)
-    dz = np.diff(z, axis=0)
+    dz = np.diff(z)
 
     for i in range(nz - 1):
 
@@ -283,38 +280,13 @@ def ivp_solver(fftpq, profiles, z, Lx, Ly, method="TSEI3"):
         Kinv = 1.0 / K[i]
         dzi = dz[i]
 
-        # exponential integrator (exact) method
-        if method == "EI":
-            eig = np.sqrt(Ti * Kinv)
-            dum = np.cos(eig * dzi) * fftp - Kinv / eig * np.sin(eig * dzi) * fftq
-            fftq = Ti / eig * np.sin(eig * dzi) * fftp + np.cos(eig * dzi) * fftq
-            fftp = dum
+        a = 1.0 - 0.5 * Kinv * Ti * dzi**2
+        b = -Kinv * dzi - 1.0 / 6.0 * Kinv**2 * Ti * dzi**3
+        c = Ti * dzi - 1.0 / 6.0 * Kinv * Ti**2 * dzi**3
+        d = 1.0 - 0.5 * Kinv * Ti * dzi**2
 
-        # Taylor series for exponential integrator method up to 3rd order
-        elif method == "TSEI3":
-            a = 1.0 - 0.5 * Kinv * Ti * dzi**2
-            b = -Kinv * dzi - 1.0 / 6.0 * Kinv**2 * Ti * dzi**3
-            c = Ti * dzi - 1.0 / 6.0 * Kinv * Ti**2 * dzi**3
-            d = 1.0 - 0.5 * Kinv * Ti * dzi**2
-
-            dum = a * fftp + b * fftq
-            fftq = c * fftp + d * fftq
-            fftp = dum
-
-        # Semi-implicit Euler method
-        elif method == "SIE":
-            fftp = fftp - dzi * Kinv * fftq
-            fftq = fftq + dzi * Ti * fftp
-
-        # Explicit Euler method
-        elif method == "EE":
-            dum = fftp - dz[i] / K[i] * fftq
-            fftq = fftq + dz[i] * Ti * fftp
-            fftp = dum
-
-        else:
-            raise ValueError(
-                "Invalid method. Choose from 'SIE', 'EI', 'TSEI3', or 'EE'."
-            )
+        dum = a * fftp + b * fftq
+        fftq = c * fftp + d * fftq
+        fftp = dum
 
     return fftp, fftq
