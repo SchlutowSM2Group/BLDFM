@@ -5,6 +5,7 @@ import numpy as np
 def vertical_profiles(
     n,
     meas_height,
+    top_height,
     wind,
     ustar=0.2,
     mol=1e9,
@@ -50,7 +51,7 @@ def vertical_profiles(
 
     """
 
-    zm, (um, vm) = meas_height, wind
+    zm, zmx, (um, vm) = meas_height, top_height, wind
 
     # make function dimension-agnostic
     # here, we create (Nts x Nz arrays)
@@ -87,17 +88,14 @@ def vertical_profiles(
             # roughness length
             z0 = zm * np.exp(-kap * absum / ustar + psi(zm / mol))
 
-            # sanity checks
-            z0[...] = np.clip(z0, z0_min, z0_max)
-
         else:
 
-            z0 = np.array(z0)[..., np.newaxis]
             ustar = absum * kap / (np.log(zm / z0) + psi(zm / mol))
 
         # equidistant vertical grid
         # find a way to vectorize this properly
-        z = np.array([np.linspace(z00, zm, n) for z00 in z0]).squeeze()
+        dz = (zm - z0) / n
+        z = np.arange(z0, zmx, dz)
 
         absu = ustar / kap * (np.log(z / z0) + psi(z / mol))
 
