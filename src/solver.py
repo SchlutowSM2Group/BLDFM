@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.fft as fft
-from numba import njit
+import os
+import numba
 
 
 def steady_state_transport_solver(
@@ -163,13 +164,9 @@ def steady_state_transport_solver(
         # solve non-degenerated problem for (n,m) =/= (0,0)
         # by linear shooting method
         # use two auxillary initial value problems
-        tfftp1, tfftq1 = ivp_solver(
-            (one, zero), profiles, z, Lx[msk], Ly[msk]
-        )
+        tfftp1, tfftq1 = ivp_solver((one, zero), profiles, z, Lx[msk], Ly[msk])
 
-        tfftp2, tfftq2 = ivp_solver(
-            (zero, tfftq0[msk]), profiles, z, Lx[msk], Ly[msk]
-        )
+        tfftp2, tfftq2 = ivp_solver((zero, tfftq0[msk]), profiles, z, Lx[msk], Ly[msk])
 
         alpha = -(tfftq2 - K[nz - 1] * eigval * tfftp2) / (
             tfftq1 - K[nz - 1] * eigval * tfftp1
@@ -232,7 +229,19 @@ def steady_state_transport_solver(
 
     return srf_conc, bg_conc, conc, flx
 
-@njit(parallel=True)
+
+def parallelize(func):
+    def wrapper(*args, **kwargs):
+        parallel = os.environ.get("NUMBA_PARALLEL", "False").lower() == "true"
+        if parallel:
+            return numba.jit(nopython=True, parallel=True)(func)(*args, **kwargs)
+        else:
+            return numba.jit(nopython=True)(func)(*args, **kwargs)
+
+    return wrapper
+
+
+@parallelize
 def ivp_solver(fftpq, profiles, z, Lx, Ly):
     """
     Solves the initial value problem resulting from the discretization of the
@@ -251,12 +260,6 @@ def ivp_solver(fftpq, profiles, z, Lx, Ly):
         2D array of zonal wavenumbers.
     Ly : ndarray of float
         2D array of meridional wavenumbers.
-    method : str, optional
-        Method for solving the initial value problem. Options are:
-            - ``SIE`` (Semi-Implicit Euler, default)
-            - ``EI`` (Exponential Integrator)
-            - ``TSEI3`` (Taylor Series Exponential Integrator, 3rd order)
-            - ``EE`` (Explicit Euler)
 
     Returns
     -------
