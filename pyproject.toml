@@ -16,7 +16,9 @@ license = { text = "MIT" }
 dependencies = [
     "numpy",
     "matplotlib",
-    "scipy"
+    "scipy",
+    "numba",
+    "os"
 ]
 
 [project.optional-dependencies]

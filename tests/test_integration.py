@@ -49,7 +49,7 @@ def test_integration():
         srf_flx, z, profs, domain, modes=modes, halo=halo, analytic=True
     )
     _, _, conc, flx = steady_state_transport_solver(
-        srf_flx, z, profs, domain, modes=modes, halo=halo, ivp_method="TSEI3"
+        srf_flx, z, profs, domain, modes=modes, halo=halo
     )
 
     # Validate results
