@@ -7,6 +7,7 @@ def steady_state_transport_solver(
     z,
     profiles,
     domain,
+    n,
     modes=(512, 512),
     meas_pt=(0.0, 0.0),
     srf_bg_conc=0.0,
@@ -123,7 +124,7 @@ def steady_state_transport_solver(
 
     Lx, Ly = np.meshgrid(lx, ly)
 
-    dz = np.diff(z, axis=0)
+    dz = z[1] - z[0]
     nz = len(z)
 
     # define mask to seperate degenerated and non-degenerated system
@@ -166,12 +167,12 @@ def steady_state_transport_solver(
         # solve non-degenerated problem for (n,m) =/= (0,0)
         # by linear shooting method
         # use two auxillary initial value problems
-        tfftp1, tfftq1 = ivp_solver(
-            (one, zero), profiles, z, Lx[msk], Ly[msk], method=ivp_method
+        tfftp1, tfftq1, tfftpm1, tfftqm1= ivp_solver(
+            (one, zero), profiles, z, n, Lx[msk], Ly[msk], method=ivp_method
         )
 
-        tfftp2, tfftq2 = ivp_solver(
-            (zero, tfftq0[msk]), profiles, z, Lx[msk], Ly[msk], method=ivp_method
+        tfftp2, tfftq2, tfftpm2, tfftqm2 = ivp_solver(
+            (zero, tfftq0[msk]), profiles, z, n, Lx[msk], Ly[msk], method=ivp_method
         )
 
         alpha = -(tfftq2 - K[nz - 1] * eigval * tfftp2) / (
@@ -180,14 +181,14 @@ def steady_state_transport_solver(
 
         # linear combination of the two solution of the IVP
         tfftp0[msk] = alpha
-        tfftp[msk] = alpha * tfftp1 + tfftp2
-        tfftq[msk] = alpha * tfftq1 + tfftq2
+        tfftp[msk] = alpha * tfftpm1 + tfftpm2
+        tfftq[msk] = alpha * tfftqm1 + tfftqm2
 
         # solve degenerated problem for (n,m) =  (0,0)
         # with Euler forward method
         tfftp[0, 0] = p000
-        for i in range(nz - 1):
-            tfftp[0, 0] = tfftp[0, 0] - tfftq0[0, 0] / K[i] * dz[i]
+        for i in range(n):
+            tfftp[0, 0] = tfftp[0, 0] - tfftq0[0, 0] / K[i] * dz
 
     # shift green function in Fourier space to measurement point
     if footprint:
@@ -236,7 +237,7 @@ def steady_state_transport_solver(
     return srf_conc, bg_conc, conc, flx
 
 
-def ivp_solver(fftpq, profiles, z, Lx, Ly, method="TSEI3"):
+def ivp_solver(fftpq, profiles, z, n, Lx, Ly, method="TSEI3"):
     """
     Solves the initial value problem resulting from the discretization of the
     steady-state advection-diffusion equation using the Fast Fourier Transform.
@@ -275,13 +276,13 @@ def ivp_solver(fftpq, profiles, z, Lx, Ly, method="TSEI3"):
     fftp, fftq = np.copy(fftp0), np.copy(fftq0)
 
     nz = len(z)
-    dz = np.diff(z, axis=0)
+    dz = z[1]-z[0]
 
-    for i in range(nz - 1):
+    for i in range(nz):
 
         Ti = -K[i] * (Lx**2 + Ly**2) - 1j * u[i] * Lx - 1j * v[i] * Ly
         Kinv = 1.0 / K[i]
-        dzi = dz[i]
+        dzi = dz
 
         # exponential integrator (exact) method
         if method == "EI":
@@ -317,4 +318,7 @@ def ivp_solver(fftpq, profiles, z, Lx, Ly, method="TSEI3"):
                 "Invalid method. Choose from 'SIE', 'EI', 'TSEI3', or 'EE'."
             )
 
-    return fftp, fftq
+        if i == n-1:
+            fftpm, fftqm = fftp, fftq
+
+    return fftp, fftq, fftpm, fftqm
