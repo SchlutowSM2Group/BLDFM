@@ -124,7 +124,7 @@ def steady_state_transport_solver(
 
     Lx, Ly = np.meshgrid(lx, ly)
 
-    dz = z[1] - z[0]
+    dz = np.diff(z)
     nz = len(z)
 
     # define mask to seperate degenerated and non-degenerated system
@@ -188,7 +188,7 @@ def steady_state_transport_solver(
         # with Euler forward method
         tfftp[0, 0] = p000
         for i in range(n):
-            tfftp[0, 0] = tfftp[0, 0] - tfftq0[0, 0] / K[i] * dz
+            tfftp[0, 0] = tfftp[0, 0] - tfftq0[0, 0] / K[i] * dz[i]
 
     # shift green function in Fourier space to measurement point
     if footprint:
@@ -276,13 +276,13 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly, method="TSEI3"):
     fftp, fftq = np.copy(fftp0), np.copy(fftq0)
 
     nz = len(z)
-    dz = z[1]-z[0]
+    dz = np.diff(z)
 
-    for i in range(nz):
+    for i in range(nz-1):
 
         Ti = -K[i] * (Lx**2 + Ly**2) - 1j * u[i] * Lx - 1j * v[i] * Ly
         Kinv = 1.0 / K[i]
-        dzi = dz
+        dzi = dz[i]
 
         # exponential integrator (exact) method
         if method == "EI":
