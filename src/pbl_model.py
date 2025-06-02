@@ -5,13 +5,14 @@ import numpy as np
 def vertical_profiles(
     n,
     meas_height,
-    top_height,
     wind,
     ustar=0.2,
     mol=1e9,
     prsc=1.0,
     closure="MOST",
-    z0=-1e9,
+    blend_height=None,
+    stretch=None,
+    z0=None,
     z0_min=0.001,
     z0_max=2.0,
     tke=None,
@@ -51,7 +52,7 @@ def vertical_profiles(
 
     """
 
-    zm, zmx, (um, vm) = meas_height, top_height, wind
+    zm, (um, vm) = meas_height, wind
 
     # make function dimension-agnostic
     # here, we create (Nts x Nz arrays)
@@ -83,7 +84,7 @@ def vertical_profiles(
         # absolute wind at zm
         absum = np.sqrt(um**2 + vm**2)
 
-        if z0 < 0.0:
+        if z0 is None:
 
             # roughness length
             z0 = zm * np.exp(-kap * absum / ustar + psi(zm / mol))
@@ -92,10 +93,24 @@ def vertical_profiles(
 
             ustar = absum * kap / (np.log(zm / z0) + psi(zm / mol))
 
-        # equidistant vertical grid
+        # stretched vertical grid
         # find a way to vectorize this properly
-        dz = (zm - z0) / n
-        z = np.arange(z0, zmx, dz)
+        if stretch is None:
+            h = 2 * meas_height
+        else:
+            h = stretch
+
+        if blend_height is None:
+            zmx = 3 * meas_height
+        else:
+            zmx = blend_height
+
+        bb = zm / (np.exp(-z0 / h) - np.exp(-zm / h))
+        aa = bb * np.exp(-z0 / h)
+        zetamx = aa - bb * np.exp(-zmx / h)
+        dzeta = zm / n
+        zeta = np.arange(0, zetamx, dzeta)
+        z = -h * np.log(-(zeta - aa) / bb)
 
         absu = ustar / kap * (np.log(z / z0) + psi(z / mol))
 
