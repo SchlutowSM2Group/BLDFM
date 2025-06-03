@@ -114,6 +114,7 @@
     <span class="n">z</span><span class="p">,</span>
     <span class="n">profiles</span><span class="p">,</span>
     <span class="n">domain</span><span class="p">,</span>
+    <span class="n">n</span><span class="p">,</span>
     <span class="n">modes</span><span class="o">=</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
     <span class="n">meas_pt</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
     <span class="n">srf_bg_conc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
@@ -230,7 +231,7 @@
 
     <span class="n">Lx</span><span class="p">,</span> <span class="n">Ly</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">lx</span><span class="p">,</span> <span class="n">ly</span><span class="p">)</span>
 
-    <span class="n">dz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
     <span class="n">nz</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 
     <span class="c1"># define mask to seperate degenerated and non-degenerated system</span>
@@ -242,7 +243,7 @@
 
     <span class="n">Kinv</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">K</span><span class="p">[</span><span class="n">nz</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
 
-    <span class="c1"># Eigenvalue determining solution for z &gt; zm</span>
+    <span class="c1"># Eigenvalue determining solution for z &gt; zmx</span>
     <span class="n">eigval</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
         <span class="n">Lx</span><span class="p">[</span><span class="n">msk</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
         <span class="o">+</span> <span class="n">Ly</span><span class="p">[</span><span class="n">msk</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
@@ -262,7 +263,8 @@
 
         <span class="c1"># constant profiles solution</span>
         <span class="c1"># for validation purposes</span>
-        <span class="n">h</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="n">nz</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">z</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">-</span> <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
         <span class="n">tfftp0</span><span class="p">[</span><span class="n">msk</span><span class="p">]</span> <span class="o">=</span> <span class="n">tfftq0</span><span class="p">[</span><span class="n">msk</span><span class="p">]</span> <span class="o">*</span> <span class="n">Kinv</span> <span class="o">/</span> <span class="n">eigval</span>
         <span class="n">tfftp</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">p000</span> <span class="o">-</span> <span class="n">tfftq0</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">Kinv</span> <span class="o">*</span> <span class="n">h</span>
         <span class="n">tfftq</span><span class="p">[</span><span class="n">msk</span><span class="p">]</span> <span class="o">=</span> <span class="n">tfftq0</span><span class="p">[</span><span class="n">msk</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">eigval</span> <span class="o">*</span> <span class="n">h</span><span class="p">)</span>
@@ -273,12 +275,12 @@
         <span class="c1"># solve non-degenerated problem for (n,m) =/= (0,0)</span>
         <span class="c1"># by linear shooting method</span>
         <span class="c1"># use two auxillary initial value problems</span>
-        <span class="n">tfftp1</span><span class="p">,</span> <span class="n">tfftq1</span> <span class="o">=</span> <span class="n">ivp_solver</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="n">zero</span><span class="p">),</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">Lx</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span> <span class="n">Ly</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="n">ivp_method</span>
+        <span class="n">tfftp1</span><span class="p">,</span> <span class="n">tfftq1</span><span class="p">,</span> <span class="n">tfftpm1</span><span class="p">,</span> <span class="n">tfftqm1</span> <span class="o">=</span> <span class="n">ivp_solver</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">one</span><span class="p">,</span> <span class="n">zero</span><span class="p">),</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">Lx</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span> <span class="n">Ly</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="n">ivp_method</span>
         <span class="p">)</span>
 
-        <span class="n">tfftp2</span><span class="p">,</span> <span class="n">tfftq2</span> <span class="o">=</span> <span class="n">ivp_solver</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">zero</span><span class="p">,</span> <span class="n">tfftq0</span><span class="p">[</span><span class="n">msk</span><span class="p">]),</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">Lx</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span> <span class="n">Ly</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="n">ivp_method</span>
+        <span class="n">tfftp2</span><span class="p">,</span> <span class="n">tfftq2</span><span class="p">,</span> <span class="n">tfftpm2</span><span class="p">,</span> <span class="n">tfftqm2</span> <span class="o">=</span> <span class="n">ivp_solver</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">zero</span><span class="p">,</span> <span class="n">tfftq0</span><span class="p">[</span><span class="n">msk</span><span class="p">]),</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">Lx</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span> <span class="n">Ly</span><span class="p">[</span><span class="n">msk</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="n">ivp_method</span>
         <span class="p">)</span>
 
         <span class="n">alpha</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">tfftq2</span> <span class="o">-</span> <span class="n">K</span><span class="p">[</span><span class="n">nz</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">eigval</span> <span class="o">*</span> <span class="n">tfftp2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
@@ -287,13 +289,13 @@
 
         <span class="c1"># linear combination of the two solution of the IVP</span>
         <span class="n">tfftp0</span><span class="p">[</span><span class="n">msk</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span>
-        <span class="n">tfftp</span><span class="p">[</span><span class="n">msk</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">tfftp1</span> <span class="o">+</span> <span class="n">tfftp2</span>
-        <span class="n">tfftq</span><span class="p">[</span><span class="n">msk</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">tfftq1</span> <span class="o">+</span> <span class="n">tfftq2</span>
+        <span class="n">tfftp</span><span class="p">[</span><span class="n">msk</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">tfftpm1</span> <span class="o">+</span> <span class="n">tfftpm2</span>
+        <span class="n">tfftq</span><span class="p">[</span><span class="n">msk</span><span class="p">]</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">tfftqm1</span> <span class="o">+</span> <span class="n">tfftqm2</span>
 
         <span class="c1"># solve degenerated problem for (n,m) =  (0,0)</span>
         <span class="c1"># with Euler forward method</span>
         <span class="n">tfftp</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">p000</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nz</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
             <span class="n">tfftp</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">tfftp</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">tfftq0</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">dz</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
     <span class="c1"># shift green function in Fourier space to measurement point</span>
@@ -346,7 +348,7 @@
 
 <div class="viewcode-block" id="ivp_solver">
 <a class="viewcode-back" href="../../src.html#src.solver.ivp_solver">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">ivp_solver</span><span class="p">(</span><span class="n">fftpq</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">Lx</span><span class="p">,</span> <span class="n">Ly</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;TSEI3&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ivp_solver</span><span class="p">(</span><span class="n">fftpq</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">Lx</span><span class="p">,</span> <span class="n">Ly</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;TSEI3&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Solves the initial value problem resulting from the discretization of the</span>
 <span class="sd">    steady-state advection-diffusion equation using the Fast Fourier Transform.</span>
@@ -385,7 +387,7 @@
     <span class="n">fftp</span><span class="p">,</span> <span class="n">fftq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">fftp0</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">fftq0</span><span class="p">)</span>
 
     <span class="n">nz</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-    <span class="n">dz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nz</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
 
@@ -427,7 +429,10 @@
                 <span class="s2">&quot;Invalid method. Choose from &#39;SIE&#39;, &#39;EI&#39;, &#39;TSEI3&#39;, or &#39;EE&#39;.&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">fftp</span><span class="p">,</span> <span class="n">fftq</span></div>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">fftpm</span><span class="p">,</span> <span class="n">fftqm</span> <span class="o">=</span> <span class="n">fftp</span><span class="p">,</span> <span class="n">fftq</span>
+
+    <span class="k">return</span> <span class="n">fftp</span><span class="p">,</span> <span class="n">fftq</span><span class="p">,</span> <span class="n">fftpm</span><span class="p">,</span> <span class="n">fftqm</span></div>
 
 </pre></div>
 
