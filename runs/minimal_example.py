@@ -9,9 +9,9 @@ from src.utils import ideal_source
 from src.solver import steady_state_transport_solver
 
 nxy = 512, 256
-nz = 10
+nz = 16
 domain = 2000.0, 1000.0
-meas_height = 6.0
+meas_height = 10.0
 wind = 4.0, 1.0
 ustar = 0.4
 
@@ -19,7 +19,9 @@ srf_flx = ideal_source(nxy, domain)
 
 z, profs = vertical_profiles(nz, meas_height, wind, ustar)
 
-srf_conc, bg_conc, conc, flx = steady_state_transport_solver(srf_flx, z, profs, domain)
+srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
+    srf_flx, z, profs, domain, nz
+)
 
 if __name__ == "__main__":
     print("Minimal example for neutrally stratified BL and default settings.")
