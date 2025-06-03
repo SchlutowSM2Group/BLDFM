@@ -75,4 +75,3 @@ if __name__ == "__main__":
     plt.legend()
     plt.loglog()
     plt.savefig("plots/error_convergence.png", dpi=300)
-
