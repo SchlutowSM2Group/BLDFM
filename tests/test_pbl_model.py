@@ -37,16 +37,15 @@ def test_constant_closure(n, meas_height, wind, ustar, prsc):
     )
 
     # Check the shape of the outputs
-    # assert len(z) == n
-    # assert len(u) == n
-    # assert len(v) == n
-    # assert len(K) == n
+    assert len(u) == len(z)
+    assert len(v) == len(z)
+    assert len(K) == len(z)
 
     # # Check that the profiles are constant
-    np.testing.assert_array_almost_equal(u, np.full(n, wind[0]))
-    np.testing.assert_array_almost_equal(v, np.full(n, wind[1]))
+    np.testing.assert_array_almost_equal(u, np.full(len(z), wind[0]))
+    np.testing.assert_array_almost_equal(v, np.full(len(z), wind[1]))
     np.testing.assert_array_almost_equal(
-        K, np.full(n, 0.4 * ustar * meas_height / prsc)
+        K, np.full(len(z), 0.4 * ustar * meas_height / prsc)
     )
 
 
@@ -75,10 +74,9 @@ def test_most_closure(n, meas_height, wind, ustar, mol):
     )
 
     # Check the shape of the outputs
-    # assert len(z) == n
-    # assert len(u) == n
-    # assert len(v) == n
-    # assert len(K) == n
+    assert len(u) == len(z)
+    assert len(v) == len(z)
+    assert len(K) == len(z)
 
     # Check that the profiles are not constant
     assert not np.isclose(u[0], u[-1])
