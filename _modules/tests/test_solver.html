@@ -116,6 +116,8 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">src.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">steady_state_transport_solver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.pbl_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">vertical_profiles</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ideal_source</span>
 
 
 <div class="viewcode-block" id="test_steady_state_transport_solver">
@@ -133,28 +135,29 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Define test inputs</span>
-    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span>  <span class="c1"># Grid size</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Vertical grid points</span>
-    <span class="n">u</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Constant wind speed</span>
-    <span class="n">K</span> <span class="o">=</span> <span class="mf">10.0</span>  <span class="c1"># Constant eddy diffusivity</span>
-    <span class="n">Q</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># Source strength</span>
-    <span class="n">profiles</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="o">*</span> <span class="n">u</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="o">*</span> <span class="n">K</span><span class="p">)</span>
-    <span class="n">domain</span> <span class="o">=</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>  <span class="c1"># Domain size</span>
+    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span>  <span class="c1"># Grid size</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="mi">32</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span>
+    <span class="n">domain</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">100</span>  <span class="c1"># Domain size</span>
+    <span class="n">meas_height</span> <span class="o">=</span> <span class="mf">5.0</span>
+    <span class="n">wind</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span>
+    <span class="n">ustar</span> <span class="o">=</span> <span class="mf">0.5</span>
 
-    <span class="c1"># Create a point source at the center of the domain</span>
-    <span class="n">srf_flx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
-    <span class="n">srf_flx</span><span class="p">[</span><span class="n">ny</span> <span class="o">//</span> <span class="mi">4</span><span class="p">,</span> <span class="n">nx</span> <span class="o">//</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">Q</span>
+    <span class="n">z</span><span class="p">,</span> <span class="n">profs</span> <span class="o">=</span> <span class="n">vertical_profiles</span><span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="n">meas_height</span><span class="p">,</span> <span class="n">wind</span><span class="p">,</span> <span class="n">ustar</span><span class="p">,</span> <span class="n">closure</span><span class="o">=</span><span class="s2">&quot;CONSTANT&quot;</span><span class="p">)</span>
+    <span class="n">srf_flx</span> <span class="o">=</span> <span class="n">ideal_source</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">),</span> <span class="n">domain</span><span class="p">)</span>
 
     <span class="c1"># Call the solver with analytic=True</span>
     <span class="n">srf_conc_analytic</span><span class="p">,</span> <span class="n">bg_conc_analytic</span><span class="p">,</span> <span class="n">conc_analytic</span><span class="p">,</span> <span class="n">flx_analytic</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">steady_state_transport_solver</span><span class="p">(</span><span class="n">srf_flx</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">analytic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">steady_state_transport_solver</span><span class="p">(</span>
+            <span class="n">srf_flx</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">profs</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="n">modes</span><span class="p">,</span> <span class="n">analytic</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># Call the solver with analytic=False</span>
     <span class="n">srf_conc_numeric</span><span class="p">,</span> <span class="n">bg_conc_numeric</span><span class="p">,</span> <span class="n">conc_numeric</span><span class="p">,</span> <span class="n">flx_numeric</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">steady_state_transport_solver</span><span class="p">(</span><span class="n">srf_flx</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">analytic</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">steady_state_transport_solver</span><span class="p">(</span>
+            <span class="n">srf_flx</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">profs</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="n">modes</span><span class="p">,</span> <span class="n">analytic</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># Assertions to validate numeric output shapes</span>
@@ -185,17 +188,13 @@
     <span class="c1"># Plot numerical solution</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Numerical Solution&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
-        <span class="n">srf_conc_numeric</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
-    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">srf_conc_numeric</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
 
     <span class="c1"># Plot analytical solution</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Analytical Solution&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
-        <span class="n">srf_conc_analytic</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">y</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span>
-    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">srf_conc_analytic</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/analytical_vs_numerical_solution.png&quot;</span><span class="p">)</span>
 
