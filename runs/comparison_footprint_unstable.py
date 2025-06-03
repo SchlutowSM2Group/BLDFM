@@ -32,13 +32,14 @@ umean = np.sqrt(wind[0] ** 2 + wind[1] ** 2)
 
 surf_flx = ideal_source(nxy, domain)
 
-z, profs = vertical_profiles(nz, meas_height, wind, ustar, z0=z0, mol=mol)
+z, profs = vertical_profiles(nz, meas_height, wind, z0=z0, mol=mol)
 
 srf_flx, bg_conc, conc, flx = steady_state_transport_solver(
     surf_flx,
     z,
     profs,
     domain,
+    nz,
     modes=modes,
     meas_pt=meas_pt,
     footprint=True,

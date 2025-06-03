@@ -136,7 +136,7 @@ def steady_state_transport_solver(
 
     Kinv = 1.0 / K[nz - 1]
 
-    # Eigenvalue determining solution for z > zm
+    # Eigenvalue determining solution for z > zmx
     eigval = np.sqrt(
         Lx[msk] ** 2
         + Ly[msk] ** 2
@@ -156,7 +156,8 @@ def steady_state_transport_solver(
 
         # constant profiles solution
         # for validation purposes
-        h = z[nz - 1] - z[0]
+        h = z[n] - z[0]
+
         tfftp0[msk] = tfftq0[msk] * Kinv / eigval
         tfftp[0, 0] = p000 - tfftq0[0, 0] * Kinv * h
         tfftq[msk] = tfftq0[msk] * np.exp(-eigval * h)
@@ -167,7 +168,7 @@ def steady_state_transport_solver(
         # solve non-degenerated problem for (n,m) =/= (0,0)
         # by linear shooting method
         # use two auxillary initial value problems
-        tfftp1, tfftq1, tfftpm1, tfftqm1= ivp_solver(
+        tfftp1, tfftq1, tfftpm1, tfftqm1 = ivp_solver(
             (one, zero), profiles, z, n, Lx[msk], Ly[msk], method=ivp_method
         )
 
@@ -278,7 +279,7 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly, method="TSEI3"):
     nz = len(z)
     dz = np.diff(z)
 
-    for i in range(nz-1):
+    for i in range(nz - 1):
 
         Ti = -K[i] * (Lx**2 + Ly**2) - 1j * u[i] * Lx - 1j * v[i] * Ly
         Kinv = 1.0 / K[i]
@@ -318,7 +319,7 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly, method="TSEI3"):
                 "Invalid method. Choose from 'SIE', 'EI', 'TSEI3', or 'EE'."
             )
 
-        if i == n-1:
+        if i == n - 1:
             fftpm, fftqm = fftp, fftq
 
     return fftp, fftq, fftpm, fftqm
