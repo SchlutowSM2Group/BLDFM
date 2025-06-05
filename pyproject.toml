@@ -16,7 +16,8 @@ license = { text = "PolyForm Noncommercial License 1.0.0" }
 dependencies = [
     "numpy",
     "matplotlib",
-    "scipy"
+    "scipy",
+    "numba",
 ]
 
 [project.optional-dependencies]

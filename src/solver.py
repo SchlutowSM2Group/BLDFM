@@ -1,5 +1,7 @@
 import numpy as np
 import scipy.fft as fft
+import os
+import numba
 
 
 def steady_state_transport_solver(
@@ -7,13 +9,13 @@ def steady_state_transport_solver(
     z,
     profiles,
     domain,
+    n,
     modes=(512, 512),
     meas_pt=(0.0, 0.0),
     srf_bg_conc=0.0,
     footprint=False,
     analytic=False,
     halo=-1e9,
-    ivp_method="TSEI3",
 ):
     """
     Solves the steady-state advection-diffusion equation for a concentration
@@ -47,9 +49,6 @@ def steady_state_transport_solver(
     halo : float, optional
         Width of the zero-flux halo around the domain [m]. Default is -1e9, which sets
         the halo to `max(xmax, ymax)`.
-    ivp_method : str, optional
-        Method for solving the initial value problem. Options are "TSEI3" (default),
-        "EI", "TSEI3", or "EE".
 
     Returns
     -------
@@ -123,7 +122,7 @@ def steady_state_transport_solver(
 
     Lx, Ly = np.meshgrid(lx, ly)
 
-    dz = np.diff(z, axis=0)
+    dz = np.diff(z)
     nz = len(z)
 
     # define mask to seperate degenerated and non-degenerated system
@@ -135,7 +134,7 @@ def steady_state_transport_solver(
 
     Kinv = 1.0 / K[nz - 1]
 
-    # Eigenvalue determining solution for z > zm
+    # Eigenvalue determining solution for z > zmx
     eigval = np.sqrt(
         Lx[msk] ** 2
         + Ly[msk] ** 2
@@ -155,7 +154,8 @@ def steady_state_transport_solver(
 
         # constant profiles solution
         # for validation purposes
-        h = z[nz - 1] - z[0]
+        h = z[n] - z[0]
+
         tfftp0[msk] = tfftq0[msk] * Kinv / eigval
         tfftp[0, 0] = p000 - tfftq0[0, 0] * Kinv * h
         tfftq[msk] = tfftq0[msk] * np.exp(-eigval * h)
@@ -166,12 +166,12 @@ def steady_state_transport_solver(
         # solve non-degenerated problem for (n,m) =/= (0,0)
         # by linear shooting method
         # use two auxillary initial value problems
-        tfftp1, tfftq1 = ivp_solver(
-            (one, zero), profiles, z, Lx[msk], Ly[msk], method=ivp_method
+        tfftp1, tfftq1, tfftpm1, tfftqm1 = ivp_solver(
+            (one, zero), profiles, z, n, Lx[msk], Ly[msk]
         )
 
-        tfftp2, tfftq2 = ivp_solver(
-            (zero, tfftq0[msk]), profiles, z, Lx[msk], Ly[msk], method=ivp_method
+        tfftp2, tfftq2, tfftpm2, tfftqm2 = ivp_solver(
+            (zero, tfftq0[msk]), profiles, z, n, Lx[msk], Ly[msk]
         )
 
         alpha = -(tfftq2 - K[nz - 1] * eigval * tfftp2) / (
@@ -180,13 +180,13 @@ def steady_state_transport_solver(
 
         # linear combination of the two solution of the IVP
         tfftp0[msk] = alpha
-        tfftp[msk] = alpha * tfftp1 + tfftp2
-        tfftq[msk] = alpha * tfftq1 + tfftq2
+        tfftp[msk] = alpha * tfftpm1 + tfftpm2
+        tfftq[msk] = alpha * tfftqm1 + tfftqm2
 
         # solve degenerated problem for (n,m) =  (0,0)
         # with Euler forward method
         tfftp[0, 0] = p000
-        for i in range(nz - 1):
+        for i in range(n):
             tfftp[0, 0] = tfftp[0, 0] - tfftq0[0, 0] / K[i] * dz[i]
 
     # shift green function in Fourier space to measurement point
@@ -236,7 +236,19 @@ def steady_state_transport_solver(
     return srf_conc, bg_conc, conc, flx
 
 
-def ivp_solver(fftpq, profiles, z, Lx, Ly, method="TSEI3"):
+def parallelize(func):
+    def wrapper(*args, **kwargs):
+        parallel = os.environ.get("NUMBA_PARALLEL", "False").lower() == "true"
+        if parallel:
+            return numba.jit(nopython=True, parallel=True)(func)(*args, **kwargs)
+        else:
+            return numba.jit(nopython=True)(func)(*args, **kwargs)
+
+    return wrapper
+
+
+@parallelize
+def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
     """
     Solves the initial value problem resulting from the discretization of the
     steady-state advection-diffusion equation using the Fast Fourier Transform.
@@ -254,12 +266,6 @@ def ivp_solver(fftpq, profiles, z, Lx, Ly, method="TSEI3"):
         2D array of zonal wavenumbers.
     Ly : ndarray of float
         2D array of meridional wavenumbers.
-    method : str, optional
-        Method for solving the initial value problem. Options are:
-            - ``SIE`` (Semi-Implicit Euler, default)
-            - ``EI`` (Exponential Integrator)
-            - ``TSEI3`` (Taylor Series Exponential Integrator, 3rd order)
-            - ``EE`` (Explicit Euler)
 
     Returns
     -------
@@ -275,7 +281,7 @@ def ivp_solver(fftpq, profiles, z, Lx, Ly, method="TSEI3"):
     fftp, fftq = np.copy(fftp0), np.copy(fftq0)
 
     nz = len(z)
-    dz = np.diff(z, axis=0)
+    dz = np.diff(z)
 
     for i in range(nz - 1):
 
@@ -283,38 +289,16 @@ def ivp_solver(fftpq, profiles, z, Lx, Ly, method="TSEI3"):
         Kinv = 1.0 / K[i]
         dzi = dz[i]
 
-        # exponential integrator (exact) method
-        if method == "EI":
-            eig = np.sqrt(Ti * Kinv)
-            dum = np.cos(eig * dzi) * fftp - Kinv / eig * np.sin(eig * dzi) * fftq
-            fftq = Ti / eig * np.sin(eig * dzi) * fftp + np.cos(eig * dzi) * fftq
-            fftp = dum
+        a = 1.0 - 0.5 * Kinv * Ti * dzi**2
+        b = -Kinv * dzi - 1.0 / 6.0 * Kinv**2 * Ti * dzi**3
+        c = Ti * dzi - 1.0 / 6.0 * Kinv * Ti**2 * dzi**3
+        d = 1.0 - 0.5 * Kinv * Ti * dzi**2
 
-        # Taylor series for exponential integrator method up to 3rd order
-        elif method == "TSEI3":
-            a = 1.0 - 0.5 * Kinv * Ti * dzi**2
-            b = -Kinv * dzi - 1.0 / 6.0 * Kinv**2 * Ti * dzi**3
-            c = Ti * dzi - 1.0 / 6.0 * Kinv * Ti**2 * dzi**3
-            d = 1.0 - 0.5 * Kinv * Ti * dzi**2
+        dum = a * fftp + b * fftq
+        fftq = c * fftp + d * fftq
+        fftp = dum
 
-            dum = a * fftp + b * fftq
-            fftq = c * fftp + d * fftq
-            fftp = dum
+        if i == n - 1:
+            fftpm, fftqm = fftp, fftq
 
-        # Semi-implicit Euler method
-        elif method == "SIE":
-            fftp = fftp - dzi * Kinv * fftq
-            fftq = fftq + dzi * Ti * fftp
-
-        # Explicit Euler method
-        elif method == "EE":
-            dum = fftp - dz[i] / K[i] * fftq
-            fftq = fftq + dz[i] * Ti * fftp
-            fftp = dum
-
-        else:
-            raise ValueError(
-                "Invalid method. Choose from 'SIE', 'EI', 'TSEI3', or 'EE'."
-            )
-
-    return fftp, fftq
+    return fftp, fftq, fftpm, fftqm
