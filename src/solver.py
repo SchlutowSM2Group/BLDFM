@@ -248,7 +248,7 @@ def parallelize(func):
 
 
 @parallelize
-def ivp_solver(fftpq, profiles, z, Lx, Ly):
+def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
     """
     Solves the initial value problem resulting from the discretization of the
     steady-state advection-diffusion equation using the Fast Fourier Transform.
