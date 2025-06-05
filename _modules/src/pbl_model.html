@@ -113,11 +113,13 @@
     <span class="n">n</span><span class="p">,</span>
     <span class="n">meas_height</span><span class="p">,</span>
     <span class="n">wind</span><span class="p">,</span>
-    <span class="n">ustar</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">ustar</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">z0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">mol</span><span class="o">=</span><span class="mf">1e9</span><span class="p">,</span>
     <span class="n">prsc</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
     <span class="n">closure</span><span class="o">=</span><span class="s2">&quot;MOST&quot;</span><span class="p">,</span>
-    <span class="n">z0</span><span class="o">=-</span><span class="mf">1e9</span><span class="p">,</span>
+    <span class="n">blend_height</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">stretch</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">z0_min</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
     <span class="n">z0_max</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
     <span class="n">tke</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -126,7 +128,7 @@
 <span class="sd">    Computes vertical profiles of horizontal wind components and eddy diffusivity in the planetary boundary layer (PBL) based on Monin-Obukhov Similarity Theory (MOST) or other closure models.</span>
 
 <span class="sd">    Parameters:</span>
-<span class="sd">        n (int): Number of vertical grid points.</span>
+<span class="sd">        n (int): Number of vertical grid points between z0 and meas_height.</span>
 <span class="sd">        meas_height (float): Measurement height above the ground.</span>
 <span class="sd">        wind (tuple of floats): Zonal (u) and meridional (v) wind components at the measurement height.</span>
 <span class="sd">        ustar (float or numpy.ndarray): Friction velocity [m/s].</span>
@@ -164,54 +166,29 @@
     <span class="n">um</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">um</span><span class="p">)</span>
     <span class="n">vm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vm</span><span class="p">)</span>
     <span class="n">zm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">zm</span><span class="p">)</span>
-    <span class="n">ustar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ustar</span><span class="p">)</span>
 
     <span class="n">um</span> <span class="o">=</span> <span class="n">um</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
     <span class="n">vm</span> <span class="o">=</span> <span class="n">vm</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
     <span class="n">zm</span> <span class="o">=</span> <span class="n">zm</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
-    <span class="n">ustar</span> <span class="o">=</span> <span class="n">ustar</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
 
     <span class="n">kap</span> <span class="o">=</span> <span class="mf">0.4</span>  <span class="c1"># Karman constant</span>
 
-    <span class="k">if</span> <span class="n">closure</span> <span class="o">==</span> <span class="s2">&quot;CONSTANT&quot;</span><span class="p">:</span>
+    <span class="c1"># absolute wind at zm</span>
+    <span class="n">absum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">um</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">vm</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
-        <span class="n">Km</span> <span class="o">=</span> <span class="n">kap</span> <span class="o">*</span> <span class="n">ustar</span> <span class="o">*</span> <span class="n">zm</span> <span class="o">/</span> <span class="n">prsc</span>
+    <span class="k">if</span> <span class="n">closure</span> <span class="o">==</span> <span class="s2">&quot;CONSTANT&quot;</span> <span class="ow">or</span> <span class="n">closure</span> <span class="o">==</span> <span class="s2">&quot;MOST&quot;</span><span class="p">:</span>
 
-        <span class="n">z0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">um</span><span class="p">)</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">z00</span><span class="p">,</span> <span class="n">zm</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">z00</span> <span class="ow">in</span> <span class="n">z0</span><span class="p">])</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
-
-        <span class="n">u</span> <span class="o">=</span> <span class="n">um</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">vm</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-        <span class="n">K</span> <span class="o">=</span> <span class="n">Km</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-
-    <span class="k">elif</span> <span class="n">closure</span> <span class="o">==</span> <span class="s2">&quot;MOST&quot;</span><span class="p">:</span>
-
-        <span class="c1"># absolute wind at zm</span>
-        <span class="n">absum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">um</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">vm</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">z0</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">z0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 
             <span class="c1"># roughness length</span>
             <span class="n">z0</span> <span class="o">=</span> <span class="n">zm</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">kap</span> <span class="o">*</span> <span class="n">absum</span> <span class="o">/</span> <span class="n">ustar</span> <span class="o">+</span> <span class="n">psi</span><span class="p">(</span><span class="n">zm</span> <span class="o">/</span> <span class="n">mol</span><span class="p">))</span>
 
-            <span class="c1"># sanity checks</span>
-            <span class="n">z0</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="n">z0_min</span><span class="p">,</span> <span class="n">z0_max</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ustar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 
-        <span class="k">else</span><span class="p">:</span>
-
-            <span class="n">z0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">z0</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
             <span class="n">ustar</span> <span class="o">=</span> <span class="n">absum</span> <span class="o">*</span> <span class="n">kap</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">zm</span> <span class="o">/</span> <span class="n">z0</span><span class="p">)</span> <span class="o">+</span> <span class="n">psi</span><span class="p">(</span><span class="n">zm</span> <span class="o">/</span> <span class="n">mol</span><span class="p">))</span>
 
-        <span class="c1"># equidistant vertical grid</span>
-        <span class="c1"># find a way to vectorize this properly</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">z00</span><span class="p">,</span> <span class="n">zm</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">z00</span> <span class="ow">in</span> <span class="n">z0</span><span class="p">])</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
-
-        <span class="n">absu</span> <span class="o">=</span> <span class="n">ustar</span> <span class="o">/</span> <span class="n">kap</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">z</span> <span class="o">/</span> <span class="n">z0</span><span class="p">)</span> <span class="o">+</span> <span class="n">psi</span><span class="p">(</span><span class="n">z</span> <span class="o">/</span> <span class="n">mol</span><span class="p">))</span>
-
-        <span class="n">u</span> <span class="o">=</span> <span class="n">um</span> <span class="o">/</span> <span class="n">absum</span> <span class="o">*</span> <span class="n">absu</span>
-        <span class="n">v</span> <span class="o">=</span> <span class="n">vm</span> <span class="o">/</span> <span class="n">absum</span> <span class="o">*</span> <span class="n">absu</span>
-
-        <span class="n">K</span> <span class="o">=</span> <span class="n">kap</span> <span class="o">*</span> <span class="n">ustar</span> <span class="o">*</span> <span class="n">z</span> <span class="o">/</span> <span class="n">phi</span><span class="p">(</span><span class="n">z</span> <span class="o">/</span> <span class="n">mol</span><span class="p">)</span> <span class="o">/</span> <span class="n">prsc</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Either z0 or ustar must be provided.&quot;</span><span class="p">)</span>
 
     <span class="c1"># One-and-a-half order closure</span>
     <span class="c1"># according to Schumann-Lilly closure (Schumann, 1991)</span>
@@ -233,8 +210,55 @@
         <span class="c1"># roughness length</span>
         <span class="n">z0</span> <span class="o">=</span> <span class="n">zm</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">cm</span> <span class="o">*</span> <span class="n">cl</span> <span class="o">*</span> <span class="n">absum</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tke</span><span class="p">)</span> <span class="o">/</span> <span class="n">ustar</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
-        <span class="c1"># equidistant vertical grid</span>
-        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">z00</span><span class="p">,</span> <span class="n">zm</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">z00</span> <span class="ow">in</span> <span class="n">z0</span><span class="p">])</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Invalid closure type: </span><span class="si">{</span><span class="n">closure</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="s2">&quot;Supported closures are &#39;MOST&#39;, &#39;CONSTANT&#39;, and &#39;OAAHOC&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># stretched vertical grid</span>
+    <span class="k">if</span> <span class="n">stretch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">meas_height</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">stretch</span>
+
+    <span class="k">if</span> <span class="n">blend_height</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">zmx</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">meas_height</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">zmx</span> <span class="o">=</span> <span class="n">blend_height</span>
+
+    <span class="n">bb</span> <span class="o">=</span> <span class="n">zm</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z0</span> <span class="o">/</span> <span class="n">h</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">zm</span> <span class="o">/</span> <span class="n">h</span><span class="p">))</span>
+    <span class="n">aa</span> <span class="o">=</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z0</span> <span class="o">/</span> <span class="n">h</span><span class="p">)</span>
+
+    <span class="n">zetamx</span> <span class="o">=</span> <span class="n">aa</span> <span class="o">-</span> <span class="n">bb</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">zmx</span> <span class="o">/</span> <span class="n">h</span><span class="p">)</span>
+
+    <span class="n">dzeta</span> <span class="o">=</span> <span class="n">zm</span> <span class="o">/</span> <span class="n">n</span>
+
+    <span class="n">nzeta</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">zetamx</span> <span class="o">/</span> <span class="n">dzeta</span><span class="p">)</span>
+
+    <span class="n">zeta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">zzz</span><span class="p">,</span> <span class="n">dzeta</span><span class="p">)</span> <span class="k">for</span> <span class="n">zzz</span> <span class="ow">in</span> <span class="n">zetamx</span><span class="p">])</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+
+    <span class="n">z</span> <span class="o">=</span> <span class="o">-</span><span class="n">h</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">zeta</span> <span class="o">-</span> <span class="n">aa</span><span class="p">)</span> <span class="o">/</span> <span class="n">bb</span><span class="p">)</span>
+
+    <span class="c1"># Compute wind and eddy diffusivity profiles</span>
+    <span class="k">if</span> <span class="n">closure</span> <span class="o">==</span> <span class="s2">&quot;CONSTANT&quot;</span><span class="p">:</span>
+
+        <span class="n">Km</span> <span class="o">=</span> <span class="n">kap</span> <span class="o">*</span> <span class="n">ustar</span> <span class="o">*</span> <span class="n">zm</span> <span class="o">/</span> <span class="n">prsc</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">um</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">vm</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+        <span class="n">K</span> <span class="o">=</span> <span class="n">Km</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">closure</span> <span class="o">==</span> <span class="s2">&quot;MOST&quot;</span><span class="p">:</span>
+
+        <span class="c1"># computation of MOST profiles</span>
+        <span class="n">absu</span> <span class="o">=</span> <span class="n">ustar</span> <span class="o">/</span> <span class="n">kap</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">z</span> <span class="o">/</span> <span class="n">z0</span><span class="p">)</span> <span class="o">+</span> <span class="n">psi</span><span class="p">(</span><span class="n">z</span> <span class="o">/</span> <span class="n">mol</span><span class="p">))</span>
+
+        <span class="n">u</span> <span class="o">=</span> <span class="n">um</span> <span class="o">/</span> <span class="n">absum</span> <span class="o">*</span> <span class="n">absu</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">vm</span> <span class="o">/</span> <span class="n">absum</span> <span class="o">*</span> <span class="n">absu</span>
+
+        <span class="n">K</span> <span class="o">=</span> <span class="n">kap</span> <span class="o">*</span> <span class="n">ustar</span> <span class="o">*</span> <span class="n">z</span> <span class="o">/</span> <span class="n">phi</span><span class="p">(</span><span class="n">z</span> <span class="o">/</span> <span class="n">mol</span><span class="p">)</span> <span class="o">/</span> <span class="n">prsc</span>
+
+    <span class="k">elif</span> <span class="n">closure</span> <span class="o">==</span> <span class="s2">&quot;OAAHOC&quot;</span><span class="p">:</span>
 
         <span class="n">absu</span> <span class="o">=</span> <span class="n">ustar</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">cm</span> <span class="o">/</span> <span class="n">cl</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tke</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">z</span> <span class="o">/</span> <span class="n">z0</span><span class="p">)</span>
 
