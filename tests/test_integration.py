@@ -46,10 +46,10 @@ def test_integration():
 
     # Solve using the solver
     _, _, conc_ana, flx_ana = steady_state_transport_solver(
-        srf_flx, z, profs, domain, modes=modes, halo=halo, analytic=True
+        srf_flx, z, profs, domain, nz, modes=modes, halo=halo, analytic=True
     )
     _, _, conc, flx = steady_state_transport_solver(
-        srf_flx, z, profs, domain, modes=modes, halo=halo, ivp_method="TSEI3"
+        srf_flx, z, profs, domain, nz, modes=modes, halo=halo
     )
 
     # Validate results

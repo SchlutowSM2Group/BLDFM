@@ -11,6 +11,8 @@ Functions:
 import numpy as np
 import matplotlib.pyplot as plt
 from src.solver import steady_state_transport_solver
+from src.pbl_model import vertical_profiles
+from src.utils import ideal_source
 
 
 def test_steady_state_transport_solver():
@@ -26,28 +28,29 @@ def test_steady_state_transport_solver():
 
     """
     # Define test inputs
-    nx, ny = 50, 50  # Grid size
-    x = np.linspace(-50, 50, nx)
-    y = np.linspace(-50, 50, ny)
-    z = np.linspace(0, 100, 1)  # Vertical grid points
-    u = 1.0  # Constant wind speed
-    K = 10.0  # Constant eddy diffusivity
-    Q = 1.0  # Source strength
-    profiles = (np.ones(len(z)) * u, np.zeros(len(z)), np.ones(len(z)) * K)
-    domain = (100, 100)  # Domain size
+    nx, ny = 128, 128  # Grid size
+    nz = 32
+    modes = 256, 256
+    domain = 100, 100  # Domain size
+    meas_height = 5.0
+    wind = 4.0, 2.0
+    ustar = 0.5
 
-    # Create a point source at the center of the domain
-    srf_flx = np.zeros((ny, nx))
-    srf_flx[ny // 4, nx // 4] = Q
+    z, profs = vertical_profiles(nz, meas_height, wind, ustar, closure="CONSTANT")
+    srf_flx = ideal_source((nx, ny), domain)
 
     # Call the solver with analytic=True
     srf_conc_analytic, bg_conc_analytic, conc_analytic, flx_analytic = (
-        steady_state_transport_solver(srf_flx, z, profiles, domain, analytic=True)
+        steady_state_transport_solver(
+            srf_flx, z, profs, domain, nz, modes=modes, analytic=True
+        )
     )
 
     # Call the solver with analytic=False
     srf_conc_numeric, bg_conc_numeric, conc_numeric, flx_numeric = (
-        steady_state_transport_solver(srf_flx, z, profiles, domain, analytic=False)
+        steady_state_transport_solver(
+            srf_flx, z, profs, domain, nz, modes=modes, analytic=False
+        )
     )
 
     # Assertions to validate numeric output shapes
@@ -78,17 +81,13 @@ def test_steady_state_transport_solver():
     # Plot numerical solution
     plt.subplot(1, 2, 1)
     plt.title("Numerical Solution")
-    plt.imshow(
-        srf_conc_numeric, origin="lower", extent=[x.min(), x.max(), y.min(), y.max()]
-    )
+    plt.imshow(srf_conc_numeric, origin="lower", extent=[0, domain[0], 0, domain[1]])
     plt.colorbar()
 
     # Plot analytical solution
     plt.subplot(1, 2, 2)
     plt.title("Analytical Solution")
-    plt.imshow(
-        srf_conc_analytic, origin="lower", extent=[x.min(), x.max(), y.min(), y.max()]
-    )
+    plt.imshow(srf_conc_analytic, origin="lower", extent=[0, domain[0], 0, domain[1]])
     plt.colorbar()
     plt.savefig("plots/analytical_vs_numerical_solution.png")
 

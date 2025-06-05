@@ -6,11 +6,13 @@ def vertical_profiles(
     n,
     meas_height,
     wind,
-    ustar=0.2,
+    ustar=None,
+    z0=None,
     mol=1e9,
     prsc=1.0,
     closure="MOST",
-    z0=-1e9,
+    blend_height=None,
+    stretch=None,
     z0_min=0.001,
     z0_max=2.0,
     tke=None,
@@ -19,7 +21,7 @@ def vertical_profiles(
     Computes vertical profiles of horizontal wind components and eddy diffusivity in the planetary boundary layer (PBL) based on Monin-Obukhov Similarity Theory (MOST) or other closure models.
 
     Parameters:
-        n (int): Number of vertical grid points.
+        n (int): Number of vertical grid points between z0 and meas_height.
         meas_height (float): Measurement height above the ground.
         wind (tuple of floats): Zonal (u) and meridional (v) wind components at the measurement height.
         ustar (float or numpy.ndarray): Friction velocity [m/s].
@@ -57,54 +59,29 @@ def vertical_profiles(
     um = np.array(um)
     vm = np.array(vm)
     zm = np.array(zm)
-    ustar = np.array(ustar)
 
     um = um[..., np.newaxis]
     vm = vm[..., np.newaxis]
     zm = zm[..., np.newaxis]
-    ustar = ustar[..., np.newaxis]
 
     kap = 0.4  # Karman constant
 
-    if closure == "CONSTANT":
+    # absolute wind at zm
+    absum = np.sqrt(um**2 + vm**2)
 
-        Km = kap * ustar * zm / prsc
+    if closure == "CONSTANT" or closure == "MOST":
 
-        z0 = np.zeros_like(um)
-        z = np.array([np.linspace(z00, zm, n) for z00 in z0]).squeeze()
-
-        u = um * np.ones(n)
-        v = vm * np.ones(n)
-        K = Km * np.ones(n)
-
-    elif closure == "MOST":
-
-        # absolute wind at zm
-        absum = np.sqrt(um**2 + vm**2)
-
-        if z0 < 0.0:
+        if z0 is None:
 
             # roughness length
             z0 = zm * np.exp(-kap * absum / ustar + psi(zm / mol))
 
-            # sanity checks
-            z0[...] = np.clip(z0, z0_min, z0_max)
+        elif ustar is None:
 
-        else:
-
-            z0 = np.array(z0)[..., np.newaxis]
             ustar = absum * kap / (np.log(zm / z0) + psi(zm / mol))
 
-        # equidistant vertical grid
-        # find a way to vectorize this properly
-        z = np.array([np.linspace(z00, zm, n) for z00 in z0]).squeeze()
-
-        absu = ustar / kap * (np.log(z / z0) + psi(z / mol))
-
-        u = um / absum * absu
-        v = vm / absum * absu
-
-        K = kap * ustar * z / phi(z / mol) / prsc
+        else:
+            raise ValueError(f"Either z0 or ustar must be provided.")
 
     # One-and-a-half order closure
     # according to Schumann-Lilly closure (Schumann, 1991)
@@ -126,8 +103,55 @@ def vertical_profiles(
         # roughness length
         z0 = zm * np.exp(-cm * cl * absum * np.sqrt(tke) / ustar**2)
 
-        # equidistant vertical grid
-        z = np.array([np.linspace(z00, zm, n) for z00 in z0]).squeeze()
+    else:
+        raise ValueError(
+            f"Invalid closure type: {closure}. "
+            "Supported closures are 'MOST', 'CONSTANT', and 'OAAHOC'."
+        )
+
+    # stretched vertical grid
+    if stretch is None:
+        h = 2 * meas_height
+    else:
+        h = stretch
+
+    if blend_height is None:
+        zmx = 2 * meas_height
+    else:
+        zmx = blend_height
+
+    bb = zm / (np.exp(-z0 / h) - np.exp(-zm / h))
+    aa = bb * np.exp(-z0 / h)
+
+    zetamx = aa - bb * np.exp(-zmx / h)
+
+    dzeta = zm / n
+
+    nzeta = int(zetamx / dzeta)
+
+    zeta = np.array([np.arange(0.0, zzz, dzeta) for zzz in zetamx]).squeeze()
+
+    z = -h * np.log(-(zeta - aa) / bb)
+
+    # Compute wind and eddy diffusivity profiles
+    if closure == "CONSTANT":
+
+        Km = kap * ustar * zm / prsc
+        u = um * np.ones(len(z))
+        v = vm * np.ones(len(z))
+        K = Km * np.ones(len(z))
+
+    elif closure == "MOST":
+
+        # computation of MOST profiles
+        absu = ustar / kap * (np.log(z / z0) + psi(z / mol))
+
+        u = um / absum * absu
+        v = vm / absum * absu
+
+        K = kap * ustar * z / phi(z / mol) / prsc
+
+    elif closure == "OAAHOC":
 
         absu = ustar**2 / cm / cl / np.sqrt(tke) * np.log(z / z0)
 

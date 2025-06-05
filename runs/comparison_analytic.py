@@ -28,12 +28,12 @@ srf_flx = point_source(nxy, domain, src_pt)
 z, profs = vertical_profiles(nz, meas_height, wind, ustar, closure="CONSTANT")
 
 srf_conc_ana, bg_conc_ana, conc_ana, flx_ana = steady_state_transport_solver(
-    srf_flx, z, profs, domain, modes=modes, halo=halo, analytic=True
+    srf_flx, z, profs, domain, nz, modes=modes, halo=halo, analytic=True
 )
 
 tic = time.time()
 srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
-    srf_flx, z, profs, domain, modes=modes, halo=halo, ivp_method="TSEI3"
+    srf_flx, z, profs, domain, nz, modes=modes, halo=halo
 )
 toc = time.time()
 
