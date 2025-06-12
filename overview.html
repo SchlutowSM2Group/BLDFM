@@ -126,7 +126,7 @@
 <h2>Core modules in the <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage<a class="headerlink" href="#core-modules-in-the-src-subpackage" title="Link to this heading">¶</a></h2>
 <ol class="arabic">
 <li><dl>
-<dt><a class="reference internal" href="src.html#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a></dt><dd><p>Computes vertical profiles of horizontal wind and eddy diffusivity in the planetary boundary layer using Monin-Obukhov Similarity Theory (MOST).</p>
+<dt><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></dt><dd><p>Computes vertical profiles of horizontal wind and eddy diffusivity in the planetary boundary layer using Monin-Obukhov Similarity Theory (MOST).</p>
 <dl class="simple">
 <dt><strong>Features:</strong></dt><dd><ul class="simple">
 <li><p>Implements surface-layer closure via stability corrections.</p></li>
@@ -135,9 +135,9 @@
 </ul>
 </dd>
 <dt><strong>Key functions:</strong></dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="src.html#src.pbl_model.vertical_profiles" title="src.pbl_model.vertical_profiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.vertical_profiles()</span></code></a></p></li>
-<li><p><a class="reference internal" href="src.html#src.pbl_model.psi" title="src.pbl_model.psi"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.psi()</span></code></a></p></li>
-<li><p><a class="reference internal" href="src.html#src.pbl_model.phi" title="src.pbl_model.phi"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.phi()</span></code></a></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.vertical_profiles()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.psi()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.phi()</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -145,7 +145,7 @@
 </dl>
 </li>
 <li><dl>
-<dt><a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a></dt><dd><p>Solves the steady-state advection-diffusion equation for scalar concentration fields using FFT-based methods and numerical integration schemes.</p>
+<dt><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></dt><dd><p>Solves the steady-state advection-diffusion equation for scalar concentration fields using FFT-based methods and numerical integration schemes.</p>
 <dl class="simple">
 <dt><strong>Features:</strong></dt><dd><ul class="simple">
 <li><p>Supports Fourier-transformed formulation for horizontal advection-diffusion.</p></li>
@@ -154,8 +154,8 @@
 </ul>
 </dd>
 <dt><strong>Key functions:</strong></dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="src.html#src.solver.steady_state_transport_solver" title="src.solver.steady_state_transport_solver"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code></a></p></li>
-<li><p><a class="reference internal" href="src.html#src.solver.ivp_solver" title="src.solver.ivp_solver"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.ivp_solver()</span></code></a></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.ivp_solver()</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -163,7 +163,7 @@
 </dl>
 </li>
 <li><dl>
-<dt><a class="reference internal" href="src.html#module-src.utils" title="src.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code></a></dt><dd><p>Provides utility functions for preprocessing, synthetic input generation, and diagnostics.</p>
+<dt><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code></dt><dd><p>Provides utility functions for preprocessing, synthetic input generation, and diagnostics.</p>
 <dl class="simple">
 <dt><strong>Features:</strong></dt><dd><ul class="simple">
 <li><p>Source field generation (e.g., circular/point sources).</p></li>
@@ -172,10 +172,10 @@
 </ul>
 </dd>
 <dt><strong>Key functions:</strong></dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="src.html#src.utils.compute_wind_fields" title="src.utils.compute_wind_fields"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.compute_wind_fields()</span></code></a></p></li>
-<li><p><a class="reference internal" href="src.html#src.utils.point_source" title="src.utils.point_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.point_source()</span></code></a></p></li>
-<li><p><a class="reference internal" href="src.html#src.utils.ideal_source" title="src.utils.ideal_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.ideal_source()</span></code></a></p></li>
-<li><p><a class="reference internal" href="src.html#src.utils.point_measurement" title="src.utils.point_measurement"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.point_measurement()</span></code></a></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.compute_wind_fields()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.point_source()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.ideal_source()</span></code></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.point_measurement()</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -188,7 +188,7 @@
 <h2>Additional subpackages<a class="headerlink" href="#additional-subpackages" title="Link to this heading">¶</a></h2>
 <ol class="arabic">
 <li><p><a class="reference internal" href="runs.html#runs"><span class="std std-ref">runs</span></a>
-provides example workflows and pre-configured scripts to demonstrate the usage of the package. These scripts showcase how to combine the core modules (<a class="reference internal" href="src.html#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a>, <a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a>, and <a class="reference internal" href="src.html#module-src.utils" title="src.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code></a>) for practical applications, such as footprint modeling or dispersion analysis.</p>
+provides example workflows and pre-configured scripts to demonstrate the usage of the package. These scripts showcase how to combine the core modules (<code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code>, <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code>, and <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code>) for practical applications, such as footprint modeling or dispersion analysis.</p>
 <dl class="simple">
 <dt><strong>Features:</strong></dt><dd><ul class="simple">
 <li><p>Example configurations for common use cases.</p></li>
@@ -198,7 +198,7 @@ provides example workflows and pre-configured scripts to demonstrate the usage o
 </dl>
 </li>
 <li><p><a class="reference internal" href="tests.html#tests"><span class="std std-ref">tests</span></a>
-contains the test suite for validating the functionality and accuracy of the package. The tests ensure that the core modules (<a class="reference internal" href="src.html#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a>, <a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a>, and <a class="reference internal" href="src.html#module-src.utils" title="src.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code></a>) work as expected and provide a framework for extending test coverage.</p>
+contains the test suite for validating the functionality and accuracy of the package. The tests ensure that the core modules (<code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code>, <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code>, and <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code>) work as expected and provide a framework for extending test coverage.</p>
 <dl class="simple">
 <dt><strong>Features:</strong></dt><dd><ul class="simple">
 <li><p>Unit tests for individual functions.</p></li>
@@ -213,9 +213,9 @@ contains the test suite for validating the functionality and accuracy of the pac
 <section id="module-interactions">
 <h2>Module interactions<a class="headerlink" href="#module-interactions" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference internal" href="src.html#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a> provides the vertical profiles required by the <a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a> module.</p></li>
-<li><p><a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a> handles the core transport computation, optionally using Green’s functions for convolution with surface fluxes.</p></li>
-<li><p><a class="reference internal" href="src.html#module-src.utils" title="src.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code></a> supports both <a class="reference internal" href="src.html#module-src.pbl_model" title="src.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></a> and <a class="reference internal" href="src.html#module-src.solver" title="src.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></a> with reusable tools for test generation and output diagnostics.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code> provides the vertical profiles required by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code> module.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code> handles the core transport computation, optionally using Green’s functions for convolution with surface fluxes.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code> supports both <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code> and <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code> with reusable tools for test generation and output diagnostics.</p></li>
 <li><p><a class="reference internal" href="runs.html#runs"><span class="std std-ref">runs</span></a> contains examples and user-defined run scripts that utilize the core modules.</p></li>
 <li><p><a class="reference internal" href="tests.html#tests"><span class="std std-ref">tests</span></a> ensures the reliability and correctness of the package.</p></li>
 </ul>

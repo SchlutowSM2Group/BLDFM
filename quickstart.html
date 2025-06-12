@@ -138,9 +138,9 @@
 <dl class="simple">
 <dt>The script uses the following steps:</dt><dd><ol class="arabic simple">
 <li><p>Defines the domain, grid resolution, and atmospheric parameters (e.g., wind speed, roughness length).</p></li>
-<li><p>Generates a synthetic surface flux field using <a class="reference internal" href="src.html#src.utils.ideal_source" title="src.utils.ideal_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.ideal_source()</span></code></a>.</p></li>
-<li><p>Computes vertical profiles of wind and diffusivity using <a class="reference internal" href="src.html#src.pbl_model.vertical_profiles" title="src.pbl_model.vertical_profiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.vertical_profiles()</span></code></a>.</p></li>
-<li><p>Solves the steady-state transport equation using <a class="reference internal" href="src.html#src.solver.steady_state_transport_solver" title="src.solver.steady_state_transport_solver"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code></a>.</p></li>
+<li><p>Generates a synthetic surface flux field using <code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.ideal_source()</span></code>.</p></li>
+<li><p>Computes vertical profiles of wind and diffusivity using <code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.vertical_profiles()</span></code>.</p></li>
+<li><p>Solves the steady-state transport equation using <code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code>.</p></li>
 </ol>
 </dd>
 </dl>
@@ -160,7 +160,7 @@
 </dd>
 <dt>The script follows these steps:</dt><dd><ol class="arabic simple">
 <li><p>Sets up the domain, grid resolution, and atmospheric parameters, similar to the minimal example.</p></li>
-<li><p>Computes the BLDFM footprint using <a class="reference internal" href="src.html#src.solver.steady_state_transport_solver" title="src.solver.steady_state_transport_solver"><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code></a>.</p></li>
+<li><p>Computes the BLDFM footprint using <code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code>.</p></li>
 <li><p>Computes the FKM footprint using <cite>estimateFootprint</cite> from the Kormann Meixner model.</p></li>
 <li><p>Plots the results for visual comparison.</p></li>
 </ol>
