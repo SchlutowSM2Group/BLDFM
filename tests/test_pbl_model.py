@@ -9,7 +9,7 @@ The tests use parameterized inputs to check the function's output shapes, values
 
 import pytest
 import numpy as np
-from src.pbl_model import vertical_profiles
+from bldfm.pbl_model import vertical_profiles
 
 
 @pytest.mark.parametrize(

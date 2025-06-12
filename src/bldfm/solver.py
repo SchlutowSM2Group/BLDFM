@@ -3,6 +3,11 @@ import scipy.fft as fft
 import os
 import numba
 
+from .utils import get_logger
+
+logger = get_logger(__name__.split("bldfm.")[-1])
+logger.info("Loaded solver module for steady-state transport solver.")
+
 
 def steady_state_transport_solver(
     srf_flx,
@@ -90,8 +95,10 @@ def steady_state_transport_solver(
     ny = ny + 2 * py
 
     if (nlx > nx) or (nly > ny):
-        print("Warning: Number of Fourier modes must not exeed number of grid cells.")
-        print("Setting both equal.")
+        logger.info(
+            "Warning: Number of Fourier modes must not exeed number of grid cells."
+        )
+        logger.info("Setting both equal.")
         nlx, nly = nx, ny
 
     # Deltas for truncated Fourier transform
