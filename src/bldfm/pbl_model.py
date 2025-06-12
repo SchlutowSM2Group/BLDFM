@@ -130,9 +130,11 @@ def vertical_profiles(
 
     dzeta = zm / n
 
-    nzeta = int(zetamx / dzeta)
+    # nzeta = int((zetamx / dzeta).item())
 
-    zeta = np.array([np.arange(0.0, zzz, dzeta) for zzz in zetamx]).squeeze()
+    zeta = np.array(
+        [np.arange(0.0, zzz.item(), dzeta.item()) for zzz in zetamx]
+    ).squeeze()
 
     z = -h * np.log(-(zeta - aa) / bb)
 
