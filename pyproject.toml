@@ -26,6 +26,3 @@ dev = [
     "sphinx",  # For documentation
     "black",  # Optional: for code formatting
 ]
-
-[tool.setuptools]
-packages = ["src"]
