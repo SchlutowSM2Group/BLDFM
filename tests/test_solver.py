@@ -10,9 +10,9 @@ Functions:
 
 import numpy as np
 import matplotlib.pyplot as plt
-from src.solver import steady_state_transport_solver
-from src.pbl_model import vertical_profiles
-from src.utils import ideal_source
+from bldfm.solver import steady_state_transport_solver
+from bldfm.pbl_model import vertical_profiles
+from bldfm.utils import ideal_source
 
 
 def test_steady_state_transport_solver():

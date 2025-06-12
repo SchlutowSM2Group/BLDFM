@@ -4,9 +4,11 @@ Minimal example module showcasing basic usage of the BLDFM framework.
 
 import matplotlib.pyplot as plt
 
-from src.pbl_model import vertical_profiles
-from src.utils import ideal_source
-from src.solver import steady_state_transport_solver
+from bldfm.pbl_model import vertical_profiles
+from bldfm.utils import ideal_source, get_logger
+from bldfm.solver import steady_state_transport_solver
+
+logger = get_logger("minimal_example")
 
 nxy = 512, 256
 nz = 16
@@ -24,8 +26,8 @@ srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
 )
 
 if __name__ == "__main__":
-    print("Minimal example for neutrally stratified BL and default settings.")
-    print()
+    logger.info("Minimal example for neutrally stratified BL and default settings.")
+    logger.info("")
     plt.figure()
     plt.imshow(srf_conc, origin="lower", extent=[0, domain[0], 0, domain[1]])
     plt.title("Concentration at z0")

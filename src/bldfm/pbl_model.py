@@ -1,5 +1,8 @@
-import logging
 import numpy as np
+from .utils import get_logger
+
+logger = get_logger(__name__.split("bldfm.")[-1])
+logger.info("Loaded PBL model module.")
 
 
 def vertical_profiles(
@@ -127,9 +130,11 @@ def vertical_profiles(
 
     dzeta = zm / n
 
-    nzeta = int(zetamx / dzeta)
+    # nzeta = int((zetamx / dzeta).item())
 
-    zeta = np.array([np.arange(0.0, zzz, dzeta) for zzz in zetamx]).squeeze()
+    zeta = np.array(
+        [np.arange(0.0, zzz.item(), dzeta.item()) for zzz in zetamx]
+    ).squeeze()
 
     z = -h * np.log(-(zeta - aa) / bb)
 
@@ -167,16 +172,16 @@ def vertical_profiles(
         )
 
     if len(z) <= 1:
-        logging.info("Stats from vertical_profiles")
-        logging.info("z0    = %.3f m", z[0])
-        logging.info("ustar = %.3f m s-1", ustar)
-        logging.info(
+        logger.info("Stats from vertical_profiles")
+        logger.info("z0    = %.3f m", z[0])
+        logger.info("ustar = %.3f m s-1", ustar)
+        logger.info(
             "umax  = %.3f m s-1, vmax = %.3f m s-1, Kmax = %.3f m2 s-1",
             max(u),
             max(v),
             max(K),
         )
-        logging.info(
+        logger.info(
             "umin  = %.3f m s-1, vmin = %.3f m s-1, Kmin = %.3f m2 s-1",
             min(u),
             min(v),
