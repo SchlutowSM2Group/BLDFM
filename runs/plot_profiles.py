@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.pbl_model import vertical_profiles
+from bldfm.pbl_model import vertical_profiles
 
 meas_height = 10.0
 mols = [-1000, -100, -10, 10, 100, 1000]

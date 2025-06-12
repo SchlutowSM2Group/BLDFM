@@ -9,10 +9,10 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
-from src.pbl_model import vertical_profiles
-from src.utils import ideal_source
-from src.solver import steady_state_transport_solver
-from src.ffm_kormann_meixner import estimateFootprint as FKM
+from bldfm.pbl_model import vertical_profiles
+from bldfm.utils import ideal_source
+from bldfm.solver import steady_state_transport_solver
+from bldfm.ffm_kormann_meixner import estimateFootprint as FKM
 
 nxy = 512, 512
 nz = 128

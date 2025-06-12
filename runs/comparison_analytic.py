@@ -6,9 +6,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-from src.pbl_model import vertical_profiles
-from src.utils import point_source
-from src.solver import steady_state_transport_solver
+from bldfm.pbl_model import vertical_profiles
+from bldfm.utils import point_source
+from bldfm.solver import steady_state_transport_solver
 
 nxy = 512, 256
 modes = 512, 512
