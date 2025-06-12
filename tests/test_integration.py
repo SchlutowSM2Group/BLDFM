@@ -10,9 +10,9 @@ Functions:
 """
 
 import numpy as np
-from src.pbl_model import vertical_profiles
-from src.utils import point_source
-from src.solver import steady_state_transport_solver
+from bldfm.pbl_model import vertical_profiles
+from bldfm.utils import point_source
+from bldfm.solver import steady_state_transport_solver
 
 
 def test_integration():
