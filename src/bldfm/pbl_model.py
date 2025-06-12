@@ -4,6 +4,7 @@ from .utils import get_logger
 logger = get_logger(__name__.split("bldfm.")[-1])
 logger.info("Loaded PBL model module.")
 
+
 def vertical_profiles(
     n,
     meas_height,

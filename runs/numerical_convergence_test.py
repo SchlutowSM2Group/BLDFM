@@ -9,7 +9,7 @@ from bldfm.pbl_model import vertical_profiles
 from bldfm.utils import point_source, get_logger
 from bldfm.solver import steady_state_transport_solver
 
-logger = get_logger('numerical_convergence_test')
+logger = get_logger("numerical_convergence_test")
 
 nxy = 512, 256
 modes = 1024, 1024
