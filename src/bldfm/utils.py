@@ -1,4 +1,6 @@
 import logging
+from datetime import datetime
+from pathlib import Path
 
 import numpy as np
 import scipy.fft as fft
@@ -116,9 +118,60 @@ def point_measurement(f, g):
 
     return np.sum(f * g)
 
-
-def setup_logging():
-    """Set up logging configuration."""
+def setup_logging(level=None, format_string=None, log_file=None, log_dir="logs", auto_file=True, run_name=None):
+    """
+    Set up logging configuration with customizable options.
+    
+    Parameters:
+        level (str or int): Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+        format_string (str): Custom format string for log messages
+        log_file (str): Optional specific log file name (overrides auto_file)
+        log_dir (str): Directory to store log files
+        auto_file (bool): If True, automatically generate timestamped filename
+        run_name (str): Optional run name to include in log filename
+    """
+    if level is None:
+        level = logging.INFO
+    
+    if format_string is None:
+        format_string = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    
+    # Create handlers - always include console
+    handlers = [logging.StreamHandler()]
+    
+    # Add file handler with timestamped filename
+    if auto_file and log_file is None:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        if run_name:
+            log_file = f"bldfm_{run_name}_{timestamp}.log"
+        else:
+            log_file = f"bldfm_{timestamp}.log"
+    
+    if log_file:
+        log_path = Path(log_dir)
+        log_path.mkdir(parents=True, exist_ok=True)
+        full_log_path = log_path / log_file
+        handlers.append(logging.FileHandler(full_log_path))
+    
+    # Configure logging
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+        level=level,
+        format=format_string,
+        handlers=handlers,
+        force=True  # Override any existing configuration
     )
+    
+    # Set specific logger for BLDFM
+    logger = logging.getLogger('bldfm')
+    logger.setLevel(level)
+    
+    if log_file:
+        logger.info(f"BLDFM logging initialized - writing to: {log_path / log_file}")
+    
+    return logger
+
+def get_logger(name=None):
+    """Get a logger instance for the given module."""
+    if name is None:
+        return logging.getLogger('bldfm')
+    return logging.getLogger(f'bldfm.{name}')

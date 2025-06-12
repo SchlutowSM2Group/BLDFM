@@ -4,11 +4,12 @@ Run script for comparing numerical and analytic solutions of concentration and f
 
 import numpy as np
 import matplotlib.pyplot as plt
-import time
 
 from bldfm.pbl_model import vertical_profiles
-from bldfm.utils import point_source
+from bldfm.utils import point_source, get_logger
 from bldfm.solver import steady_state_transport_solver
+
+logger = get_logger('numerical_convergence_test')
 
 nxy = 512, 256
 modes = 1024, 1024
@@ -45,9 +46,8 @@ flx_err = np.zeros(len(nzs))
 
 for i, (modes, nz) in enumerate(zip(modess, nzs)):
 
-    print("modes ", modes)
-    print("nz ", nz)
-    print()
+    logger.info("modes: %s", modes)
+    logger.info("nz: %d", nz)
 
     z, profs = vertical_profiles(nz, meas_height, wind, ustar, closure="CONSTANT")
     _, _, conc, flx = steady_state_transport_solver(

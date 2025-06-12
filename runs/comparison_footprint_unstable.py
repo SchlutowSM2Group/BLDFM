@@ -6,9 +6,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from bldfm.pbl_model import vertical_profiles
-from bldfm.utils import ideal_source
+from bldfm.utils import ideal_source, get_logger
 from bldfm.solver import steady_state_transport_solver
 from bldfm.ffm_kormann_meixner import estimateFootprint as FKM
+
+logger = get_logger('comparison_footprint_unstable')
 
 nxy = 512, 512
 nz = 128
