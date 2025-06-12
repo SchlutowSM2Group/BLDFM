@@ -8,6 +8,7 @@ from .utils import get_logger
 logger = get_logger(__name__.split("bldfm.")[-1])
 logger.info("Loaded solver module for steady-state transport solver.")
 
+
 def steady_state_transport_solver(
     srf_flx,
     z,
@@ -94,7 +95,9 @@ def steady_state_transport_solver(
     ny = ny + 2 * py
 
     if (nlx > nx) or (nly > ny):
-        logger.info("Warning: Number of Fourier modes must not exeed number of grid cells.")
+        logger.info(
+            "Warning: Number of Fourier modes must not exeed number of grid cells."
+        )
         logger.info("Setting both equal.")
         nlx, nly = nx, ny
 

@@ -10,7 +10,7 @@ from bldfm.pbl_model import vertical_profiles
 from bldfm.utils import point_source, get_logger
 from bldfm.solver import steady_state_transport_solver
 
-logger = get_logger('comparison_analytic')
+logger = get_logger("comparison_analytic")
 
 nxy = 512, 256
 modes = 512, 512

@@ -8,7 +8,7 @@ from bldfm.pbl_model import vertical_profiles
 from bldfm.utils import ideal_source, get_logger
 from bldfm.solver import steady_state_transport_solver
 
-logger = get_logger('footprint_example')
+logger = get_logger("footprint_example")
 
 nxy = 512, 256
 nz = 256
