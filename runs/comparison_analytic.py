@@ -7,8 +7,10 @@ import matplotlib.pyplot as plt
 import time
 
 from bldfm.pbl_model import vertical_profiles
-from bldfm.utils import point_source
+from bldfm.utils import point_source, get_logger
 from bldfm.solver import steady_state_transport_solver
+
+logger = get_logger('comparison_analytic')
 
 nxy = 512, 256
 modes = 512, 512
@@ -39,7 +41,7 @@ toc = time.time()
 
 t = toc - tic
 
-print("Elapsed time for numerical solver %d s" % t)
+logger.info("Elapsed time for numerical solver %d s" % t)
 
 # diff_conc = (conc - conc_ana) / np.mean(conc_ana)
 # diff_flx  = (flx - flx_ana) / np.mean(flx_ana)
