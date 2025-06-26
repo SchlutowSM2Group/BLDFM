@@ -1,10 +1,13 @@
 import logging
+import numpy as np
+import scipy.fft as fft
+import os
+import numba
+
 from datetime import datetime
 from pathlib import Path
 
-import numpy as np
-import scipy.fft as fft
-
+from bldfm import config
 
 def compute_wind_fields(u_rot, wind_dir):
     """
@@ -184,3 +187,14 @@ def get_logger(name=None):
     if name is None:
         return logging.getLogger("bldfm")
     return logging.getLogger(f"bldfm.{name}")
+
+
+def parallelize(func):
+    def wrapper(*args, **kwargs):
+        if config.NUM_THREADS > 1:
+            return numba.jit(nopython=True, parallel=True)(func)(*args, **kwargs)
+        else:
+            return numba.jit(nopython=True)(func)(*args, **kwargs)
+
+    return wrapper
+
