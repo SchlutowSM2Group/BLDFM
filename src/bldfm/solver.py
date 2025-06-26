@@ -1,9 +1,11 @@
 import numpy as np
 import scipy.fft as fft
-import os
-import numba
+
+from numba import set_num_threads
 
 from .utils import get_logger
+from .utils import parallelize
+from bldfm import config
 
 logger = get_logger(__name__.split("bldfm.")[-1])
 logger.info("Loaded solver module for steady-state transport solver.")
@@ -173,6 +175,10 @@ def steady_state_transport_solver(
         # solve non-degenerated problem for (n,m) =/= (0,0)
         # by linear shooting method
         # use two auxillary initial value problems
+        if config.NUM_THREADS > 1:
+            logger.info("BLDFM runnning in parallel mode.")
+            set_num_threads(config.NUM_THREADS)
+
         tfftp1, tfftq1, tfftpm1, tfftqm1 = ivp_solver(
             (one, zero), profiles, z, n, Lx[msk], Ly[msk]
         )
@@ -241,17 +247,6 @@ def steady_state_transport_solver(
     flx = q[py : ny - py, px : nx - px]
 
     return srf_conc, bg_conc, conc, flx
-
-
-def parallelize(func):
-    def wrapper(*args, **kwargs):
-        parallel = os.environ.get("NUMBA_PARALLEL", "False").lower() == "true"
-        if parallel:
-            return numba.jit(nopython=True, parallel=True)(func)(*args, **kwargs)
-        else:
-            return numba.jit(nopython=True)(func)(*args, **kwargs)
-
-    return wrapper
 
 
 @parallelize
