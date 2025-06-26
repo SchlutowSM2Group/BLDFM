@@ -9,6 +9,7 @@ from pathlib import Path
 
 from bldfm import config
 
+
 def compute_wind_fields(u_rot, wind_dir):
     """
     Computes the zonal (u) and meridional (v) wind components from a rotated
@@ -197,4 +198,3 @@ def parallelize(func):
             return numba.jit(nopython=True)(func)(*args, **kwargs)
 
     return wrapper
-
