@@ -9,9 +9,6 @@ import time
 from bldfm.pbl_model import vertical_profiles
 from bldfm.utils import point_source, get_logger
 from bldfm.solver import steady_state_transport_solver
-from bldfm import config
-
-config.NUM_THREADS = 2
 
 logger = get_logger("comparison_analytic")
 
