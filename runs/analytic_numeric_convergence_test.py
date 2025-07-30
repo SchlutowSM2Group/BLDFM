@@ -10,8 +10,9 @@ from bldfm.utils import point_source, get_logger
 from bldfm.solver import steady_state_transport_solver
 from bldfm import config
 
-# Run BLDFM on 8 threads/CPUs
-config.NUM_THREADS = 8
+# Run BLDFM on 4 threads/CPUs
+config.NUM_THREADS = 16
+
 
 logger = get_logger("numerical_convergence_test")
 
@@ -78,4 +79,4 @@ if __name__ == "__main__":
     plt.ylabel("Relative RMSE")
     plt.legend()
     plt.loglog()
-    plt.savefig("plots/error_convergence.png", dpi=300)
+    plt.savefig("plots/error_convergence_analytic.png", dpi=300)
