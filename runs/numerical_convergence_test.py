@@ -8,6 +8,10 @@ import matplotlib.pyplot as plt
 from bldfm.pbl_model import vertical_profiles
 from bldfm.utils import point_source, get_logger
 from bldfm.solver import steady_state_transport_solver
+from bldfm import config
+
+# Run BLDFM on 8 threads/CPUs
+config.NUM_THREADS = 8
 
 logger = get_logger("numerical_convergence_test")
 
