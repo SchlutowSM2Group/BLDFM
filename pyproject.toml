@@ -18,6 +18,7 @@ dependencies = [
     "matplotlib",
     "scipy",
     "numba",
+    "pyfftw"
 ]
 
 [project.optional-dependencies]
