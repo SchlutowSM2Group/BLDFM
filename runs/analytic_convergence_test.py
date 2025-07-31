@@ -45,17 +45,17 @@ modess = [
     (304, 304),
     (362, 362),
     (432, 432),
-#    (512, 512),
-#    (610, 610),
-#    (724, 724),
-#    (862, 862),
-#    (1024, 1024)
+    #    (512, 512),
+    #    (610, 610),
+    #    (724, 724),
+    #    (862, 862),
+    #    (1024, 1024)
 ]
-#nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108, 128, 152, 180, 215, 256]
-#nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108, 128]
+# nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108, 128, 152, 180, 215, 256]
+# nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108, 128]
 nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108]
 
-#modess = [
+# modess = [
 #    (128, 128),
 #    (180, 180),
 #    (256, 256),
@@ -63,8 +63,8 @@ nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108]
 #    (512, 512),
 #    (724, 724),
 #    (1024, 1024),
-#]
-#nzs = [32, 45, 64, 90, 128, 180, 256]
+# ]
+# nzs = [32, 45, 64, 90, 128, 180, 256]
 #
 conc_err = np.zeros(len(nzs))
 flx_err = np.zeros(len(nzs))
@@ -95,10 +95,10 @@ if __name__ == "__main__":
     dxyz = np.cbrt(dx * dy * dz)
 
     plt.plot(dxyz, conc_err, "o")
-    #plt.plot(dxyz, 1e-2 * dxyz**10, label="$\\mathcal{O}(h^{10})$")
+    # plt.plot(dxyz, 1e-2 * dxyz**10, label="$\\mathcal{O}(h^{10})$")
     plt.title("Rate of numerical error convergence")
     plt.xlabel("$h$ [m]")
     plt.ylabel("Relative RMSE")
-    #plt.legend()
+    # plt.legend()
     plt.loglog()
     plt.savefig("plots/error_convergence_analytic.png", dpi=300)
