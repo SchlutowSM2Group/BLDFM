@@ -1,5 +1,5 @@
 """
-Run script for comparing numerical and analytic solutions of concentration and flux.
+Run script for comparing low resolution sulutions with high resolution solutions of concentration and flux to compute error convergence.
 """
 
 import numpy as np
@@ -10,7 +10,6 @@ from bldfm.utils import point_source, get_logger
 from bldfm.solver import steady_state_transport_solver
 from bldfm import config
 
-# Run BLDFM on 4 threads/CPUs
 config.NUM_THREADS = 16
 
 logger = get_logger("numerical_convergence_test")
