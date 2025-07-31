@@ -45,14 +45,14 @@ modess = [
     (304, 304),
     (362, 362),
     (432, 432),
-#    (512, 512),
-#    (610, 610),
-#    (724, 724),
-#    (862, 862),
-#    (1024, 1024)
+    #    (512, 512),
+    #    (610, 610),
+    #    (724, 724),
+    #    (862, 862),
+    #    (1024, 1024)
 ]
-#nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108, 128, 152, 180, 215, 256]
-#nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108, 128]
+# nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108, 128, 152, 180, 215, 256]
+# nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108, 128]
 nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108]
 
 conc_err = np.zeros(len(nzs))
@@ -83,12 +83,12 @@ if __name__ == "__main__":
     # effective grid size
     dxyz = np.cbrt(dx * dy * dz)
 
-    #plt.plot(lx/dx, flx_err, "o")
+    # plt.plot(lx/dx, flx_err, "o")
     plt.plot(dxyz, flx_err, "o")
-    #plt.plot(dxyz, 1e-2 * dxyz**5, label="$\\mathcal{O}(h^{10})$")
+    # plt.plot(dxyz, 1e-2 * dxyz**5, label="$\\mathcal{O}(h^{10})$")
     plt.title("Rate of numerical error convergence")
     plt.xlabel("$h$ [m]")
     plt.ylabel("Relative RMSE")
-    #plt.legend()
+    # plt.legend()
     plt.loglog()
     plt.savefig("plots/error_convergence_numeric.png", dpi=300)
