@@ -84,15 +84,15 @@ $ pip install '.[dev]'
 ```
 
 ### Parallelization
-For large domains and number of Fourier modes, a considerable acceleration can be achieved by running BLDFM in parallel mode
-```bash
-# BLDFM root directory
-$ export NUMBA_PARALLEL=True
-$ export NUMBA_NUM_THREADS=4
-$ python -m runs.comparison_analytic
-```
-`NUMBA_PARALLEL` switches on parallelization, default is FALSE and `NUMBA_NUM_THREADS` sets number of threads.
+For large domains and number of Fourier modes, a considerable acceleration can be achieved by running BLDFM in parallel mode.
+The number of parallel threads can be set with the global variable `config.NUM_THREADS`. 
 
+```python
+from bldfm import config
+config.NUM_THREADS = 2
+```
+
+`config.NUM_THREADS = 1` is default and equivalent to serial mode. 
 
 ## License
 This project is licensed under the GNU License. See the [LICENSE file](https://github.com/SchlutowSM2Group/BLDFM/blob/main/LICENSE) for details.
