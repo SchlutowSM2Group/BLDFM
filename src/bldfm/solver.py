@@ -1,9 +1,12 @@
 import numpy as np
-import scipy.fft as fft
-import os
-import numba
+
+from numpy.fft import fftshift, ifftshift, fftfreq
+from pyfftw.interfaces.numpy_fft import fft2, ifft2
+from numba import set_num_threads
 
 from .utils import get_logger
+from .utils import parallelize
+from bldfm import config
 
 logger = get_logger(__name__.split("bldfm.")[-1])
 logger.info("Loaded solver module for steady-state transport solver.")
@@ -108,20 +111,20 @@ def steady_state_transport_solver(
         # Fourier trafo of delta distribution
         tfftq0 = np.ones((nly, nlx), dtype=complex) / nx / ny
     else:
-        fftq0 = fft.fft2(q0, norm="forward")  # fft of source
+        fftq0 = fft2(q0, norm="forward")  # fft of source
 
         # shift zero wave number to center of array
-        fftq0 = fft.fftshift(fftq0)
+        fftq0 = fftshift(fftq0)
 
         # truncate fourier series by removing higher-frequency components
         tfftq0 = fftq0[dly : ny - dly, dlx : nx - dlx]
 
         # unshift
-        tfftq0 = fft.ifftshift(tfftq0)
+        tfftq0 = ifftshift(tfftq0)
 
     # Fourier summation index
-    ilx = fft.fftfreq(nlx, d=1.0 / nlx)
-    ily = fft.fftfreq(nly, d=1.0 / nly)
+    ilx = fftfreq(nlx, d=1.0 / nlx)
+    ily = fftfreq(nly, d=1.0 / nly)
 
     # define truncated zonal and meridional wavenumbers
     lx = 2.0 * np.pi / dx / nx * ilx
@@ -173,6 +176,10 @@ def steady_state_transport_solver(
         # solve non-degenerated problem for (n,m) =/= (0,0)
         # by linear shooting method
         # use two auxillary initial value problems
+        if config.NUM_THREADS > 1:
+            logger.info("BLDFM runnning in parallel mode.")
+            set_num_threads(config.NUM_THREADS)
+
         tfftp1, tfftq1, tfftpm1, tfftqm1 = ivp_solver(
             (one, zero), profiles, z, n, Lx[msk], Ly[msk]
         )
@@ -208,9 +215,9 @@ def steady_state_transport_solver(
         tfftq = tfftq * np.exp(1j * (Lx * (xm - xmx / 2) + Ly * (ym - ymx / 2)))
 
     # shift zero to center
-    tfftp0 = fft.fftshift(tfftp0)
-    tfftp = fft.fftshift(tfftp)
-    tfftq = fft.fftshift(tfftq)
+    tfftp0 = fftshift(tfftp0)
+    tfftp = fftshift(tfftp)
+    tfftq = fftshift(tfftq)
 
     # untruncate
     fftp0 = np.pad(
@@ -220,20 +227,20 @@ def steady_state_transport_solver(
     fftq = np.pad(tfftq, ((dly, dly), (dlx, dlx)), mode="constant", constant_values=0.0)
 
     # unshift
-    fftp0 = fft.ifftshift(fftp0)
-    fftp = fft.ifftshift(fftp)
-    fftq = fft.ifftshift(fftq)
+    fftp0 = ifftshift(fftp0)
+    fftp = ifftshift(fftp)
+    fftq = ifftshift(fftq)
 
     if footprint:
         # use fft to reverse sign, make green's function to footprint
-        p0 = fft.fft2(fftp0, norm="backward").real  # concentration
-        p = fft.fft2(fftp, norm="backward").real  # concentration
-        q = fft.fft2(fftq, norm="backward").real  # kinematic flux
+        p0 = fft2(fftp0, norm="backward").real  # concentration
+        p = fft2(fftp, norm="backward").real  # concentration
+        q = fft2(fftq, norm="backward").real  # kinematic flux
     else:
         # use ifft as usual
-        p0 = fft.ifft2(fftp0, norm="forward").real  # concentration
-        p = fft.ifft2(fftp, norm="forward").real  # concentration
-        q = fft.ifft2(fftq, norm="forward").real  # kinematic flux
+        p0 = ifft2(fftp0, norm="forward").real  # concentration
+        p = ifft2(fftp, norm="forward").real  # concentration
+        q = ifft2(fftq, norm="forward").real  # kinematic flux
 
     srf_conc = p0[py : ny - py, px : nx - px]
     bg_conc = fftp[0, 0].real
@@ -241,17 +248,6 @@ def steady_state_transport_solver(
     flx = q[py : ny - py, px : nx - px]
 
     return srf_conc, bg_conc, conc, flx
-
-
-def parallelize(func):
-    def wrapper(*args, **kwargs):
-        parallel = os.environ.get("NUMBA_PARALLEL", "False").lower() == "true"
-        if parallel:
-            return numba.jit(nopython=True, parallel=True)(func)(*args, **kwargs)
-        else:
-            return numba.jit(nopython=True)(func)(*args, **kwargs)
-
-    return wrapper
 
 
 @parallelize
