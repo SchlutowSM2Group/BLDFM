@@ -193,8 +193,10 @@ def get_logger(name=None):
 def parallelize(func):
     def wrapper(*args, **kwargs):
         if config.NUM_THREADS > 1:
-            return numba.jit(nopython=True, parallel=True)(func)(*args, **kwargs)
+            return numba.jit(nopython=True, parallel=True, cache=True)(func)(
+                *args, **kwargs
+            )
         else:
-            return numba.jit(nopython=True)(func)(*args, **kwargs)
+            return numba.jit(nopython=True, cache=True)(func)(*args, **kwargs)
 
     return wrapper

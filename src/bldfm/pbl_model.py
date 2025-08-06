@@ -59,13 +59,13 @@ def vertical_profiles(
 
     # make function dimension-agnostic
     # here, we create (Nts x Nz arrays)
-    um = np.array(um)
-    vm = np.array(vm)
-    zm = np.array(zm)
+    # um = np.array(um)
+    # vm = np.array(vm)
+    # zm = np.array(zm)
 
-    um = um[..., np.newaxis]
-    vm = vm[..., np.newaxis]
-    zm = zm[..., np.newaxis]
+    # um = um[..., np.newaxis]
+    # vm = vm[..., np.newaxis]
+    # zm = zm[..., np.newaxis]
 
     kap = 0.4  # Karman constant
 
@@ -130,11 +130,7 @@ def vertical_profiles(
 
     dzeta = zm / n
 
-    # nzeta = int((zetamx / dzeta).item())
-
-    zeta = np.array(
-        [np.arange(0.0, zzz.item(), dzeta.item()) for zzz in zetamx]
-    ).squeeze()
+    zeta = np.arange(0.0, zetamx, dzeta)
 
     z = -h * np.log(-(zeta - aa) / bb)
 
@@ -188,7 +184,7 @@ def vertical_profiles(
             min(K),
         )
 
-    return z.squeeze(), (u.squeeze(), v.squeeze(), K.squeeze())
+    return z, (u, v, K)
 
 
 def psi(x):
