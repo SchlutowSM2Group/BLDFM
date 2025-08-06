@@ -1,7 +1,8 @@
 import numpy as np
+import gc
 
 from numpy.fft import fftshift, ifftshift, fftfreq
-from pyfftw.interfaces.numpy_fft import fft2, ifft2
+from .fft_manager import fft2, ifft2, get_fft_manager
 from numba import set_num_threads
 
 from .utils import get_logger
@@ -183,6 +184,11 @@ def steady_state_transport_solver(
         if config.NUM_THREADS > 1:
             logger.info("BLDFM runnning in parallel mode.")
             set_num_threads(config.NUM_THREADS)
+            # Initialize FFT manager with thread count
+            get_fft_manager(num_threads=config.NUM_THREADS)
+        else:
+            # Initialize FFT manager for single-threaded operation
+            get_fft_manager(num_threads=1)
 
         tfftp1, tfftq1, tfftpm1, tfftqm1 = ivp_solver(
             (one, zero), profiles, z, n, Lx[msk], Ly[msk]
@@ -286,6 +292,8 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
     u, v, K = profiles
 
     fftp, fftq = np.copy(fftp0), np.copy(fftq0)
+    # Initialize to avoid unbound variable warnings
+    fftpm, fftqm = fftp, fftq
 
     nz = len(z)
     dz = np.diff(z)
