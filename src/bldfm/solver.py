@@ -79,7 +79,7 @@ def steady_state_transport_solver(
 
     # Check if modes are even
     if (nlx % 2 > 0) or (nly % 2 > 0):
-        raise Exception("modes must consist of even numbers.") 
+        raise Exception("modes must consist of even numbers.")
 
     # number of grid cells
     ny, nx = q0.shape
