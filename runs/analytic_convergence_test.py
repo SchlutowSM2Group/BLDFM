@@ -13,7 +13,6 @@ from bldfm import config
 # Run BLDFM on 4 threads/CPUs
 config.NUM_THREADS = 16
 
-
 logger = get_logger("numerical_convergence_test")
 
 nxy = 512, 256
