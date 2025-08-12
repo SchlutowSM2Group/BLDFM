@@ -182,7 +182,7 @@ def steady_state_transport_solver(
         # by linear shooting method
         # use two auxillary initial value problems
         if config.NUM_THREADS > 1:
-            logger.info("BLDFM runnning in parallel mode.")
+            logger.info("BLDFM runnning with Numba parallelization.")
             set_num_threads(config.NUM_THREADS)
             # Initialize FFT manager with thread count
             get_fft_manager(num_threads=config.NUM_THREADS)
@@ -315,5 +315,5 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
 
         if i == n - 1:
             fftpm, fftqm = fftp, fftq
-    
+
     return fftp, fftq, fftpm, fftqm
