@@ -198,8 +198,8 @@ def steady_state_transport_solver(
             (zero, tfftq0[msk]), profiles, z, n, Lx[msk], Ly[msk]
         )
 
-        alpha = -(tfftq2 - K[nz - 1] * eigval * tfftp2) / (
-            tfftq1 - K[nz - 1] * eigval * tfftp1
+        alpha = -(tfftq2 - Kz[nz - 1] * eigval * tfftp2) / (
+            tfftq1 - Kz[nz - 1] * eigval * tfftp1
         )
 
         # linear combination of the two solution of the IVP
@@ -211,7 +211,7 @@ def steady_state_transport_solver(
         # with Euler forward method
         tfftp[0, 0] = p000
         for i in range(n):
-            tfftp[0, 0] = tfftp[0, 0] - tfftq0[0, 0] / K[i] * dz[i]
+            tfftp[0, 0] = tfftp[0, 0] - tfftq0[0, 0] / Kz[i] * dz[i]
 
     # shift green function in Fourier space to measurement point
     if footprint:
@@ -289,7 +289,7 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
     """
 
     fftp0, fftq0 = fftpq
-    u, v, K = profiles
+    u, v, Kh, Kz = profiles
 
     fftp, fftq = np.copy(fftp0), np.copy(fftq0)
     # Initialize to avoid unbound variable warnings
@@ -300,14 +300,14 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
 
     for i in range(nz - 1):
 
-        Ti = -K[i] * (Lx**2 + Ly**2) - 1j * u[i] * Lx - 1j * v[i] * Ly
-        Kinv = 1.0 / K[i]
+        Ti = -Kh[i] * (Lx**2 + Ly**2) - 1j * u[i] * Lx - 1j * v[i] * Ly
+        Kzinv = 1.0 / Kz[i]
         dzi = dz[i]
 
-        a = 1.0 - 0.5 * Kinv * Ti * dzi**2
-        b = -Kinv * dzi - 1.0 / 6.0 * Kinv**2 * Ti * dzi**3
-        c = Ti * dzi - 1.0 / 6.0 * Kinv * Ti**2 * dzi**3
-        d = 1.0 - 0.5 * Kinv * Ti * dzi**2
+        a = 1.0 - 0.5 * Kzinv * Ti * dzi**2
+        b = -Kzinv * dzi - 1.0 / 6.0 * Kzinv**2 * Ti * dzi**3
+        c = Ti * dzi - 1.0 / 6.0 * Kzinv * Ti**2 * dzi**3
+        d = 1.0 - 0.5 * Kzinv * Ti * dzi**2
 
         dum = a * fftp + b * fftq
         fftq = c * fftp + d * fftq
