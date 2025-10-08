@@ -12,7 +12,7 @@ from bldfm.ffm_kormann_meixner import estimateFootprint as FKM
 from bldfm import config
 
 # Run BLDFM on 4 threads/CPUs
-#config.NUM_THREADS = 16
+# config.NUM_THREADS = 16
 
 logger = get_logger("comparison_footprint_unstable")
 
@@ -45,11 +45,11 @@ surf_flx = ideal_source(nxy, domain)
 
 z, profs = vertical_profiles(nz, meas_height, wind, z0=z0, mol=mol, closure="MOST")
 
-#u, v, Kx, Ky, Kz = profs
-#Kzm = Kz[nz]
-#x = xmx / 2.0
-#sigma_v = np.sqrt(2.0 * Kzm * umean / x)
-#print(sigma_v)
+# u, v, Kx, Ky, Kz = profs
+# Kzm = Kz[nz]
+# x = xmx / 2.0
+# sigma_v = np.sqrt(2.0 * Kzm * umean / x)
+# print(sigma_v)
 
 srf_flx, bg_conc, conc, flx = steady_state_transport_solver(
     surf_flx,
@@ -118,35 +118,47 @@ if __name__ == "__main__":
     levels = np.linspace(vmin, vmax, lvls, endpoint=False)
 
     # BLDFM
-    #plot = axs[0].imshow(
+    # plot = axs[0].imshow(
     #    flx, origin="lower", cmap=cmap, vmin=0.0, vmax=vmax, extent=[0, domain[0], 0, domain[1]]
-    #)
+    # )
 
     x = np.linspace(0, xmx, nx)
     y = np.linspace(0, ymx, ny)
     X, Y = np.meshgrid(x, y)
-    
-    c0 = axs[0].contour(X, Y, flx, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=linewidths)
+
+    c0 = axs[0].contour(
+        X, Y, flx, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=linewidths
+    )
 
     axs[0].set_title("BLDFM")
     axs[0].set_xlabel("x [m]")
     axs[0].set_ylabel("y [m]")
 
-
     # BLDFM modified
-    #plot = axs[1].imshow(
+    # plot = axs[1].imshow(
     #    flx_m, origin="lower", cmap=cmap, vmin=0.0, vmax=vmax, extent=[0, domain[0], 0, domain[1]]
-    #)
-    axs[1].contour(X, Y, flx_m, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=linewidths)
+    # )
+    axs[1].contour(
+        X, Y, flx_m, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=linewidths
+    )
 
     axs[1].set_title("BLDFM-SP")
     axs[1].set_xlabel("x [m]")
 
     # FKM
-    #plot = axs[2].imshow(
+    # plot = axs[2].imshow(
     #    grid_ffm, origin="upper", cmap=cmap, vmin=0.0, vmax=vmax, extent=[0, domain[0], 0, domain[1]]
-    #)
-    plot = axs[2].contour(grid_x, grid_y, grid_ffm, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=linewidths)
+    # )
+    plot = axs[2].contour(
+        grid_x,
+        grid_y,
+        grid_ffm,
+        levels,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        linewidths=linewidths,
+    )
 
     axs[2].set_title("KM01")
     axs[2].set_xlabel("x [m]")
@@ -156,9 +168,9 @@ if __name__ == "__main__":
     cbar.formatter.set_useMathText(True)
     cbar.set_label("$m^{-2}$")
 
-    axs[0].scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*", color='red', s=300)
-    axs[1].scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*", color='red', s=300)
-    axs[2].scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*", color='red', s=300)
+    axs[0].scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*", color="red", s=300)
+    axs[1].scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*", color="red", s=300)
+    axs[2].scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*", color="red", s=300)
 
     plt.savefig("plots/comparison_footprint_neutral.png", dpi=300)
 #    plt.show()

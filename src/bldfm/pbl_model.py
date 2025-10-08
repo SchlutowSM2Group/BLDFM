@@ -154,7 +154,6 @@ def vertical_profiles(
         K = kap * ustar * z / phi(z / mol) / prsc
         Kx = Ky = Kz = K
 
-
     elif closure == "MOSTM":
 
         # computation of MOST profiles, modified with no diffusion in flow direction
@@ -165,7 +164,7 @@ def vertical_profiles(
         v = vm / absum * absu
 
         K = kap * ustar * z / phi(z / mol) / prsc
-        
+
         Kx = K * v**2 / (u**2 + v**2)
         Ky = K * u**2 / (u**2 + v**2)
         Kz = K

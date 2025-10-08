@@ -153,8 +153,8 @@ def steady_state_transport_solver(
 
     # Eigenvalue determining solution for z > zmx
     eigval = np.sqrt(
-        KxKzinv * Lx[msk]**2
-        + KyKzinv * Ly[msk]**2
+        KxKzinv * Lx[msk] ** 2
+        + KyKzinv * Ly[msk] ** 2
         + 1j * u[nz - 1] * Kzinv * Lx[msk]
         + 1j * v[nz - 1] * Kzinv * Ly[msk]
     )

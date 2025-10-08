@@ -72,9 +72,11 @@ for i, (modes, nz) in enumerate(zip(modess, nzs)):
     conc_err[i] = np.mean((conc - conc_ref) ** 2) / np.mean(conc_ref**2)
     flx_err[i] = np.mean((flx - flx_ref) ** 2) / np.mean(flx_ref**2)
 
-def decay(x,e0,r):
+
+def decay(x, e0, r):
     # exponential error convergence
-    return e0 * np.exp(-r/x)
+    return e0 * np.exp(-r / x)
+
 
 if __name__ == "__main__":
 
@@ -91,7 +93,7 @@ if __name__ == "__main__":
     popt, _ = curve_fit(decay, dxyz, conc_err)
 
     plt.plot(dxyz, conc_err, "o")
-    plt.plot(dxyz, decay(dxyz,*popt), label=f"r = {int(popt[1])}")
+    plt.plot(dxyz, decay(dxyz, *popt), label=f"r = {int(popt[1])}")
     plt.title("Error convergence for HI-RES")
     plt.xlabel("$h$ [m]")
     plt.ylabel("Relative RMSE")

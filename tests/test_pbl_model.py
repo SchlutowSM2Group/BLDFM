@@ -27,7 +27,7 @@ def test_constant_closure(n, meas_height, wind, ustar, prsc):
     """
     closure = "CONSTANT"
 
-    z, (u, v, K) = vertical_profiles(
+    z, (u, v, Kx, Ky, Kz) = vertical_profiles(
         n=n,
         meas_height=meas_height,
         wind=wind,
@@ -39,13 +39,15 @@ def test_constant_closure(n, meas_height, wind, ustar, prsc):
     # Check the shape of the outputs
     assert len(u) == len(z)
     assert len(v) == len(z)
-    assert len(K) == len(z)
+    assert len(Kx) == len(z)
+    assert len(Ky) == len(z)
+    assert len(Kz) == len(z)
 
     # # Check that the profiles are constant
     np.testing.assert_array_almost_equal(u, np.full(len(z), wind[0]))
     np.testing.assert_array_almost_equal(v, np.full(len(z), wind[1]))
     np.testing.assert_array_almost_equal(
-        K, np.full(len(z), 0.4 * ustar * meas_height / prsc)
+        Kz, np.full(len(z), 0.4 * ustar * meas_height / prsc)
     )
 
 
@@ -64,7 +66,7 @@ def test_most_closure(n, meas_height, wind, ustar, mol):
     """
     closure = "MOST"
 
-    z, (u, v, K) = vertical_profiles(
+    z, (u, v, Kx, Ky, Kz) = vertical_profiles(
         n=n,
         meas_height=meas_height,
         wind=wind,
@@ -76,13 +78,17 @@ def test_most_closure(n, meas_height, wind, ustar, mol):
     # Check the shape of the outputs
     assert len(u) == len(z)
     assert len(v) == len(z)
-    assert len(K) == len(z)
+    assert len(Kx) == len(z)
+    assert len(Ky) == len(z)
+    assert len(Kz) == len(z)
 
     # Check that the profiles are not constant
     assert not np.isclose(u[0], u[-1])
     assert not np.isclose(v[0], v[-1])
-    assert not np.isclose(K[0], K[-1])
+    assert not np.isclose(Kz[0], Kz[-1])
 
     # Check that the profiles are physically reasonable
     assert np.all(z > 0)  # Heights should be positive
-    assert np.all(K > 0)  # Eddy diffusivity should be positive
+    assert np.all(Kx > 0)  # Eddy diffusivity should be positive
+    assert np.all(Ky > 0)  # Eddy diffusivity should be positive
+    assert np.all(Kz > 0)  # Eddy diffusivity should be positive
