@@ -5,6 +5,8 @@ Run script for comparing numerical and analytic solutions of concentration and f
 import numpy as np
 import matplotlib.pyplot as plt
 
+from scipy.optimize import curve_fit
+
 from bldfm.pbl_model import vertical_profiles
 from bldfm.utils import point_source, get_logger
 from bldfm.solver import steady_state_transport_solver
@@ -81,6 +83,10 @@ for i, (modes, nz) in enumerate(zip(modess, nzs)):
     conc_err[i] = np.mean((conc - conc_ana) ** 2) / np.mean(conc_ana**2)
     flx_err[i] = np.mean((flx - flx_ana) ** 2) / np.mean(flx_ana**2)
 
+def decay(x,e0,r):
+    # exponential error convergence
+    return e0 * np.exp(-r/x)
+
 if __name__ == "__main__":
 
     # estimated grid lengths
@@ -93,11 +99,13 @@ if __name__ == "__main__":
     # effective grid size
     dxyz = np.cbrt(dx * dy * dz)
 
+    popt, _ = curve_fit(decay, dxyz, conc_err)
+
     plt.plot(dxyz, conc_err, "o")
-    # plt.plot(dxyz, 1e-2 * dxyz**10, label="$\\mathcal{O}(h^{10})$")
-    plt.title("Rate of numerical error convergence")
+    plt.plot(dxyz, decay(dxyz,*popt), label=f"r = {int(popt[1])}")
+    plt.title("Error convergence for ANALY")
     plt.xlabel("$h$ [m]")
     plt.ylabel("Relative RMSE")
-    # plt.legend()
+    plt.legend()
     plt.loglog()
     plt.savefig("plots/error_convergence_analytic.png", dpi=300)
