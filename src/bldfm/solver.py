@@ -39,7 +39,7 @@ def steady_state_transport_solver(
         1D array of vertical grid points from z0 to zm [m].
     profiles : tuple of ndarray
         Tuple containing 1D arrays of vertical profiles of zonal wind, meridional wind [m/s],
-        and eddy diffusivity [m²/s].
+        and eddy diffusivities [m²/s].
     domain : tuple of float
         Tuple containing domain sizes (xmax, ymax) [m].
     modes : tuple of int, optional
@@ -73,7 +73,7 @@ def steady_state_transport_solver(
 
     q0 = srf_flx
     p000 = srf_bg_conc
-    u, v, K = profiles
+    u, v, Kx, Ky, Kz = profiles
     xmx, ymx = domain
     nlx, nly = modes
     xm, ym = meas_pt
@@ -147,14 +147,16 @@ def steady_state_transport_solver(
     one = np.ones((nly, nlx), dtype=complex)[msk]
     zero = np.zeros((nly, nlx), dtype=complex)[msk]
 
-    Kinv = 1.0 / K[nz - 1]
+    Kzinv = 1.0 / Kz[nz - 1]
+    KxKzinv = Kx[nz - 1] * Kzinv
+    KyKzinv = Ky[nz - 1] * Kzinv
 
     # Eigenvalue determining solution for z > zmx
     eigval = np.sqrt(
-        Lx[msk] ** 2
-        + Ly[msk] ** 2
-        + 1j * u[nz - 1] * Kinv * Lx[msk]
-        + 1j * v[nz - 1] * Kinv * Ly[msk]
+        KxKzinv * Lx[msk]**2
+        + KyKzinv * Ly[msk]**2
+        + 1j * u[nz - 1] * Kzinv * Lx[msk]
+        + 1j * v[nz - 1] * Kzinv * Ly[msk]
     )
 
     # initialization
@@ -171,10 +173,10 @@ def steady_state_transport_solver(
         # for validation purposes
         h = z[n] - z[0]
 
-        tfftp0[msk] = tfftq0[msk] * Kinv / eigval
-        tfftp[0, 0] = p000 - tfftq0[0, 0] * Kinv * h
+        tfftp0[msk] = tfftq0[msk] * Kzinv / eigval
+        tfftp[0, 0] = p000 - tfftq0[0, 0] * Kzinv * h
         tfftq[msk] = tfftq0[msk] * np.exp(-eigval * h)
-        tfftp[msk] = tfftq[msk] * Kinv / eigval
+        tfftp[msk] = tfftq[msk] * Kzinv / eigval
 
     else:
 
@@ -289,7 +291,7 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
     """
 
     fftp0, fftq0 = fftpq
-    u, v, Kh, Kz = profiles
+    u, v, Kx, Ky, Kz = profiles
 
     fftp, fftq = np.copy(fftp0), np.copy(fftq0)
     # Initialize to avoid unbound variable warnings
@@ -300,7 +302,7 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
 
     for i in range(nz - 1):
 
-        Ti = -Kh[i] * (Lx**2 + Ly**2) - 1j * u[i] * Lx - 1j * v[i] * Ly
+        Ti = -(Kx[i] * Lx**2 + Ky[i] * Ly**2) - 1j * u[i] * Lx - 1j * v[i] * Ly
         Kzinv = 1.0 / Kz[i]
         dzi = dz[i]
 
