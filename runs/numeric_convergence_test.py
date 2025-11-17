@@ -93,7 +93,7 @@ if __name__ == "__main__":
     popt, _ = curve_fit(decay, dxyz, conc_err)
 
     plt.plot(dxyz, conc_err, "o")
-    plt.plot(dxyz, decay(dxyz, *popt), label=f"r = {int(popt[1])}")
+    plt.plot(dxyz, decay(dxyz, *popt), label=f"r = {int(popt[1])} m")
     plt.title("Error convergence for HI-RES")
     plt.xlabel("$h$ [m]")
     plt.ylabel("Relative RMSE")
