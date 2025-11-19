@@ -13,7 +13,7 @@ logger = get_logger(__name__.split("bldfm.")[-1])
 logger.info("Loaded solver module for steady-state transport solver.")
 
 
-def steady_state_transport_solver(
+def steady_state_transport_solver_3d(
     srf_flx,
     z,
     profiles,
@@ -162,7 +162,7 @@ def steady_state_transport_solver(
     tfftp = np.zeros((nz, nly, nlx), dtype=complex)
     tfftq = np.zeros((nz, nly, nlx), dtype=complex)
 
-    tfftp0[0, 0, 0] = p000
+    tfftp[0, 0, 0] = p000
     tfftq[:, 0, 0] = tfftq0[0, 0]  # conservation by design
 
     if analytic:
@@ -181,14 +181,14 @@ def steady_state_transport_solver(
         # solve non-degenerated problem for (n,m) =/= (0,0)
         # by linear shooting method
         # use two auxillary initial value problems
-        if config.NUM_THREADS > 1:
-            logger.info("BLDFM runnning with Numba parallelization.")
-            set_num_threads(config.NUM_THREADS)
-            # Initialize FFT manager with thread count
-            get_fft_manager(num_threads=config.NUM_THREADS)
-        else:
-            # Initialize FFT manager for single-threaded operation
-            get_fft_manager(num_threads=1)
+        #if config.NUM_THREADS > 1:
+        #    logger.info("BLDFM runnning with Numba parallelization.")
+        #    set_num_threads(config.NUM_THREADS)
+        #    # Initialize FFT manager with thread count
+        #    get_fft_manager(num_threads=config.NUM_THREADS)
+        #else:
+        #    # Initialize FFT manager for single-threaded operation
+        #    get_fft_manager(num_threads=1)
 
         tfftp1, tfftq1 = ivp_solver(
             (one, zero), profiles, z, n, Lx[msk], Ly[msk]
@@ -198,8 +198,8 @@ def steady_state_transport_solver(
             (zero, tfftq0[msk]), profiles, z, n, Lx[msk], Ly[msk]
         )
 
-        alpha = -(tfftq2[nz - 1, :, :] - K[nz - 1] * eigval * tfftp2[nz - 1, :, :]) / (
-                tfftq1[nz - 1, :, :] - K[nz - 1] * eigval * tfftp1[nz - 1, :, :]
+        alpha = -(tfftq2[nz - 1,...] - K[nz - 1] * eigval * tfftp2[nz - 1,...]) / (
+                tfftq1[nz - 1,...] - K[nz - 1] * eigval * tfftp1[nz - 1,...]
         )
 
         # linear combination of the two solution of the IVP
@@ -240,19 +240,19 @@ def steady_state_transport_solver(
 
     # unshift
     #fftp0 = ifftshift(fftp0)
-    fftp = ifftshift(fftp, axes=(1,2)))
-    fftq = ifftshift(fftq, axes=(1,2)))
+    fftp = ifftshift(fftp, axes=(1,2))
+    fftq = ifftshift(fftq, axes=(1,2))
 
     if footprint:
         # use fft to reverse sign, make green's function to footprint
         #p0 = fft2(fftp0, norm="backward").real  # concentration
-        p = fft2(fftp, norm="backward", axes=(1,2)).real  # concentration
-        q = fft2(fftq, norm="backward", axes=(1,2)).real  # kinematic flux
+        p = fft2(fftp, norm="backward").real  # concentration
+        q = fft2(fftq, norm="backward").real  # kinematic flux
     else:
         # use ifft as usual
         #p0 = ifft2(fftp0, norm="forward").real  # concentration
-        p = ifft2(fftp, norm="forward", axes=(1,2)).real  # concentration
-        q = ifft2(fftq, norm="forward", axes=(1,2)).real  # kinematic flux
+        p = ifft2(fftp, norm="forward").real  # concentration
+        q = ifft2(fftq, norm="forward").real  # kinematic flux
 
     #srf_conc = p[0, py : ny - py, px : nx - px]
     bg_conc = fftp[:, 0, 0].real
@@ -262,7 +262,7 @@ def steady_state_transport_solver(
     return bg_conc, conc, flx
 
 
-@parallelize
+#@parallelize
 def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
     """
     Solves the initial value problem resulting from the discretization of the
@@ -292,6 +292,7 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
 
     fftp0, fftq0 = fftpq
     u, v, K = profiles
+    nxy = fftp0.shape[0]
 
     # fftp, fftq = np.copy(fftp0), np.copy(fftq0)
     # Initialize to avoid unbound variable warnings
@@ -300,8 +301,8 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
     nz = len(z)
     dz = np.diff(z)
 
-    fftp = np.zeros((nz, fftp0.shape), dtype=complex) 
-    fftq = np.zeros((nz, fftp0.shape), dtype=complex) 
+    fftp = np.zeros((nz, nxy), dtype=complex) 
+    fftq = np.zeros((nz, nxy), dtype=complex) 
 
     fftp[0,...] = fftp0
     fftq[0,...] = fftq0
