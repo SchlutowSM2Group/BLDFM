@@ -114,12 +114,12 @@ def vertical_profiles(
 
     # stretched vertical grid
     if stretch is None:
-        h = 2 * meas_height
+        h = 2.0 * meas_height
     else:
         h = stretch
 
     if blend_height is None:
-        zmx = 2 * meas_height
+        zmx = 2.0 * meas_height
     else:
         zmx = blend_height
 
@@ -130,7 +130,7 @@ def vertical_profiles(
 
     dzeta = zm / n
 
-    zeta = np.arange(0.0, zetamx, dzeta)
+    zeta = np.arange(0.0, zetamx+dzeta, dzeta)
 
     z = -h * np.log(-(zeta - aa) / bb)
 

@@ -210,7 +210,7 @@ def steady_state_transport_solver(
         # solve degenerated problem for (n,m) =  (0,0)
         # with Euler forward method
         tfftp[0, 0] = p000
-        for i in range(n):
+        for i in range(n-1):
             tfftp[0, 0] = tfftp[0, 0] - tfftq0[0, 0] / K[i] * dz[i]
 
     # shift green function in Fourier space to measurement point
