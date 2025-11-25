@@ -130,7 +130,7 @@ def vertical_profiles(
 
     dzeta = zm / n
 
-    zeta = np.arange(0.0, zetamx+dzeta, dzeta)
+    zeta = np.arange(0.0, zetamx + dzeta, dzeta)
 
     z = -h * np.log(-(zeta - aa) / bb)
 

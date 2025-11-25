@@ -45,10 +45,10 @@ def test_integration():
     z, profs = vertical_profiles(nz, meas_height, wind, ustar, closure="CONSTANT")
 
     # Solve using the solver
-    _, _, conc_ana, flx_ana = steady_state_transport_solver(
+    _, conc_ana, flx_ana = steady_state_transport_solver(
         srf_flx, z, profs, domain, nz, modes=modes, halo=halo, analytic=True
     )
-    _, _, conc, flx = steady_state_transport_solver(
+    _, conc, flx = steady_state_transport_solver(
         srf_flx, z, profs, domain, nz, modes=modes, halo=halo
     )
 
