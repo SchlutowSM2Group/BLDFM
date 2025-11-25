@@ -14,7 +14,7 @@ def vertical_profiles(
     mol=1e9,
     prsc=1.0,
     closure="MOST",
-    blend_height=None,
+    domain_height=None,
     stretch=None,
     z0_min=0.001,
     z0_max=2.0,
@@ -118,10 +118,10 @@ def vertical_profiles(
     else:
         h = stretch
 
-    if blend_height is None:
+    if domain_height is None:
         zmx = 2.0 * meas_height
     else:
-        zmx = blend_height
+        zmx = domain_height
 
     bb = zm / (np.exp(-z0 / h) - np.exp(-zm / h))
     aa = bb * np.exp(-z0 / h)
