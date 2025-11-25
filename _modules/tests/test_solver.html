@@ -147,34 +147,20 @@
     <span class="n">srf_flx</span> <span class="o">=</span> <span class="n">ideal_source</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">),</span> <span class="n">domain</span><span class="p">)</span>
 
     <span class="c1"># Call the solver with analytic=True</span>
-    <span class="n">srf_conc_analytic</span><span class="p">,</span> <span class="n">bg_conc_analytic</span><span class="p">,</span> <span class="n">conc_analytic</span><span class="p">,</span> <span class="n">flx_analytic</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">steady_state_transport_solver</span><span class="p">(</span>
-            <span class="n">srf_flx</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">profs</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="n">modes</span><span class="p">,</span> <span class="n">analytic</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">conc_analytic</span><span class="p">,</span> <span class="n">flx_analytic</span> <span class="o">=</span> <span class="n">steady_state_transport_solver</span><span class="p">(</span>
+        <span class="n">srf_flx</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">profs</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="n">modes</span><span class="p">,</span> <span class="n">analytic</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
 
     <span class="c1"># Call the solver with analytic=False</span>
-    <span class="n">srf_conc_numeric</span><span class="p">,</span> <span class="n">bg_conc_numeric</span><span class="p">,</span> <span class="n">conc_numeric</span><span class="p">,</span> <span class="n">flx_numeric</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">steady_state_transport_solver</span><span class="p">(</span>
-            <span class="n">srf_flx</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">profs</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="n">modes</span><span class="p">,</span> <span class="n">analytic</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">conc_numeric</span><span class="p">,</span> <span class="n">flx_numeric</span> <span class="o">=</span> <span class="n">steady_state_transport_solver</span><span class="p">(</span>
+        <span class="n">srf_flx</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">profs</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">nz</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="n">modes</span><span class="p">,</span> <span class="n">analytic</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
 
     <span class="c1"># Assertions to validate numeric output shapes</span>
-    <span class="k">assert</span> <span class="n">srf_conc_numeric</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">),</span> <span class="s2">&quot;Surface concentration shape mismatch&quot;</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span>
-        <span class="n">bg_conc_numeric</span><span class="p">,</span> <span class="nb">float</span>
-    <span class="p">),</span> <span class="s2">&quot;Background concentration should be a float&quot;</span>
     <span class="k">assert</span> <span class="n">conc_numeric</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">),</span> <span class="s2">&quot;Concentration shape mismatch&quot;</span>
     <span class="k">assert</span> <span class="n">flx_numeric</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">),</span> <span class="s2">&quot;Flux shape mismatch&quot;</span>
 
     <span class="c1"># Compare the results</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
-        <span class="n">srf_conc_analytic</span><span class="p">,</span> <span class="n">srf_conc_numeric</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-2</span>
-    <span class="p">),</span> <span class="s2">&quot;Surface concentration mismatch between analytic and numeric&quot;</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span>
-        <span class="n">bg_conc_analytic</span><span class="p">,</span> <span class="n">bg_conc_numeric</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-2</span>
-    <span class="p">),</span> <span class="s2">&quot;Background concentration mismatch between analytic and numeric&quot;</span>
     <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span>
         <span class="n">conc_analytic</span><span class="p">,</span> <span class="n">conc_numeric</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-2</span>
     <span class="p">),</span> <span class="s2">&quot;Concentration mismatch between analytic and numeric&quot;</span>
@@ -188,18 +174,18 @@
     <span class="c1"># Plot numerical solution</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Numerical Solution&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">srf_conc_numeric</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">conc_numeric</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
 
     <span class="c1"># Plot analytical solution</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Analytical Solution&quot;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">srf_conc_analytic</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">conc_analytic</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">domain</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/analytical_vs_numerical_solution.png&quot;</span><span class="p">)</span>
 
     <span class="c1"># Compare numerical and analytical solutions</span>
-    <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">srf_conc_numeric</span> <span class="o">-</span> <span class="n">srf_conc_analytic</span><span class="p">)</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">conc_numeric</span> <span class="o">-</span> <span class="n">conc_analytic</span><span class="p">)</span>
     <span class="n">max_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
     <span class="k">assert</span> <span class="p">(</span>
         <span class="n">max_error</span> <span class="o">&lt;</span> <span class="mf">1e-2</span>
