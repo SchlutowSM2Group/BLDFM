@@ -29,7 +29,7 @@ levels = np.arange(nz + 1)
 
 grid, conc, flx = steady_state_transport_solver(srf_flx, z, profs, domain, levels)
 
-Z, Y, X = grid
+X, Y, Z = grid
 
 if __name__ == "__main__":
     logger.info("Minimal example for neutrally stratified BL and default settings.")

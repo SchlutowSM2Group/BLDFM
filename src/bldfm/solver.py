@@ -270,7 +270,7 @@ def steady_state_transport_solver(
     y = np.linspace(0, ymx, ny, endpoint=False)
 
     Z, Y, X = np.meshgrid(z[levels], y, x, indexing="ij")
-    grid = (np.squeeze(Z), np.squeeze(Y), np.squeeze(X))
+    grid = (np.squeeze(X), np.squeeze(Y), np.squeeze(Z))
 
     return grid, np.squeeze(conc), np.squeeze(flx)
 
