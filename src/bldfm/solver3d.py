@@ -18,13 +18,13 @@ def steady_state_transport_solver_3d(
     z,
     profiles,
     domain,
-    n,
+    levels,
     modes=(512, 512),
     meas_pt=(0.0, 0.0),
     srf_bg_conc=0.0,
     footprint=False,
     analytic=False,
-    halo=-1e9,
+    halo=None,
 ):
     """
     Solves the steady-state advection-diffusion equation for a concentration
@@ -42,6 +42,8 @@ def steady_state_transport_solver_3d(
         and eddy diffusivity [m²/s].
     domain : tuple of float
         Tuple containing domain sizes (xmax, ymax) [m].
+    levels : float or ndarray of float
+        Vertical level for output or optionally 1D array of output levels.
     modes : tuple of int, optional
         Tuple containing the number of zonal and meridional Fourier modes (nlx, nly).
         Default is (512, 512).
@@ -61,14 +63,12 @@ def steady_state_transport_solver_3d(
 
     Returns
     -------
-    srf_conc : ndarray of float
-        2D field of surface concentrations at z=z0.
-    bg_conc : float
-        Background concentration at z=zm.
+    z : ndarray of float
+        Heights [m] at levels.
     conc : ndarray of float
-        2D field of concentration at z=zm or Green's function.
+        2D or 3D field of concentration at levels or Green's function.
     flx : ndarray of float
-        2D field of kinematic flux at z=zm or footprint.
+        2D or 3D field of kinematic flux at levels or footprint.
     """
 
     q0 = srf_flx
@@ -84,11 +84,20 @@ def steady_state_transport_solver_3d(
 
     # number of grid cells
     ny, nx = q0.shape
+    nz = len(z)
 
     # grid increments
     dx, dy = xmx / nx, ymx / ny
+    dz = np.diff(z)
 
-    if halo < 0.0:
+    # Check output levels
+    if np.ndim(levels) == 0:
+        levels = [levels]
+
+    nlvls = len(levels)
+        
+    # halo to deal with periodicity of FFT
+    if halo is None:
         halo = max(xmx, ymx)
 
     # pad width
@@ -99,22 +108,22 @@ def steady_state_transport_solver_3d(
     q0 = np.pad(q0, ((py, py), (px, px)), mode="constant", constant_values=0.0)
 
     # extent domain
-    nx = nx + 2 * px
-    ny = ny + 2 * py
+    nxe = nx + 2 * px
+    nye = ny + 2 * py
 
-    if (nlx > nx) or (nly > ny):
+    if (nlx > nxe) or (nly > nye):
         logger.info(
             "Warning: Number of Fourier modes must not exeed number of grid cells."
         )
         logger.info("Setting both equal.")
-        nlx, nly = nx, ny
+        nlx, nly = nxe, nye
 
     # Deltas for truncated Fourier transform
-    dlx, dly = (nx - nlx) // 2, (ny - nly) // 2
+    dlx, dly = (nxe - nlx) // 2, (nye - nly) // 2
 
     if footprint:
         # Fourier trafo of delta distribution
-        tfftq0 = np.ones((nly, nlx), dtype=complex) / nx / ny
+        tfftq0 = np.ones((nly, nlx), dtype=complex) / nxe / nye
     else:
         fftq0 = fft2(q0, norm="forward")  # fft of source
 
@@ -122,7 +131,7 @@ def steady_state_transport_solver_3d(
         fftq0 = fftshift(fftq0)
 
         # truncate fourier series by removing higher-frequency components
-        tfftq0 = fftq0[dly : ny - dly, dlx : nx - dlx]
+        tfftq0 = fftq0[dly : nye - dly, dlx : nxe - dlx]
 
         # unshift
         tfftq0 = ifftshift(tfftq0)
@@ -132,13 +141,10 @@ def steady_state_transport_solver_3d(
     ily = fftfreq(nly, d=1.0 / nly)
 
     # define truncated zonal and meridional wavenumbers
-    lx = 2.0 * np.pi / dx / nx * ilx
-    ly = 2.0 * np.pi / dy / ny * ily
+    lx = 2.0 * np.pi / dx / nxe * ilx
+    ly = 2.0 * np.pi / dy / nye * ily
 
     Lx, Ly = np.meshgrid(lx, ly)
-
-    dz = np.diff(z)
-    nz = len(z)
 
     # define mask to seperate degenerated and non-degenerated system
     msk = np.ones((nly, nlx), dtype=bool)  # all n and m not equal 0
@@ -157,10 +163,9 @@ def steady_state_transport_solver_3d(
         + 1j * v[nz - 1] * Kinv * Ly[msk]
     )
 
-    # initialization
-    #tfftp0 = np.zeros((nz, nly, nlx), dtype=complex)
-    tfftp = np.zeros((nz, nly, nlx), dtype=complex)
-    tfftq = np.zeros((nz, nly, nlx), dtype=complex)
+    # initialization of output arrays
+    tfftp = np.zeros((nlvls, nly, nlx), dtype=complex)
+    tfftq = np.zeros((nlvls, nly, nlx), dtype=complex)
 
     tfftp[0, 0, 0] = p000
     tfftq[:, 0, 0] = tfftq0[0, 0]  # conservation by design
@@ -169,7 +174,7 @@ def steady_state_transport_solver_3d(
 
         # constant profiles solution
         # for validation purposes
-        h = z[n] - z[0]
+        h = z[levels] - z[0]
 
         tfftp[0, msk] = tfftq0[msk] * Kinv / eigval
         tfftp[:, 0, 0] = p000 - tfftq0[0, 0] * Kinv * h
@@ -181,89 +186,93 @@ def steady_state_transport_solver_3d(
         # solve non-degenerated problem for (n,m) =/= (0,0)
         # by linear shooting method
         # use two auxillary initial value problems
-        #if config.NUM_THREADS > 1:
-        #    logger.info("BLDFM runnning with Numba parallelization.")
-        #    set_num_threads(config.NUM_THREADS)
-        #    # Initialize FFT manager with thread count
-        #    get_fft_manager(num_threads=config.NUM_THREADS)
-        #else:
-        #    # Initialize FFT manager for single-threaded operation
-        #    get_fft_manager(num_threads=1)
+        if config.NUM_THREADS > 1:
+            logger.info("BLDFM runnning with Numba parallelization.")
+            set_num_threads(config.NUM_THREADS)
+            # Initialize FFT manager with thread count
+            get_fft_manager(num_threads=config.NUM_THREADS)
+        else:
+            # Initialize FFT manager for single-threaded operation
+            get_fft_manager(num_threads=1)
 
-        tfftp1, tfftq1 = ivp_solver(
-            (one, zero), profiles, z, n, Lx[msk], Ly[msk]
+        tfftp1, tfftq1, tfftpm1, tfftqm1 = ivp_solver(
+            (one, zero), profiles, z, levels, Lx[msk], Ly[msk]
         )
 
-        tfftp2, tfftq2 = ivp_solver(
-            (zero, tfftq0[msk]), profiles, z, n, Lx[msk], Ly[msk]
+        tfftp2, tfftq2, tfftpm2, tfftqm2 = ivp_solver(
+            (zero, tfftq0[msk]), profiles, z, levels, Lx[msk], Ly[msk]
         )
 
-        alpha = -(tfftq2[nz - 1,...] - K[nz - 1] * eigval * tfftp2[nz - 1,...]) / (
-                tfftq1[nz - 1,...] - K[nz - 1] * eigval * tfftp1[nz - 1,...]
+        alpha = -(tfftq2 - K[nz - 1] * eigval * tfftp2) / (
+                tfftq1 - K[nz - 1] * eigval * tfftp1
         )
 
         # linear combination of the two solution of the IVP
         tfftp[0, msk] = alpha
-        tfftp[:, msk] = alpha * tfftp1 + tfftp2
-        tfftq[:, msk] = alpha * tfftq1 + tfftq2
+        tfftp[:, msk] = alpha * tfftpm1 + tfftpm2
+        tfftq[:, msk] = alpha * tfftqm1 + tfftqm2
 
         # solve degenerated problem for (n,m) =  (0,0)
         # with Euler forward method
-        tfftp[0, 0, 0] = p000
-        for i in range(n-1):
-            tfftp[i+1, 0, 0] = tfftp[i, 0, 0] - tfftq0[0, 0] / K[i] * dz[i]
+        lvl = 0
+        tfftp00 = p000
+        for i in range(nz-1):
+
+            if i in levels:
+                tfftp[lvl, 0, 0] = tfftp00
+                lvl += 1
+
+            tfftp00 = tfftp00 - tfftq0[0, 0] / K[i] * dz[i]
+
+        if nz-1 in levels:
+            tfftp[lvl, 0, 0] = tfftp00
 
     # shift green function in Fourier space to measurement point
     if footprint:
-        #tfftp0 = tfftp0 * np.exp(1j * (Lx * (xm + halo) + Ly * (ym + halo)))
         shift = np.exp(1j * (Lx * (xm + halo) + Ly * (ym + halo)))
         tfftp = tfftp * shift
         tfftq = tfftq * shift
     # shift such that xm, ym are in the middle of the domain
     elif xm**2 + ym**2 > 0.0:
-        #tfftp0 = tfftp0 * np.exp(1j * (Lx * (xm - xmx / 2) + Ly * (ym - ymx / 2)))
         shift = np.exp(1j * (Lx * (xm - xmx / 2) + Ly * (ym - ymx / 2)))
         tfftp = tfftp * shift
         tfftq = tfftq * shift
 
     # shift zero to center?
-    #tfftp0 = fftshift(tfftp0)
     tfftp = fftshift(tfftp, axes=(1,2))
     tfftq = fftshift(tfftq, axes=(1,2))
 
     # untruncate
-    #fftp0 = np.pad(
-    #    tfftp0, ((dly, dly), (dlx, dlx)), mode="constant", constant_values=0.0
-    #)
     fftp = np.pad(tfftp, ((0, 0), (dly, dly), (dlx, dlx)), mode="constant", constant_values=0.0)
     fftq = np.pad(tfftq, ((0, 0), (dly, dly), (dlx, dlx)), mode="constant", constant_values=0.0)
 
     # unshift
-    #fftp0 = ifftshift(fftp0)
     fftp = ifftshift(fftp, axes=(1,2))
     fftq = ifftshift(fftq, axes=(1,2))
 
     if footprint:
         # use fft to reverse sign, make green's function to footprint
-        #p0 = fft2(fftp0, norm="backward").real  # concentration
         p = fft2(fftp, norm="backward").real  # concentration
         q = fft2(fftq, norm="backward").real  # kinematic flux
     else:
         # use ifft as usual
-        #p0 = ifft2(fftp0, norm="forward").real  # concentration
         p = ifft2(fftp, norm="forward").real  # concentration
         q = ifft2(fftq, norm="forward").real  # kinematic flux
 
-    #srf_conc = p[0, py : ny - py, px : nx - px]
-    bg_conc = fftp[:, 0, 0].real
-    conc = p[:, py : ny - py, px : nx - px]
-    flx = q[:, py : ny - py, px : nx - px]
+    conc = p[:, py : nye - py, px : nxe - px]
+    flx = q[:, py : nye - py, px : nxe - px]
 
-    return bg_conc, conc, flx
+    x = np.linspace(0, xmx, nx, endpoint=False)
+    y = np.linspace(0, ymx, ny, endpoint=False)
+
+    Z, Y, X = np.meshgrid(z[levels], y, x, indexing='ij')
+    grid = (np.squeeze(Z), np.squeeze(Y), np.squeeze(X))
+
+    return grid, np.squeeze(conc), np.squeeze(flx)
 
 
-#@parallelize
-def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
+@parallelize
+def ivp_solver(fftpq, profiles, z, levels, Lx, Ly):
     """
     Solves the initial value problem resulting from the discretization of the
     steady-state advection-diffusion equation using the Fast Fourier Transform.
@@ -294,20 +303,24 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
     u, v, K = profiles
     nxy = fftp0.shape[0]
 
-    # fftp, fftq = np.copy(fftp0), np.copy(fftq0)
-    # Initialize to avoid unbound variable warnings
-    # fftpm, fftqm = fftp, fftq
 
+    nlvls = len(levels)
     nz = len(z)
     dz = np.diff(z)
 
-    fftp = np.zeros((nz, nxy), dtype=complex) 
-    fftq = np.zeros((nz, nxy), dtype=complex) 
+    # Initialize arrays
+    fftpi, fftqi = np.copy(fftp0), np.copy(fftq0)
+    fftp = np.zeros((nlvls, nxy), dtype=np.complex128) 
+    fftq = np.zeros((nlvls, nxy), dtype=np.complex128) 
 
-    fftp[0,...] = fftp0
-    fftq[0,...] = fftq0
+    lvl = 0
 
     for i in range(nz - 1):
+
+        if i in levels:
+            fftp[lvl, ...] = fftpi
+            fftq[lvl, ...] = fftqi
+            lvl += 1
 
         Ti = -K[i] * (Lx**2 + Ly**2) - 1j * u[i] * Lx - 1j * v[i] * Ly
         Kinv = 1.0 / K[i]
@@ -318,8 +331,12 @@ def ivp_solver(fftpq, profiles, z, n, Lx, Ly):
         c = Ti * dzi - 1.0 / 6.0 * Kinv * Ti**2 * dzi**3
         d = 1.0 - 0.5 * Kinv * Ti * dzi**2
 
-        dum = a * fftp[i,...] + b * fftq[i,...]
-        fftq[i+1,...] = c * fftp[i,...] + d * fftq[i,...]
-        fftp[i+1,...] = dum
+        dum = a * fftpi + b * fftqi
+        fftqi = c * fftpi + d * fftqi
+        fftpi = dum
 
-    return fftp, fftq
+    if nz-1 in levels:
+        fftp[lvl, ...] = fftpi
+        fftq[lvl, ...] = fftqi
+
+    return fftpi, fftqi, fftp, fftq
