@@ -29,7 +29,7 @@ srf_flx = point_source(nxy, domain, src_pt)
 
 z, profs = vertical_profiles(nz, meas_height, wind, ustar, closure="CONSTANT")
 
-_, _, conc_ana, flx_ana = steady_state_transport_solver(
+_, conc_ana, flx_ana = steady_state_transport_solver(
     srf_flx, z, profs, domain, nz, modes=modes, halo=halo, analytic=True
 )
 
@@ -74,7 +74,7 @@ for i, (modes, nz) in enumerate(zip(modess, nzs)):
     logger.info("nz: %d", nz)
 
     z, profs = vertical_profiles(nz, meas_height, wind, ustar, closure="CONSTANT")
-    _, _, conc, flx = steady_state_transport_solver(
+    _, conc, flx = steady_state_transport_solver(
         srf_flx, z, profs, domain, nz, modes=modes, halo=halo
     )
 

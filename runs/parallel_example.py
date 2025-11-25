@@ -26,9 +26,7 @@ srf_flx = ideal_source(nxy, domain)
 
 z, profs = vertical_profiles(nz, meas_height, wind, z0=z0)
 
-srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
-    srf_flx, z, profs, domain, nz
-)
+_, conc, flx = steady_state_transport_solver(srf_flx, z, profs, domain, nz)
 
 if __name__ == "__main__":
     logger.info("Example for BLDFM in parallelized mode.")

@@ -25,7 +25,7 @@ surf_flx = ideal_source(nxy, domain)
 
 z, profs = vertical_profiles(nz, meas_height, wind, mol=mol, z0=z0)
 
-srf_flx, bg_conc, conc, flx = steady_state_transport_solver(
+_, conc, flx = steady_state_transport_solver(
     surf_flx,
     z,
     profs,
