@@ -23,7 +23,7 @@ z, profs = vertical_profiles(nz, meas_height, wind, ustar)
 
 grid, conc, flx = steady_state_transport_solver(srf_flx, z, profs, domain, nz)
 
-Z, Y, X = grid
+X, Y, Z = grid
 
 if __name__ == "__main__":
     logger.info("Minimal example for neutrally stratified BL and default settings.")
