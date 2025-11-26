@@ -123,7 +123,7 @@ def steady_state_transport_solver(
 
     if footprint:
         # Fourier trafo of delta distribution
-        tfftq0 = np.ones((nly, nlx), dtype=complex) / nxe / nye
+        tfftq0 = np.ones((nly, nlx), dtype=np.complex128) / nxe / nye
     else:
         fftq0 = fft2(q0, norm="forward")  # fft of source
 
@@ -150,8 +150,8 @@ def steady_state_transport_solver(
     msk = np.ones((nly, nlx), dtype=bool)  # all n and m not equal 0
     msk[0, 0] = False
 
-    one = np.ones((nly, nlx), dtype=complex)[msk]
-    zero = np.zeros((nly, nlx), dtype=complex)[msk]
+    one = np.ones((nly, nlx), dtype=np.complex128)[msk]
+    zero = np.zeros((nly, nlx), dtype=np.complex128)[msk]
 
     Kinv = 1.0 / K[nz - 1]
 
@@ -164,8 +164,8 @@ def steady_state_transport_solver(
     )
 
     # initialization of output arrays
-    tfftp = np.zeros((nlvls, nly, nlx), dtype=complex)
-    tfftq = np.zeros((nlvls, nly, nlx), dtype=complex)
+    tfftp = np.zeros((nlvls, nly, nlx), dtype=np.complex128)
+    tfftq = np.zeros((nlvls, nly, nlx), dtype=np.complex128)
 
     tfftp[0, 0, 0] = p000
     tfftq[:, 0, 0] = tfftq0[0, 0]  # conservation by design
