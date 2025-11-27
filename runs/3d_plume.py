@@ -24,7 +24,7 @@ wind = 6.0, 0.0
 ustar = 0.4
 
 # define a point source at src_loc
-srf_flx = ideal_source(nxy, domain, src_loc=src_loc, shape='point')
+srf_flx = ideal_source(nxy, domain, src_loc=src_loc, shape="point")
 
 # compute profiles for neutral PBL
 z, profs = vertical_profiles(nz, meas_height, wind, ustar)
@@ -33,7 +33,9 @@ z, profs = vertical_profiles(nz, meas_height, wind, ustar)
 levels = np.arange(0, nz + 1, 2)
 
 # BLDFM in dispersion mode
-grid, conc, flx = steady_state_transport_solver(srf_flx, z, profs, domain, levels, modes=modes)
+grid, conc, flx = steady_state_transport_solver(
+    srf_flx, z, profs, domain, levels, modes=modes
+)
 
 X, Y, Z = grid
 
@@ -46,7 +48,7 @@ if __name__ == "__main__":
     plt.title("Horizontal slice of concentration at z0")
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
-    #plt.gca().set_aspect("equal")
+    # plt.gca().set_aspect("equal")
     plt.colorbar()
     plt.savefig("plots/ptsrc_concentration_xy_slice_at_z0.png")
 
@@ -55,7 +57,7 @@ if __name__ == "__main__":
     plt.title("Horizontal slice of flux field at z0")
     plt.xlabel("x [m]")
     plt.ylabel("y [m]")
-    #plt.gca().set_aspect("equal")
+    # plt.gca().set_aspect("equal")
     plt.colorbar()
     plt.savefig("plots/ptsrc_flux_xy_slice_at_z0.png")
 
@@ -63,13 +65,13 @@ if __name__ == "__main__":
     plt.pcolormesh(X[-1, :, :], Y[-1, :, :], conc[-1, :, :])
     plt.title("Horizontal slice of concentration at zmx")
     plt.xlabel("x [m]")
-    plt.ylabel("y [m]") 
-    #plt.gca().set_aspect("equal")
+    plt.ylabel("y [m]")
+    # plt.gca().set_aspect("equal")
     plt.colorbar()
     plt.savefig("plots/ptsrc_concentration_xy_slice_at_zmx.png")
 
     plt.figure()
-    plt.pcolormesh(X[:, nxy[1]//2, :], Z[:, nxy[1]//2, :], conc[:, nxy[1]//2, :])
+    plt.pcolormesh(X[:, nxy[1] // 2, :], Z[:, nxy[1] // 2, :], conc[:, nxy[1] // 2, :])
     plt.title("Vertical slice of concentration at ymx/2")
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")
@@ -77,19 +79,19 @@ if __name__ == "__main__":
     plt.savefig("plots/ptsrc_concentration_xz_slice.png")
 
     plt.figure()
-    plt.pcolormesh(X[:, nxy[1]//2, :], Z[:, nxy[1]//2, :], flx[:, nxy[1]//2, :])
+    plt.pcolormesh(X[:, nxy[1] // 2, :], Z[:, nxy[1] // 2, :], flx[:, nxy[1] // 2, :])
     plt.title("Vertical slice of flux field at ymx/2")
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")
     plt.colorbar()
     plt.savefig("plots/ptsrc_flux_xz_slice.png")
 
-
     plt.figure()
-    plt.pcolormesh(Y[:, :, nxy[0]*3//4], Z[:, :, nxy[0]*3//4], conc[:, :, nxy[0]*3//4])
+    plt.pcolormesh(
+        Y[:, :, nxy[0] * 3 // 4], Z[:, :, nxy[0] * 3 // 4], conc[:, :, nxy[0] * 3 // 4]
+    )
     plt.title("Vertical slice of concentration at 3/4 xmx")
     plt.xlabel("y [m]")
     plt.ylabel("z [m]")
     plt.colorbar()
     plt.savefig("plots/ptsrc_concentration_yz_slice.png")
-
