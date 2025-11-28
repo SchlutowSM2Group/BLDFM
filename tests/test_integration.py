@@ -41,7 +41,7 @@ def test_integration():
     ustar = 0.2
 
     # Generate inputs using pbl_model and utils
-    srf_flx = ideal_source(nxy, domain, src_pt, shape='point')
+    srf_flx = ideal_source(nxy, domain, src_pt, shape="point")
     z, profs = vertical_profiles(nz, meas_height, wind, ustar, closure="CONSTANT")
 
     # Solve using the solver
