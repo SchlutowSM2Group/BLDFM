@@ -61,7 +61,7 @@ if __name__ == "__main__":
         conc, origin="lower", cmap=cmap, extent=[0, domain[0], 0, domain[1]]
     )
 
-    axs[0, 0].plot(src_pt[0], src_pt[1], "ro")
+    # axs[0, 0].plot(src_pt[0], src_pt[1], "ro")
     axs[0, 0].set_title("Numerical concentration")
     axs[0, 0].set_ylabel("y [m]")
     axs[0, 0].xaxis.set_tick_params(labelbottom=False)
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         flx, origin="lower", cmap=cmap, extent=[0, domain[0], 0, domain[1]]
     )
 
-    axs[0, 1].plot(src_pt[0], src_pt[1], "ro")
+    # axs[0, 1].plot(src_pt[0], src_pt[1], "ro")
     axs[0, 1].set_title("Numerical flux")
     axs[0, 1].xaxis.set_tick_params(labelbottom=False)
     axs[0, 1].yaxis.set_tick_params(labelleft=False)
@@ -110,6 +110,9 @@ if __name__ == "__main__":
     # cbar.set_label('‰')
     cbar.formatter.set_powerlimits((0, 0))
     cbar.formatter.set_useMathText(True)
+
+    axs[0, 0].scatter(src_pt[0], src_pt[1], zorder=5, marker="*", color="red", s=100)
+    axs[0, 1].scatter(src_pt[0], src_pt[1], zorder=5, marker="*", color="red", s=100)
 
     # plt.show()
     plt.savefig("plots/comparison_analytic.png", dpi=300)
