@@ -134,7 +134,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">closure</span> <span class="o">=</span> <span class="s2">&quot;CONSTANT&quot;</span>
 
-    <span class="n">z</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span> <span class="o">=</span> <span class="n">vertical_profiles</span><span class="p">(</span>
+    <span class="n">z</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">Kx</span><span class="p">,</span> <span class="n">Ky</span><span class="p">,</span> <span class="n">Kz</span><span class="p">)</span> <span class="o">=</span> <span class="n">vertical_profiles</span><span class="p">(</span>
         <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
         <span class="n">meas_height</span><span class="o">=</span><span class="n">meas_height</span><span class="p">,</span>
         <span class="n">wind</span><span class="o">=</span><span class="n">wind</span><span class="p">,</span>
@@ -146,13 +146,15 @@
     <span class="c1"># Check the shape of the outputs</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">K</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">Kx</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ky</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">Kz</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 
     <span class="c1"># # Check that the profiles are constant</span>
     <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_almost_equal</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">wind</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
     <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_almost_equal</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="n">wind</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
     <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_almost_equal</span><span class="p">(</span>
-        <span class="n">K</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">ustar</span> <span class="o">*</span> <span class="n">meas_height</span> <span class="o">/</span> <span class="n">prsc</span><span class="p">)</span>
+        <span class="n">Kz</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">),</span> <span class="mf">0.4</span> <span class="o">*</span> <span class="n">ustar</span> <span class="o">*</span> <span class="n">meas_height</span> <span class="o">/</span> <span class="n">prsc</span><span class="p">)</span>
     <span class="p">)</span></div>
 
 
@@ -174,7 +176,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">closure</span> <span class="o">=</span> <span class="s2">&quot;MOST&quot;</span>
 
-    <span class="n">z</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span> <span class="o">=</span> <span class="n">vertical_profiles</span><span class="p">(</span>
+    <span class="n">z</span><span class="p">,</span> <span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">Kx</span><span class="p">,</span> <span class="n">Ky</span><span class="p">,</span> <span class="n">Kz</span><span class="p">)</span> <span class="o">=</span> <span class="n">vertical_profiles</span><span class="p">(</span>
         <span class="n">n</span><span class="o">=</span><span class="n">n</span><span class="p">,</span>
         <span class="n">meas_height</span><span class="o">=</span><span class="n">meas_height</span><span class="p">,</span>
         <span class="n">wind</span><span class="o">=</span><span class="n">wind</span><span class="p">,</span>
@@ -186,16 +188,20 @@
     <span class="c1"># Check the shape of the outputs</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">K</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">Kx</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ky</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">Kz</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
 
     <span class="c1"># Check that the profiles are not constant</span>
     <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">u</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">v</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">K</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">K</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">Kz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Kz</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="c1"># Check that the profiles are physically reasonable</span>
     <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">z</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Heights should be positive</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">K</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Eddy diffusivity should be positive</span></div>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">Kx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Eddy diffusivity should be positive</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">Ky</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Eddy diffusivity should be positive</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">Kz</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Eddy diffusivity should be positive</span></div>
 
 </pre></div>
 
