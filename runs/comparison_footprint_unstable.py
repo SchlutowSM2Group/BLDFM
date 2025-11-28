@@ -11,9 +11,6 @@ from bldfm.solver import steady_state_transport_solver
 from bldfm.ffm_kormann_meixner import estimateFootprint as FKM
 from bldfm import config
 
-# Run BLDFM on 4 threads/CPUs
-# config.NUM_THREADS = 16
-
 logger = get_logger("comparison_footprint_unstable")
 
 nxy = 256, 768
@@ -44,12 +41,6 @@ umean = np.sqrt(wind[0] ** 2 + wind[1] ** 2)
 surf_flx = ideal_source(nxy, domain)
 
 z, profs = vertical_profiles(nz, meas_height, wind, z0=z0, mol=mol, closure="MOST")
-
-# u, v, Kx, Ky, Kz = profs
-# Kzm = Kz[nz]
-# x = xmx / 2.0
-# sigma_v = np.sqrt(2.0 * Kzm * umean / x)
-# print(sigma_v)
 
 srf_flx, bg_conc, conc, flx = steady_state_transport_solver(
     surf_flx,
@@ -117,11 +108,6 @@ if __name__ == "__main__":
 
     levels = np.linspace(vmin, vmax, lvls, endpoint=False)
 
-    # BLDFM
-    # plot = axs[0].imshow(
-    #    flx, origin="lower", cmap=cmap, vmin=0.0, vmax=vmax, extent=[0, domain[0], 0, domain[1]]
-    # )
-
     x = np.linspace(0, xmx, nx)
     y = np.linspace(0, ymx, ny)
     X, Y = np.meshgrid(x, y)
@@ -134,10 +120,6 @@ if __name__ == "__main__":
     axs[0].set_xlabel("x [m]")
     axs[0].set_ylabel("y [m]")
 
-    # BLDFM modified
-    # plot = axs[1].imshow(
-    #    flx_m, origin="lower", cmap=cmap, vmin=0.0, vmax=vmax, extent=[0, domain[0], 0, domain[1]]
-    # )
     axs[1].contour(
         X, Y, flx_m, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=linewidths
     )
@@ -145,10 +127,6 @@ if __name__ == "__main__":
     axs[1].set_title("BLDFM-SP")
     axs[1].set_xlabel("x [m]")
 
-    # FKM
-    # plot = axs[2].imshow(
-    #    grid_ffm, origin="upper", cmap=cmap, vmin=0.0, vmax=vmax, extent=[0, domain[0], 0, domain[1]]
-    # )
     plot = axs[2].contour(
         grid_x,
         grid_y,
@@ -173,12 +151,3 @@ if __name__ == "__main__":
     axs[2].scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*", color="red", s=300)
 
     plt.savefig("plots/comparison_footprint_unstable.png", dpi=300)
-#    plt.show()
-#
-#    flx_mean = np.mean(flx,axis=1)
-#    flm_mean = np.mean(flx_m,axis=1)
-#    fkn_mean =np.mean(grid_ffm,axis=1)
-#    plt.plot(flx_mean)
-#    plt.plot(flm_mean)
-#    plt.plot(fkn_mean[::-1])
-#    plt.show()
