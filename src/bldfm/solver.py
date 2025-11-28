@@ -25,6 +25,7 @@ def steady_state_transport_solver(
     footprint=False,
     analytic=False,
     halo=None,
+    precision="single",
 ):
     """
     Solves the steady-state advection-diffusion equation for a concentration
@@ -92,7 +93,7 @@ def steady_state_transport_solver(
 
     # Check output levels
     if np.ndim(levels) == 0:
-        levels = [levels]
+        levels = np.array([levels])
 
     nlvls = len(levels)
 
@@ -164,8 +165,18 @@ def steady_state_transport_solver(
     )
 
     # initialization of output arrays
-    tfftp = np.zeros((nlvls, nly, nlx), dtype=np.complex128)
-    tfftq = np.zeros((nlvls, nly, nlx), dtype=np.complex128)
+    if precision == "single":
+
+        tfftp = np.zeros((nlvls, nly, nlx), dtype=np.complex64)
+        tfftq = np.zeros((nlvls, nly, nlx), dtype=np.complex64)
+
+    elif precision == "double":
+
+        tfftp = np.zeros((nlvls, nly, nlx), dtype=np.complex128)
+        tfftq = np.zeros((nlvls, nly, nlx), dtype=np.complex128)
+
+    else:
+        raise Exception("precision must be single (default) or double.")
 
     tfftp[0, 0, 0] = p000
     tfftq[:, 0, 0] = tfftq0[0, 0]  # conservation by design
@@ -186,6 +197,8 @@ def steady_state_transport_solver(
         # solve non-degenerated problem for (n,m) =/= (0,0)
         # by linear shooting method
         # use two auxillary initial value problems
+
+        # setup for parallelization
         if config.NUM_THREADS > 1:
             logger.info("BLDFM runnning with Numba parallelization.")
             set_num_threads(config.NUM_THREADS)
@@ -212,17 +225,18 @@ def steady_state_transport_solver(
         tfftp[:, msk] = alpha * tfftpm1 + tfftpm2
         tfftq[:, msk] = alpha * tfftqm1 + tfftqm2
 
-        # solve degenerated problem for (n,m) =  (0,0)
-        # with Euler forward method
+        # solve degenerated problem for (n,m) = (0,0)
+        # with trapezoidal rule
         lvl = 0
         tfftp00 = p000
+
         for i in range(nz - 1):
 
             if i in levels:
                 tfftp[lvl, 0, 0] = tfftp00
                 lvl += 1
 
-            tfftp00 = tfftp00 - tfftq0[0, 0] / K[i] * dz[i]
+            tfftp00 = tfftp00 - tfftq0[0, 0] * dz[i] * (0.5 / K[i] + 0.5 / K[i + 1])
 
         if nz - 1 in levels:
             tfftp[lvl, 0, 0] = tfftp00
@@ -266,6 +280,7 @@ def steady_state_transport_solver(
     conc = p[:, py : nye - py, px : nxe - px]
     flx = q[:, py : nye - py, px : nxe - px]
 
+    # grid points for output
     x = np.linspace(0, xmx, nx, endpoint=False)
     y = np.linspace(0, ymx, ny, endpoint=False)
 
@@ -302,7 +317,6 @@ def ivp_solver(fftpq, profiles, z, levels, Lx, Ly):
     fftq : ndarray of complex
         Fourier-transformed flux field after solving the IVP.
     """
-
     fftp0, fftq0 = fftpq
     u, v, K = profiles
     nxy = fftp0.shape[0]

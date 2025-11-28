@@ -31,7 +31,7 @@ def compute_wind_fields(u_rot, wind_dir):
     return u, v
 
 
-#def point_source(nxy, domain, src_pt):
+# def point_source(nxy, domain, src_pt):
 #    """
 #    Generates a point source field in Fourier space and transforms it back
 #    to the spatial domain.
@@ -71,7 +71,7 @@ def compute_wind_fields(u_rot, wind_dir):
 #    return fft.ifft2(fftq0, norm="forward").real
 
 
-def ideal_source(nxy, domain, src_loc=None,  shape="diamond"):
+def ideal_source(nxy, domain, src_loc=None, shape="diamond"):
     """
     Creates a synthetic source field in the shape of a circle or diamond.
     Useful for testing purposes.
@@ -87,14 +87,14 @@ def ideal_source(nxy, domain, src_loc=None,  shape="diamond"):
 
     nx, ny = nxy
     xmx, ymx = domain
-    dx = xmx / nx 
+    dx = xmx / nx
     dy = ymx / ny
 
     if src_loc is None:
         # source in the middle of the domain
         src_loc = (xmx / 2, ymx / 2)
 
-    xs, ys = src_loc 
+    xs, ys = src_loc
 
     x = np.linspace(0.0, xmx, nx)
     y = np.linspace(0.0, ymx, ny)
@@ -103,21 +103,20 @@ def ideal_source(nxy, domain, src_loc=None,  shape="diamond"):
 
     q0 = np.zeros([ny, nx])
 
-    if shape == 'diamond':
+    if shape == "diamond":
         R0 = xmx / 12
         R = np.abs(X - xs) + np.abs(Y - ys)
         q0 = np.where(R < R0, 1.0, 0.0)
 
-    if shape == 'circle':
+    if shape == "circle":
         R0 = xmx / 12
-        R = np.sqrt((X-xs)**2 + (Y-ys)**2)
+        R = np.sqrt((X - xs) ** 2 + (Y - ys) ** 2)
         q0 = np.where(R < R0, 1.0, 0.0)
 
-    if shape == 'point':
+    if shape == "point":
         sig = 4.0 * dx
-        Rsq = (X-xs)**2 + (Y-ys)**2
+        Rsq = (X - xs) ** 2 + (Y - ys) ** 2
         q0 = np.exp(-Rsq / 2.0 / sig**2) / sig / np.sqrt(2.0 * np.pi)
-
 
     return q0
 
