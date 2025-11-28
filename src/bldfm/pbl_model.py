@@ -40,7 +40,7 @@ def vertical_profiles(
         tuple:
             - z (numpy.ndarray): 1D array of vertical grid points.
             - profiles (tuple of numpy.ndarray): 1D arrays of horizontal wind components (u, v)
-              and eddy diffusivity (K) at each vertical grid point.
+              and eddy diffusivities (Kx, Ky, Kz) at each vertical grid point.
 
     Raises:
         ValueError: If invalid closure type is provided.
@@ -72,7 +72,7 @@ def vertical_profiles(
     # absolute wind at zm
     absum = np.sqrt(um**2 + vm**2)
 
-    if closure == "CONSTANT" or closure == "MOST":
+    if closure == "CONSTANT" or closure == "MOST" or closure == "MOSTM":
 
         if z0 is None:
 
@@ -141,6 +141,7 @@ def vertical_profiles(
         u = um * np.ones(len(z))
         v = vm * np.ones(len(z))
         K = Km * np.ones(len(z))
+        Kx = Ky = Kz = K
 
     elif closure == "MOST":
 
@@ -151,8 +152,26 @@ def vertical_profiles(
         v = vm / absum * absu
 
         K = kap * ustar * z / phi(z / mol) / prsc
+        Kx = Ky = Kz = K
+
+    elif closure == "MOSTM":
+
+        # computation of MOST profiles, modified with no diffusion in flow direction
+        # This makes it more comparable to Kormann Meixner footprint model
+        absu = ustar / kap * (np.log(z / z0) + psi(z / mol))
+
+        u = um / absum * absu
+        v = vm / absum * absu
+
+        K = kap * ustar * z / phi(z / mol) / prsc
+
+        Kx = K * v**2 / (u**2 + v**2)
+        Ky = K * u**2 / (u**2 + v**2)
+        Kz = K
 
     elif closure == "OAAHOC":
+
+        # one-and-a-half order closure
 
         absu = ustar**2 / cm / cl / np.sqrt(tke) * np.log(z / z0)
 
@@ -160,6 +179,7 @@ def vertical_profiles(
         v = vm / absum * absu
 
         K = ch * cl * z * np.sqrt(tke)
+        Kx = Ky = Kz = K
 
     else:
         raise ValueError(
@@ -167,24 +187,27 @@ def vertical_profiles(
             "Supported closures are 'MOST', 'CONSTANT', and 'OAAHOC'."
         )
 
-    if len(z) <= 1:
-        logger.info("Stats from vertical_profiles")
-        logger.info("z0    = %.3f m", z[0])
-        logger.info("ustar = %.3f m s-1", ustar)
-        logger.info(
-            "umax  = %.3f m s-1, vmax = %.3f m s-1, Kmax = %.3f m2 s-1",
-            max(u),
-            max(v),
-            max(K),
-        )
-        logger.info(
-            "umin  = %.3f m s-1, vmin = %.3f m s-1, Kmin = %.3f m2 s-1",
-            min(u),
-            min(v),
-            min(K),
-        )
+    logger.info("Stats from vertical_profiles")
+    logger.info("z0    = %.3f m", z[0])
+    logger.info("ustar = %.3f m s-1", ustar)
+    logger.info(
+        "umax  = %.3f m s-1, vmax = %.3f m s-1, Kxmax = %.3f m2 s-1, Kymax = %.3f m2 s-1, Kzmax = %.3f m2 s-1",
+        max(u),
+        max(v),
+        max(Kx),
+        max(Ky),
+        max(Kz),
+    )
+    logger.info(
+        "umin  = %.3f m s-1, vmin = %.3f m s-1, Kxmin = %.3f m2 s-1, Kymin = %.3f m2 s-1, Kzmin = %.3f m2 s-1",
+        min(u),
+        min(v),
+        min(Kx),
+        min(Ky),
+        min(Kz),
+    )
 
-    return z, (u, v, K)
+    return z, (u, v, Kx, Ky, Kz)
 
 
 def psi(x):

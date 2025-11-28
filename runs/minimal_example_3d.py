@@ -36,7 +36,7 @@ if __name__ == "__main__":
     logger.info("")
 
     plt.figure()
-    plt.pcolormesh(X[:, 64, :], Z[:, 64, :], conc[:, 64, :])
+    plt.pcolormesh(X[:, 128, :], Z[:, 128, :], conc[:, 128, :])
     plt.title("Vertical slice of concentration")
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     plt.savefig("plots/concentration_vertical_slice.png")
 
     plt.figure()
-    plt.pcolormesh(X[:, 64, :], Z[:, 64, :], flx[:, 64, :])
+    plt.pcolormesh(X[:, 128, :], Z[:, 128, :], flx[:, 128, :])
     plt.title("Vertical slice of kinematic flux")
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")

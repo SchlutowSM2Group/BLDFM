@@ -13,20 +13,20 @@ from bldfm import config
 
 logger = get_logger("comparison_footprint_unstable")
 
-nxy = 256, 768
+nxy = 128, 640
 nz = 64
 modes = 512, 512
 # modes = 1024, 1024
 # modes       = 128, 128
-domain = 50.0, 150.0
-halo = 400.0
+domain = 50.0, 250.0
+halo = 500.0
 meas_pt = 25.0, 20.0
 meas_height = 10.0
 wind = 0.0, -5.0
-ustar = 1.064
+ustar = 0.668
 z0 = 0.5
-mol = -10.0
-sigma_v = 1.0
+mol = 1e9
+sigma_v = 0.32
 
 xmx, ymx = domain
 nx, ny = nxy
@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     fig, axs = plt.subplots(1, 3, figsize=[8, 8], sharey=True, layout="constrained")
 
-    vmin = 2e-6
+    vmin = 1e-5
     vmax = np.max(flx)
 
     levels = np.linspace(vmin, vmax, lvls, endpoint=False)
@@ -148,4 +148,4 @@ if __name__ == "__main__":
     axs[1].scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*", color="red", s=300)
     axs[2].scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*", color="red", s=300)
 
-    plt.savefig("plots/comparison_footprint_unstable.png", dpi=300)
+    plt.savefig("plots/comparison_footprint_neutral.png", dpi=300)

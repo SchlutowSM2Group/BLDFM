@@ -40,7 +40,7 @@ def steady_state_transport_solver(
         1D array of vertical grid points from z0 to zm [m].
     profiles : tuple of ndarray
         Tuple containing 1D arrays of vertical profiles of zonal wind, meridional wind [m/s],
-        and eddy diffusivity [m²/s].
+        and eddy diffusivities [m²/s].
     domain : tuple of float
         Tuple containing domain sizes (xmax, ymax) [m].
     levels : float or ndarray of float
@@ -74,7 +74,7 @@ def steady_state_transport_solver(
 
     q0 = srf_flx
     p000 = srf_bg_conc
-    u, v, K = profiles
+    u, v, Kx, Ky, Kz = profiles
     xmx, ymx = domain
     nlx, nly = modes
     xm, ym = meas_pt
@@ -154,14 +154,16 @@ def steady_state_transport_solver(
     one = np.ones((nly, nlx), dtype=np.complex128)[msk]
     zero = np.zeros((nly, nlx), dtype=np.complex128)[msk]
 
-    Kinv = 1.0 / K[nz - 1]
+    Kzinv = 1.0 / Kz[nz - 1]
+    KxKzinv = Kx[nz - 1] * Kzinv
+    KyKzinv = Ky[nz - 1] * Kzinv
 
     # Eigenvalue determining solution for z > zmx
     eigval = np.sqrt(
-        Lx[msk] ** 2
-        + Ly[msk] ** 2
-        + 1j * u[nz - 1] * Kinv * Lx[msk]
-        + 1j * v[nz - 1] * Kinv * Ly[msk]
+        KxKzinv * Lx[msk] ** 2
+        + KyKzinv * Ly[msk] ** 2
+        + 1j * u[nz - 1] * Kzinv * Lx[msk]
+        + 1j * v[nz - 1] * Kzinv * Ly[msk]
     )
 
     # initialization of output arrays
@@ -187,10 +189,10 @@ def steady_state_transport_solver(
         # for validation purposes
         h = z[levels] - z[0]
 
-        tfftp[0, msk] = tfftq0[msk] * Kinv / eigval
-        tfftp[:, 0, 0] = p000 - tfftq0[0, 0] * Kinv * h
+        tfftp[0, msk] = tfftq0[msk] * Kzinv / eigval
+        tfftp[:, 0, 0] = p000 - tfftq0[0, 0] * Kzinv * h
         tfftq[:, msk] = tfftq0[msk] * np.exp(-eigval * h)
-        tfftp[:, msk] = tfftq[:, msk] * Kinv / eigval
+        tfftp[:, msk] = tfftq[:, msk] * Kzinv / eigval
 
     else:
 
@@ -216,8 +218,8 @@ def steady_state_transport_solver(
             (zero, tfftq0[msk]), profiles, z, levels, Lx[msk], Ly[msk]
         )
 
-        alpha = -(tfftq2 - K[nz - 1] * eigval * tfftp2) / (
-            tfftq1 - K[nz - 1] * eigval * tfftp1
+        alpha = -(tfftq2 - Kz[nz - 1] * eigval * tfftp2) / (
+            tfftq1 - Kz[nz - 1] * eigval * tfftp1
         )
 
         # linear combination of the two solution of the IVP
@@ -236,7 +238,7 @@ def steady_state_transport_solver(
                 tfftp[lvl, 0, 0] = tfftp00
                 lvl += 1
 
-            tfftp00 = tfftp00 - tfftq0[0, 0] * dz[i] * (0.5 / K[i] + 0.5 / K[i + 1])
+            tfftp00 = tfftp00 - tfftq0[0, 0] * dz[i] * (0.5 / Kz[i] + 0.5 / Kz[i + 1])
 
         if nz - 1 in levels:
             tfftp[lvl, 0, 0] = tfftp00
@@ -318,7 +320,8 @@ def ivp_solver(fftpq, profiles, z, levels, Lx, Ly):
         Fourier-transformed flux field after solving the IVP.
     """
     fftp0, fftq0 = fftpq
-    u, v, K = profiles
+
+    u, v, Kx, Ky, Kz = profiles
     nxy = fftp0.shape[0]
 
     nlvls = len(levels)
@@ -339,14 +342,14 @@ def ivp_solver(fftpq, profiles, z, levels, Lx, Ly):
             fftq[lvl, ...] = fftqi
             lvl += 1
 
-        Ti = -K[i] * (Lx**2 + Ly**2) - 1j * u[i] * Lx - 1j * v[i] * Ly
-        Kinv = 1.0 / K[i]
+        Ti = -(Kx[i] * Lx**2 + Ky[i] * Ly**2) - 1j * u[i] * Lx - 1j * v[i] * Ly
+        Kzinv = 1.0 / Kz[i]
         dzi = dz[i]
 
-        a = 1.0 - 0.5 * Kinv * Ti * dzi**2
-        b = -Kinv * dzi - 1.0 / 6.0 * Kinv**2 * Ti * dzi**3
-        c = Ti * dzi - 1.0 / 6.0 * Kinv * Ti**2 * dzi**3
-        d = 1.0 - 0.5 * Kinv * Ti * dzi**2
+        a = 1.0 - 0.5 * Kzinv * Ti * dzi**2
+        b = -Kzinv * dzi - 1.0 / 6.0 * Kzinv**2 * Ti * dzi**3
+        c = Ti * dzi - 1.0 / 6.0 * Kzinv * Ti**2 * dzi**3
+        d = 1.0 - 0.5 * Kzinv * Ti * dzi**2
 
         dum = a * fftpi + b * fftqi
         fftqi = c * fftpi + d * fftqi
