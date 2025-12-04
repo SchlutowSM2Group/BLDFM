@@ -25,7 +25,7 @@ meas_height = 10.0
 wind = 4.0, 1.0
 ustar = 0.4
 
-srf_flx = ideal_source(nxy, domain, src_pt, shape='point')
+srf_flx = ideal_source(nxy, domain, src_pt, shape="point")
 
 z, profs = vertical_profiles(nz, meas_height, wind, ustar, closure="CONSTANT")
 
