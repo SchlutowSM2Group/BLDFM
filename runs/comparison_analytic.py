@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import time
 
 from bldfm.pbl_model import vertical_profiles
-from bldfm.utils import point_source, get_logger
+from bldfm.utils import ideal_source, get_logger
 from bldfm.solver import steady_state_transport_solver
 
 logger = get_logger("comparison_analytic")
@@ -25,7 +25,7 @@ meas_height = 10.0
 wind = 4.0, 1.0
 ustar = 0.4
 
-srf_flx = point_source(nxy, domain, src_pt)
+srf_flx = ideal_source(nxy, domain, src_pt, shape='point')
 
 z, profs = vertical_profiles(nz, meas_height, wind, ustar, closure="CONSTANT")
 
