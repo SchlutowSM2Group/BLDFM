@@ -84,9 +84,14 @@ for i, (modes, nz) in enumerate(zip(modess, nzs)):
     flx_err[i] = np.mean((flx - flx_ana) ** 2) / np.mean(flx_ana**2)
 
 
-def decay(x, e0, r):
+def expo(x, e0, r):
     # exponential error convergence
     return e0 * np.exp(-r / x)
+
+
+def cube(x, e0):
+    # third order monomial
+    return e0 * x**3
 
 
 if __name__ == "__main__":
@@ -101,10 +106,12 @@ if __name__ == "__main__":
     # effective grid size
     dxyz = np.cbrt(dx * dy * dz)
 
-    popt, _ = curve_fit(decay, dxyz, conc_err)
+    popt_expo, _ = curve_fit(expo, dxyz, conc_err)
+    popt_cube, _ = curve_fit(cube, dxyz, conc_err)
 
+    plt.plot(dxyz, expo(dxyz, *popt_expo), label=f"$\\exp(-{int(popt_expo[1])}/h)$")
+    plt.plot(dxyz, cube(dxyz, *popt_cube), label=f"$h^3$")
     plt.plot(dxyz, conc_err, "o")
-    plt.plot(dxyz, decay(dxyz, *popt), label=f"r = {int(popt[1])}")
     plt.title("Error convergence for ANALY")
     plt.xlabel("$h$ [m]")
     plt.ylabel("Relative RMSE")
