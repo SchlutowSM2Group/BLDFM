@@ -24,7 +24,7 @@ surf_flx = ideal_source(nxy, domain)
 z, profs = vertical_profiles(nz, meas_height, wind, z0=z0)
 
 # compute flux footprint, note that surf_flx is a dummy input for shape
-_, _, _, flx = steady_state_transport_solver(
+_, _, flx = steady_state_transport_solver(
     surf_flx,
     z,
     profs,
@@ -38,7 +38,7 @@ _, _, _, flx = steady_state_transport_solver(
 flx_meas_convolve = point_measurement(surf_flx, flx)
 
 # direct computation of flux field from surface flux
-srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
+_, conc, flx = steady_state_transport_solver(
     surf_flx,
     z,
     profs,

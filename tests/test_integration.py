@@ -11,7 +11,7 @@ Functions:
 
 import numpy as np
 from bldfm.pbl_model import vertical_profiles
-from bldfm.utils import point_source
+from bldfm.utils import ideal_source
 from bldfm.solver import steady_state_transport_solver
 
 
@@ -41,14 +41,14 @@ def test_integration():
     ustar = 0.2
 
     # Generate inputs using pbl_model and utils
-    srf_flx = point_source(nxy, domain, src_pt)
+    srf_flx = ideal_source(nxy, domain, src_pt, shape="point")
     z, profs = vertical_profiles(nz, meas_height, wind, ustar, closure="CONSTANT")
 
     # Solve using the solver
-    _, _, conc_ana, flx_ana = steady_state_transport_solver(
+    _, conc_ana, flx_ana = steady_state_transport_solver(
         srf_flx, z, profs, domain, nz, modes=modes, halo=halo, analytic=True
     )
-    _, _, conc, flx = steady_state_transport_solver(
+    _, conc, flx = steady_state_transport_solver(
         srf_flx, z, profs, domain, nz, modes=modes, halo=halo
     )
 
