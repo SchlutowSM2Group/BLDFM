@@ -40,34 +40,20 @@ def test_steady_state_transport_solver():
     srf_flx = ideal_source((nx, ny), domain)
 
     # Call the solver with analytic=True
-    srf_conc_analytic, bg_conc_analytic, conc_analytic, flx_analytic = (
-        steady_state_transport_solver(
-            srf_flx, z, profs, domain, nz, modes=modes, analytic=True
-        )
+    _, conc_analytic, flx_analytic = steady_state_transport_solver(
+        srf_flx, z, profs, domain, nz, modes=modes, analytic=True
     )
 
     # Call the solver with analytic=False
-    srf_conc_numeric, bg_conc_numeric, conc_numeric, flx_numeric = (
-        steady_state_transport_solver(
-            srf_flx, z, profs, domain, nz, modes=modes, analytic=False
-        )
+    _, conc_numeric, flx_numeric = steady_state_transport_solver(
+        srf_flx, z, profs, domain, nz, modes=modes, analytic=False
     )
 
     # Assertions to validate numeric output shapes
-    assert srf_conc_numeric.shape == (ny, nx), "Surface concentration shape mismatch"
-    assert isinstance(
-        bg_conc_numeric, float
-    ), "Background concentration should be a float"
     assert conc_numeric.shape == (ny, nx), "Concentration shape mismatch"
     assert flx_numeric.shape == (ny, nx), "Flux shape mismatch"
 
     # Compare the results
-    assert np.allclose(
-        srf_conc_analytic, srf_conc_numeric, atol=1e-2
-    ), "Surface concentration mismatch between analytic and numeric"
-    assert np.isclose(
-        bg_conc_analytic, bg_conc_numeric, atol=1e-2
-    ), "Background concentration mismatch between analytic and numeric"
     assert np.allclose(
         conc_analytic, conc_numeric, atol=1e-2
     ), "Concentration mismatch between analytic and numeric"
@@ -81,18 +67,18 @@ def test_steady_state_transport_solver():
     # Plot numerical solution
     plt.subplot(1, 2, 1)
     plt.title("Numerical Solution")
-    plt.imshow(srf_conc_numeric, origin="lower", extent=[0, domain[0], 0, domain[1]])
+    plt.imshow(conc_numeric, origin="lower", extent=[0, domain[0], 0, domain[1]])
     plt.colorbar()
 
     # Plot analytical solution
     plt.subplot(1, 2, 2)
     plt.title("Analytical Solution")
-    plt.imshow(srf_conc_analytic, origin="lower", extent=[0, domain[0], 0, domain[1]])
+    plt.imshow(conc_analytic, origin="lower", extent=[0, domain[0], 0, domain[1]])
     plt.colorbar()
     plt.savefig("plots/analytical_vs_numerical_solution.png")
 
     # Compare numerical and analytical solutions
-    error = np.abs(srf_conc_numeric - srf_conc_analytic)
+    error = np.abs(conc_numeric - conc_analytic)
     max_error = np.max(error)
     assert (
         max_error < 1e-2

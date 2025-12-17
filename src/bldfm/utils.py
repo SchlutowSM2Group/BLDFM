@@ -31,47 +31,47 @@ def compute_wind_fields(u_rot, wind_dir):
     return u, v
 
 
-def point_source(nxy, domain, src_pt):
-    """
-    Generates a point source field in Fourier space and transforms it back
-    to the spatial domain.
+# def point_source(nxy, domain, src_pt):
+#    """
+#    Generates a point source field in Fourier space and transforms it back
+#    to the spatial domain.
+#
+#    Parameters:
+#        nxy (tuple): Number of grid points in the x and y directions (nx, ny).
+#        domain (tuple): Physical dimensions of the domain (xmax, ymax).
+#        src_pt (tuple): Coordinates of the source point (xs, ys).
+#
+#    Returns:
+#        numpy.ndarray: A 2D array representing the point source field in the spatial domain.
+#    """
+#    nx, ny = nxy
+#    xmx, ymx = domain
+#    xs, ys = src_pt
+#
+#    dx, dy = xmx / nx, ymx / ny
+#
+#    # Fourier summation index
+#    ilx = fft.fftfreq(nx, d=1.0 / nx)
+#    ily = fft.fftfreq(ny, d=1.0 / ny)
+#
+#    # define zonal and meridional wavenumbers
+#    lx = 2.0 * np.pi / dx / nx * ilx
+#    ly = 2.0 * np.pi / dy / ny * ily
+#
+#    Lx, Ly = np.meshgrid(lx, ly)
+#
+#    fftq0 = np.ones((ny, nx), dtype=np.complex128)
+#
+#    # shift to source point in Fourier space
+#    fftq0 = fftq0 * np.exp(-1j * (Lx * xs + Ly * ys)) / nx / ny
+#
+#    # normalize
+#    fftq0 = fftq0 / dx / dy
+#
+#    return fft.ifft2(fftq0, norm="forward").real
 
-    Parameters:
-        nxy (tuple): Number of grid points in the x and y directions (nx, ny).
-        domain (tuple): Physical dimensions of the domain (xmax, ymax).
-        src_pt (tuple): Coordinates of the source point (xs, ys).
 
-    Returns:
-        numpy.ndarray: A 2D array representing the point source field in the spatial domain.
-    """
-    nx, ny = nxy
-    xmx, ymx = domain
-    xs, ys = src_pt
-
-    dx, dy = xmx / nx, ymx / ny
-
-    # Fourier summation index
-    ilx = fft.fftfreq(nx, d=1.0 / nx)
-    ily = fft.fftfreq(ny, d=1.0 / ny)
-
-    # define zonal and meridional wavenumbers
-    lx = 2.0 * np.pi / dx / nx * ilx
-    ly = 2.0 * np.pi / dy / ny * ily
-
-    Lx, Ly = np.meshgrid(lx, ly)
-
-    fftq0 = np.ones((ny, nx), dtype=complex)
-
-    # shift to source point in Fourier space
-    fftq0 = fftq0 * np.exp(-1j * (Lx * xs + Ly * ys)) / nx / ny
-
-    # normalize
-    fftq0 = fftq0 / dx / dy
-
-    return fft.ifft2(fftq0, norm="forward").real
-
-
-def ideal_source(nxy, domain, shape="diamond"):
+def ideal_source(nxy, domain, src_loc=None, shape="diamond"):
     """
     Creates a synthetic source field in the shape of a circle or diamond.
     Useful for testing purposes.
@@ -87,6 +87,14 @@ def ideal_source(nxy, domain, shape="diamond"):
 
     nx, ny = nxy
     xmx, ymx = domain
+    dx = xmx / nx
+    dy = ymx / ny
+
+    if src_loc is None:
+        # source in the middle of the domain
+        src_loc = (xmx / 2, ymx / 2)
+
+    xs, ys = src_loc
 
     x = np.linspace(0.0, xmx, nx)
     y = np.linspace(0.0, ymx, ny)
@@ -95,15 +103,20 @@ def ideal_source(nxy, domain, shape="diamond"):
 
     q0 = np.zeros([ny, nx])
 
-    # Circular source
-    # R = np.sqrt((X-xmx/2)**2 + (Y-ymx/2)**2)
+    if shape == "diamond":
+        R0 = xmx / 12
+        R = np.abs(X - xs) + np.abs(Y - ys)
+        q0 = np.where(R < R0, 1.0, 0.0)
 
-    # Diamond source
-    R = np.abs(X - xmx / 4) + np.abs(Y - ymx / 4)
+    if shape == "circle":
+        R0 = xmx / 12
+        R = np.sqrt((X - xs) ** 2 + (Y - ys) ** 2)
+        q0 = np.where(R < R0, 1.0, 0.0)
 
-    R0 = xmx / 12
-
-    q0 = np.where(R < R0, 1.0, 0.0)
+    if shape == "point":
+        sig = 4.0 * dx
+        Rsq = (X - xs) ** 2 + (Y - ys) ** 2
+        q0 = np.exp(-Rsq / 2.0 / sig**2) / sig / np.sqrt(2.0 * np.pi)
 
     return q0
 

@@ -26,33 +26,19 @@ srf_flx = ideal_source(nxy, domain)
 
 z, profs = vertical_profiles(nz, meas_height, wind, z0=z0)
 
-srf_conc, bg_conc, conc, flx = steady_state_transport_solver(
-    srf_flx, z, profs, domain, nz
-)
+grid, conc, flx = steady_state_transport_solver(srf_flx, z, profs, domain, nz)
 
 if __name__ == "__main__":
+
     logger.info("Example for BLDFM in parallelized mode.")
     logger.info("")
-    plt.figure()
-    plt.imshow(srf_conc, origin="lower", extent=[0, domain[0], 0, domain[1]])
-    plt.title("Concentration at z0")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.colorbar()
-    plt.savefig("plots/concentration_at_z0.png")
+
+    X, Y, Z = grid
 
     plt.figure()
-    plt.imshow(conc, origin="lower", extent=[0, domain[0], 0, domain[1]])
-    plt.title("Concentration at zm")
-    plt.xlabel("x")
-    plt.ylabel("y")
+    plt.pcolormesh(X, Y, conc)
+    plt.title("Concentration at meas_height")
+    plt.xlabel("x [m]")
+    plt.ylabel("y [m]")
     plt.colorbar()
-    plt.savefig("plots/concentration_at_zm.png")
-
-    plt.figure()
-    plt.imshow(flx, origin="lower", extent=[0, domain[0], 0, domain[1]])
-    plt.title("Vertical kinematic flux at zm")
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.colorbar()
-    plt.savefig("plots/kinematic_flux_at_zm.png")
+    plt.savefig("plots/concentration_at_meas_height.png")

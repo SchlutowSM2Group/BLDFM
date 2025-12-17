@@ -2,26 +2,32 @@
 Minimal example module showcasing basic usage of the BLDFM framework.
 """
 
+import numpy as np
 import matplotlib.pyplot as plt
 
 from bldfm.pbl_model import vertical_profiles
 from bldfm.utils import ideal_source, get_logger
 from bldfm.solver import steady_state_transport_solver
+from bldfm import config
 
-logger = get_logger("minimal_example")
+config.NUM_THREADS = 16
+
+logger = get_logger("minimal_example_3d")
 
 nxy = 512, 256
-nz = 16
+nz = 64
 domain = 2000.0, 1000.0
 meas_height = 10.0
-wind = 4.0, 1.0
-ustar = 0.4
+wind = 6.0, 0.0
+ustar = 0.5
 
 srf_flx = ideal_source(nxy, domain)
 
 z, profs = vertical_profiles(nz, meas_height, wind, ustar)
 
-grid, conc, flx = steady_state_transport_solver(srf_flx, z, profs, domain, nz)
+levels = np.arange(nz + 1)
+
+grid, conc, flx = steady_state_transport_solver(srf_flx, z, profs, domain, levels)
 
 X, Y, Z = grid
 
@@ -30,19 +36,17 @@ if __name__ == "__main__":
     logger.info("")
 
     plt.figure()
-    plt.pcolormesh(X, Y, conc)
-    plt.title(f"Concentration at {meas_height} m")
+    plt.pcolormesh(X[:, 128, :], Z[:, 128, :], conc[:, 128, :])
+    plt.title("Vertical slice of concentration")
     plt.xlabel("x [m]")
-    plt.ylabel("y [m]")
-    plt.gca().set_aspect("equal")
+    plt.ylabel("z [m]")
     plt.colorbar()
-    plt.savefig("plots/concentration_at_meas_height.png")
+    plt.savefig("plots/concentration_vertical_slice.png")
 
     plt.figure()
-    plt.pcolormesh(X, Y, flx)
-    plt.title(f"Vertical kinematic flux at {meas_height} m")
+    plt.pcolormesh(X[:, 128, :], Z[:, 128, :], flx[:, 128, :])
+    plt.title("Vertical slice of kinematic flux")
     plt.xlabel("x [m]")
-    plt.ylabel("y [m]")
-    plt.gca().set_aspect("equal")
+    plt.ylabel("z [m]")
     plt.colorbar()
-    plt.savefig("plots/kinematic_flux_at_meas_height.png")
+    plt.savefig("plots/flux_vertical_slice.png")
