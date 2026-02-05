@@ -109,7 +109,7 @@ if __name__ == "__main__":
     popt_expo, _ = curve_fit(expo, dxyz, conc_err)
     popt_cube, _ = curve_fit(cube, dxyz, conc_err)
 
-    plt.plot(dxyz, expo(dxyz, *popt_expo), label=f"$\\exp(-{int(popt_expo[1])}/h)$")
+    plt.plot(dxyz, expo(dxyz, *popt_expo), label=f"$\\exp(-{int(popt_expo[1])}" + "\\,\\mathrm{m}/h)$")
     plt.plot(dxyz, cube(dxyz, *popt_cube), label=f"$h^3$")
     plt.plot(dxyz, conc_err, "o")
     plt.title("Error convergence for ANALY")
