@@ -213,3 +213,43 @@ def parallelize(func):
             return numba.jit(nopython=True, cache=True)(func)(*args, **kwargs)
 
     return wrapper
+
+
+def get_source_area(f, g):
+    """
+    Rescale g such that contour levels directly represent cumulative contribution.
+
+    For the transformed field g̃, the contour at level R encloses the region
+    where sum(f) = R.
+
+    Parameters
+    ----------
+    f : ndarray
+        Function values (e.g., flux footprint).
+    g : ndarray
+        Function defining level sets (often same as f).
+
+    Returns
+    -------
+    g_rescaled : ndarray
+        Transformed field where contour values equal cumulative contribution.
+    """
+    f_flat = f.ravel()
+    g_flat = g.ravel()
+
+    # sort by g descending
+    order = np.argsort(g_flat)[::-1]
+    f_sorted = f_flat[order]
+
+    # cumulative sum as we lower threshold
+    M_cum = np.cumsum(f_sorted)
+
+    # shift so each point gets sum of f over {g > g[point]}
+    M_shifted = np.zeros_like(M_cum)
+    M_shifted[1:] = M_cum[:-1]
+
+    # map back to original positions
+    g_rescaled = np.empty_like(g_flat)
+    g_rescaled[order] = M_shifted
+
+    return g_rescaled.reshape(g.shape)
