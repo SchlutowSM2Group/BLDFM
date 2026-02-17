@@ -64,6 +64,70 @@ def test_integration():
     assert np.allclose(diff_flx, 0, atol=1e-3), "Flux mismatch too large"
 
 
+def test_convergence_trend():
+    """Verify that numerical error decreases monotonically with resolution.
+
+    Runs the solver at 3 resolution levels against the analytic solution
+    (CONSTANT closure) and asserts that relative MSE decreases at each
+    refinement step.
+    """
+    nxy = 128, 64
+    domain = 100.0, 50.0
+    src_pt = 5.0, 5.0
+    halo = 500.0
+    meas_height = 5.0
+    wind = 4.0, 1.0
+    ustar = 0.2
+
+    srf_flx = ideal_source(nxy, domain, src_pt, shape="point")
+
+    resolutions = [
+        {"modes": (64, 64), "nz": 8},
+        {"modes": (128, 128), "nz": 16},
+        {"modes": (256, 256), "nz": 32},
+    ]
+
+    # Analytic reference at finest resolution
+    z_ref, profs_ref = vertical_profiles(
+        resolutions[-1]["nz"], meas_height, wind, ustar, closure="CONSTANT"
+    )
+    _, _, flx_ana = steady_state_transport_solver(
+        srf_flx,
+        z_ref,
+        profs_ref,
+        domain,
+        resolutions[-1]["nz"],
+        modes=resolutions[-1]["modes"],
+        halo=halo,
+        analytic=True,
+    )
+
+    errors = []
+    for res in resolutions:
+        z, profs = vertical_profiles(
+            res["nz"], meas_height, wind, ustar, closure="CONSTANT"
+        )
+        _, _, flx = steady_state_transport_solver(
+            srf_flx,
+            z,
+            profs,
+            domain,
+            res["nz"],
+            modes=res["modes"],
+            halo=halo,
+        )
+        rmse = np.mean((flx - flx_ana) ** 2) / np.mean(flx_ana**2)
+        errors.append(rmse)
+
+    # Error must decrease monotonically with resolution
+    for i in range(len(errors) - 1):
+        assert errors[i] > errors[i + 1], (
+            f"Error did not decrease: errors[{i}]={errors[i]:.6e} "
+            f"<= errors[{i+1}]={errors[i+1]:.6e}"
+        )
+
+
 if __name__ == "__main__":
-    # Run the test manually (optional, for debugging)
+    # Run the tests manually (optional, for debugging)
     test_integration()
+    test_convergence_trend()

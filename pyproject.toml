@@ -29,6 +29,7 @@ dev = [
     "pytest",
     "sphinx",
     "black",
+    "psutil",
 ]
 plotting = [
     "contextily",
@@ -47,4 +48,5 @@ markers = [
     "integration: Tests that run the solver (single, timeseries, multitower, I/O)",
     "parallel: Tests that use ProcessPoolExecutor",
     "plotting: Tests for matplotlib/plotly plotting functions",
+    "memory: Tests that measure memory usage and detect regressions",
 ]
