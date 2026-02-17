@@ -7,7 +7,7 @@ plots horizontal and vertical slices.
 Usage:
     python examples/3d_plume.py
 
-For the equivalent low-level API version, see runs/low_level/3d_plume.py.
+For the equivalent low-level API version, see examples/low_level/3d_plume.py.
 """
 
 from pathlib import Path

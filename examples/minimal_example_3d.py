@@ -7,7 +7,7 @@ plots vertical slices.
 Usage:
     python examples/minimal_example_3d.py
 
-For the equivalent low-level API version, see runs/low_level/minimal_example_3d.py.
+For the equivalent low-level API version, see examples/low_level/minimal_example_3d.py.
 """
 
 from pathlib import Path

@@ -9,7 +9,7 @@ Usage:
     # Or via CLI:
     bldfm run examples/configs/parallel.yaml --plot
 
-For the equivalent low-level API version, see runs/low_level/parallel_example.py.
+For the equivalent low-level API version, see examples/low_level/parallel_example.py.
 """
 
 from pathlib import Path

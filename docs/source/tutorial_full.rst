@@ -78,11 +78,11 @@ profiles component.
 plot_profiles.py compatibility
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``runs/low_level/plot_profiles.py`` script was updated to unpack the new tuple:
+The ``examples/low_level/plot_profiles.py`` script was updated to unpack the new tuple:
 
 .. code-block:: bash
 
-    $ python -m runs.low_level.plot_profiles
+    $ python examples/low_level/plot_profiles.py
 
 This should create ``plots/most_profiles.png`` without errors.
 

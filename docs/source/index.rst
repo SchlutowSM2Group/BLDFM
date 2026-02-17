@@ -59,7 +59,7 @@ Navigation
 - `Full Tutorial <tutorial_full.html>`_: Verify every v1.0 feature step-by-step.
 - `Quick Reference <reference.html>`_: Concise code snippets for common workflows.
 - `Package Overview <overview.html>`_: Learn about the core modules and their interactions.
-- `Example Workflows <runs.html>`_: Explore examples in ``examples/``, ``runs/low_level/``, and ``runs/manuscript/``.
+- `Example Workflows <runs.html>`_: Explore examples in ``examples/``, ``examples/low_level/``, and ``runs/manuscript/``.
 - `Test Suite <tests.html>`_: Understand how BLDFM ensures reliability through rigorous testing.
 - `API Reference <src.html>`_: Detailed documentation for all core modules and functions.
 

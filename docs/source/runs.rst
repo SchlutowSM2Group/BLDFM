@@ -6,8 +6,8 @@ Example scripts and workflows
 BLDFM provides three tiers of example scripts:
 
 - **``examples/``** — Config-driven, high-level interface (start here)
-- **``runs/low_level/``** — Direct API calls for power users
-- **``runs/manuscript/``** — Paper reproduction scripts using config + plotting library
+- **``examples/low_level/``** — Direct API calls for power users
+- **``runs/manuscript/``** — Paper reproduction scripts (both interface and low-level)
 
 
 High-level examples (``examples/``)
@@ -29,94 +29,36 @@ interface.  Each example has a corresponding YAML config in ``examples/configs/`
     $ bldfm run examples/configs/multitower.yaml --plot
 
 
-Low-level examples (``runs/low_level/``)
------------------------------------------
+Low-level examples (``examples/low_level/``)
+----------------------------------------------
 
 These scripts call ``vertical_profiles``, ``ideal_source``, and
 ``steady_state_transport_solver`` directly, giving full control over every parameter.
 
-runs.low\_level.minimal\_example module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. code-block:: bash
 
-.. automodule:: runs.low_level.minimal_example
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-runs.low\_level.footprint\_example module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: runs.low_level.footprint_example
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-runs.low\_level.plot\_profiles module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: runs.low_level.plot_profiles
-   :members:
-   :undoc-members:
-   :show-inheritance:
+    $ python examples/low_level/minimal_example.py
+    $ python examples/low_level/footprint_example.py
+    $ python examples/low_level/plot_profiles.py
+    $ python examples/low_level/point_measurement_example.py
 
 
 Manuscript figures (``runs/manuscript/``)
 ------------------------------------------
 
-These scripts reproduce the figures in the BLDFM paper.  They use the config-driven
-interface with ``dataclasses.replace()`` for parameter mutation and the plotting library
-for figure generation.
+These scripts reproduce the figures in the BLDFM paper. They are provided in
+two forms:
 
-To regenerate all manuscript figures:
+- **``runs/manuscript/interface/``** — Config-driven interface with ``dataclasses.replace()``
+  for parameter mutation and the plotting library for figure generation.
+- **``runs/manuscript/low_level/``** — Direct API calls matching the original manuscript code.
+
+To regenerate all manuscript figures (both tiers):
 
 .. code-block:: bash
 
-    $ python -m runs.manuscript.generate_all
+    $ python runs/manuscript/generate_all.py
 
-runs.manuscript.comparison\_analytic module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: runs.manuscript.comparison_analytic
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-runs.manuscript.comparison\_footprint\_unstable module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: runs.manuscript.comparison_footprint_unstable
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-runs.manuscript.comparison\_footprint\_neutral module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: runs.manuscript.comparison_footprint_neutral
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-runs.manuscript.comparison\_footprint\_stable module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: runs.manuscript.comparison_footprint_stable
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-runs.manuscript.analytic\_convergence\_test module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: runs.manuscript.analytic_convergence_test
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-runs.manuscript.numeric\_convergence\_test module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: runs.manuscript.numeric_convergence_test
-   :members:
-   :undoc-members:
-   :show-inheritance:
+    # Or only one tier:
+    $ python runs/manuscript/generate_all.py --tier interface
+    $ python runs/manuscript/generate_all.py --tier low_level

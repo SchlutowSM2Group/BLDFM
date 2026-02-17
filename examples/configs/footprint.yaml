@@ -1,7 +1,7 @@
 # BLDFM Footprint Example Configuration
 # ======================================
 # Flux footprint calculation for a single tower.
-# Equivalent to: runs/footprint_example.py
+# Equivalent to: examples/low_level/footprint_example.py
 # Run with: bldfm run examples/configs/footprint.yaml
 
 domain:
