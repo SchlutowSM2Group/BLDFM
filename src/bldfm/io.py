@@ -34,13 +34,23 @@ def save_footprints_to_netcdf(results, config, filepath):
 
     # Get dimensions from first result
     first_result = results[tower_names[0]][0]
-    X, Y, _ = first_result["grid"]
-    ny, nx = first_result["flx"].shape
+    X, Y, Z_coord = first_result["grid"]
+    is_3d = first_result["flx"].ndim == 3
     n_time = len(results[tower_names[0]])
 
+    if is_3d:
+        nz_out, ny, nx = first_result["flx"].shape
+    else:
+        ny, nx = first_result["flx"].shape
+
     # Extract coordinate arrays
-    x = X[0, :] if X.ndim == 2 else X
-    y = Y[:, 0] if Y.ndim == 2 else Y
+    if is_3d:
+        x = X[0, 0, :]
+        y = Y[0, :, 0]
+        z = Z_coord[:, 0, 0]
+    else:
+        x = X[0, :] if X.ndim == 2 else X
+        y = Y[:, 0] if Y.ndim == 2 else Y
 
     # Build timestamps
     timestamps = []
@@ -49,8 +59,15 @@ def save_footprints_to_netcdf(results, config, filepath):
         timestamps.append(str(ts))
 
     # Collect data arrays
-    flx_data = np.zeros((n_time, n_towers, ny, nx))
-    conc_data = np.zeros((n_time, n_towers, ny, nx))
+    if is_3d:
+        flx_data = np.zeros((n_time, n_towers, nz_out, ny, nx))
+        conc_data = np.zeros((n_time, n_towers, nz_out, ny, nx))
+        dims = ["time", "tower", "z", "y", "x"]
+    else:
+        flx_data = np.zeros((n_time, n_towers, ny, nx))
+        conc_data = np.zeros((n_time, n_towers, ny, nx))
+        dims = ["time", "tower", "y", "x"]
+
     ustar_data = np.zeros((n_time,))
     mol_data = np.zeros((n_time,))
     wind_speed_data = np.zeros((n_time,))
@@ -71,10 +88,19 @@ def save_footprints_to_netcdf(results, config, filepath):
     tower_lons = [t.lon for t in config.towers]
     tower_z = [t.z_m for t in config.towers]
 
+    coords = {
+        "x": ("x", x, {"long_name": "easting", "units": "m"}),
+        "y": ("y", y, {"long_name": "northing", "units": "m"}),
+        "time": ("time", timestamps),
+        "tower": ("tower", tower_names),
+    }
+    if is_3d:
+        coords["z"] = ("z", z, {"long_name": "height", "units": "m"})
+
     ds = xr.Dataset(
         {
             "footprint": (
-                ["time", "tower", "y", "x"],
+                dims,
                 flx_data,
                 {
                     "long_name": "flux footprint",
@@ -82,7 +108,7 @@ def save_footprints_to_netcdf(results, config, filepath):
                 },
             ),
             "concentration": (
-                ["time", "tower", "y", "x"],
+                dims,
                 conc_data,
                 {
                     "long_name": "concentration field",
@@ -125,12 +151,7 @@ def save_footprints_to_netcdf(results, config, filepath):
                 {"long_name": "measurement height", "units": "m"},
             ),
         },
-        coords={
-            "x": ("x", x, {"long_name": "easting", "units": "m"}),
-            "y": ("y", y, {"long_name": "northing", "units": "m"}),
-            "time": ("time", timestamps),
-            "tower": ("tower", tower_names),
-        },
+        coords=coords,
         attrs={
             "Conventions": "CF-1.8",
             "title": "BLDFM footprint output",

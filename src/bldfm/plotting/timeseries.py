@@ -7,7 +7,7 @@ from ._common import ensure_ax
 from .footprint import extract_percentile_contour
 
 
-def plot_footprint_timeseries(results, grid, pcts=None, ax=None, title=None):
+def plot_footprint_timeseries(results, grid, pcts=None, ax=None, title=None, level=0):
     """Plot temporal evolution of footprint extent.
 
     Parameters
@@ -20,6 +20,8 @@ def plot_footprint_timeseries(results, grid, pcts=None, ax=None, title=None):
         Percentile fractions to track (default [0.5, 0.8]).
     ax : matplotlib Axes, optional
     title : str, optional
+    level : int
+        Z-index to use when footprint fields are 3D. Default 0 (surface).
 
     Returns
     -------
@@ -36,7 +38,7 @@ def plot_footprint_timeseries(results, grid, pcts=None, ax=None, title=None):
     for pct in pcts:
         areas = []
         for r in results:
-            _, area = extract_percentile_contour(r["flx"], grid, pct)
+            _, area = extract_percentile_contour(r["flx"], grid, pct, level=level)
             areas.append(area / 1e6)  # m^2 -> km^2
         ax.plot(x_pos, areas, "o-", label=f"{int(pct*100)}%")
 
