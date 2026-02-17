@@ -117,6 +117,7 @@ class MetConfig:
         -------
         dict with scalar values for ustar, mol, wind_speed, wind_dir, timestamp.
         """
+
         def _get(val, idx):
             if val is None:
                 return None

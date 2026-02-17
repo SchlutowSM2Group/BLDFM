@@ -15,6 +15,7 @@ For the equivalent low-level API version, see examples/low_level/parallel_exampl
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -35,8 +36,10 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots()
     plot_footprint_field(
-        result["conc"], result["grid"],
-        ax=ax, title="Concentration at meas_height (parallel)",
+        result["conc"],
+        result["grid"],
+        ax=ax,
+        title="Concentration at meas_height (parallel)",
     )
     fig.savefig("plots/concentration_at_meas_height.png", dpi=150, bbox_inches="tight")
     plt.close(fig)

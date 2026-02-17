@@ -8,13 +8,18 @@ for the 2x2 panel comparison figure.
 import time
 import numpy as np
 import matplotlib
+
 matplotlib.use("Agg")
 
 from dataclasses import replace
 
 from bldfm import initialize, run_bldfm_single
 from bldfm.config_parser import (
-    BLDFMConfig, DomainConfig, TowerConfig, MetConfig, SolverConfig,
+    BLDFMConfig,
+    DomainConfig,
+    TowerConfig,
+    MetConfig,
+    SolverConfig,
 )
 from bldfm.plotting import plot_field_comparison
 from bldfm.utils import get_logger
@@ -42,14 +47,21 @@ if __name__ == "__main__":
 
     config = BLDFMConfig(
         domain=DomainConfig(
-            nx=nxy[0], ny=nxy[1], xmax=domain_ext[0], ymax=domain_ext[1],
-            nz=256, modes=(512, 512), halo=1000.0,
+            nx=nxy[0],
+            ny=nxy[1],
+            xmax=domain_ext[0],
+            ymax=domain_ext[1],
+            nz=256,
+            modes=(512, 512),
+            halo=1000.0,
         ),
         towers=[tower],
         met=MetConfig(ustar=ustar, mol=1e9, wind_speed=wind_speed, wind_dir=wind_dir),
         solver=SolverConfig(
-            closure="CONSTANT", analytic=True,
-            src_loc=src_pt, surface_flux_shape="point",
+            closure="CONSTANT",
+            analytic=True,
+            src_loc=src_pt,
+            surface_flux_shape="point",
         ),
     )
 

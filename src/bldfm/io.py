@@ -170,6 +170,7 @@ def load_footprints_from_netcdf(filepath):
     ds = xr.open_dataset(filepath)
     logger.info(
         "Loaded footprints: %d times x %d towers",
-        ds.sizes["time"], ds.sizes["tower"],
+        ds.sizes["time"],
+        ds.sizes["tower"],
     )
     return ds

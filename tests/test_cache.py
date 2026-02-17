@@ -21,8 +21,11 @@ def solver_inputs():
     """Minimal inputs matching what the cache hashes."""
     z = np.linspace(0.1, 10.0, 8)
     profiles = (
-        np.ones(8), np.zeros(8),  # u, v
-        np.ones(8) * 0.5, np.ones(8) * 0.5, np.ones(8) * 0.5,  # Kx, Ky, Kz
+        np.ones(8),
+        np.zeros(8),  # u, v
+        np.ones(8) * 0.5,
+        np.ones(8) * 0.5,
+        np.ones(8) * 0.5,  # Kx, Ky, Kz
     )
     domain = (200.0, 200.0)
     modes = (64, 64)
@@ -74,18 +77,25 @@ def test_cache_clear(cache, solver_inputs):
 
 def test_cache_integration():
     """Test caching through the full solver with footprint=True."""
-    config = parse_config_dict({
-        "domain": {
-            "nx": 64, "ny": 64, "xmax": 200.0, "ymax": 200.0, "nz": 8,
-            "modes": [64, 64],
-            "ref_lat": 50.95, "ref_lon": 11.586,
-        },
-        "towers": [
-            {"name": "A", "lat": 50.9505, "lon": 11.5865, "z_m": 10.0},
-        ],
-        "met": {"ustar": 0.4, "mol": -100.0, "wind_speed": 5.0, "wind_dir": 270.0},
-        "solver": {"closure": "MOST", "footprint": True},
-    })
+    config = parse_config_dict(
+        {
+            "domain": {
+                "nx": 64,
+                "ny": 64,
+                "xmax": 200.0,
+                "ymax": 200.0,
+                "nz": 8,
+                "modes": [64, 64],
+                "ref_lat": 50.95,
+                "ref_lon": 11.586,
+            },
+            "towers": [
+                {"name": "A", "lat": 50.9505, "lon": 11.5865, "z_m": 10.0},
+            ],
+            "met": {"ustar": 0.4, "mol": -100.0, "wind_speed": 5.0, "wind_dir": 270.0},
+            "solver": {"closure": "MOST", "footprint": True},
+        }
+    )
 
     with tempfile.TemporaryDirectory() as tmpdir:
         cache = GreensFunctionCache(cache_dir=tmpdir)

@@ -9,6 +9,7 @@ Usage:
 """
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -51,10 +52,10 @@ if __name__ == "__main__":
 
     for name, g in contour_types:
         rescaled = get_source_area(flx, g)
-        ax = plot_source_area_contours(flx, grid, rescaled,
-                                       title=f"{name} contours")
-        ax.figure.savefig(f"plots/source_area_{name.lower()}.png",
-                          dpi=150, bbox_inches="tight")
+        ax = plot_source_area_contours(flx, grid, rescaled, title=f"{name} contours")
+        ax.figure.savefig(
+            f"plots/source_area_{name.lower()}.png", dpi=150, bbox_inches="tight"
+        )
         plt.close("all")
         print(f"Saved plots/source_area_{name.lower()}.png")
 

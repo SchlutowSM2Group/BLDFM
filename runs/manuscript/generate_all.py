@@ -53,7 +53,9 @@ def run_tier(tier, scripts):
 def main():
     parser = argparse.ArgumentParser(description="Regenerate manuscript figures.")
     parser.add_argument(
-        "--tier", choices=TIERS, default=None,
+        "--tier",
+        choices=TIERS,
+        default=None,
         help="Run only a specific tier (default: run both).",
     )
     args = parser.parse_args()

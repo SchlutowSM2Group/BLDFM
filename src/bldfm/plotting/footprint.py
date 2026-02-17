@@ -46,8 +46,9 @@ def extract_percentile_contour(flx, grid, pct=0.8):
     return float(level), float(area)
 
 
-def plot_footprint_field(flx, grid, ax=None, contour_pcts=None,
-                         cmap="RdYlBu_r", title=None, **pcolormesh_kw):
+def plot_footprint_field(
+    flx, grid, ax=None, contour_pcts=None, cmap="RdYlBu_r", title=None, **pcolormesh_kw
+):
     """Plot a 2-D footprint field with optional percentile contours.
 
     Parameters
@@ -82,10 +83,18 @@ def plot_footprint_field(flx, grid, ax=None, contour_pcts=None,
             lvl, _ = extract_percentile_contour(flx, grid, p)
             levels.append(lvl)
             pct_labels[lvl] = f"{int(p * 100)}%"
-        cs = ax.contour(X, Y, flx, levels=sorted(levels), colors="k",
-                        linewidths=0.8, linestyles="--")
-        ax.clabel(cs, fmt=lambda x: pct_labels.get(x, f"{x:.2e}"),
-                  fontsize=8, inline=True)
+        cs = ax.contour(
+            X,
+            Y,
+            flx,
+            levels=sorted(levels),
+            colors="k",
+            linewidths=0.8,
+            linestyles="--",
+        )
+        ax.clabel(
+            cs, fmt=lambda x: pct_labels.get(x, f"{x:.2e}"), fontsize=8, inline=True
+        )
 
     ax.set_xlabel("x [m]")
     ax.set_ylabel("y [m]")
@@ -95,10 +104,20 @@ def plot_footprint_field(flx, grid, ax=None, contour_pcts=None,
     return ax
 
 
-def plot_footprint_on_map(flx, grid, config, tower=None, ax=None,
-                          contour_pcts=None, tile_source=None,
-                          land_cover=False, land_cover_size=(512, 512),
-                          alpha=0.5, cmap="RdYlBu_r", title=None):
+def plot_footprint_on_map(
+    flx,
+    grid,
+    config,
+    tower=None,
+    ax=None,
+    contour_pcts=None,
+    tile_source=None,
+    land_cover=False,
+    land_cover_size=(512, 512),
+    alpha=0.5,
+    cmap="RdYlBu_r",
+    title=None,
+):
     """Overlay footprint contours and tower marker(s) on map tiles.
 
     Requires ``contextily`` (default) or ``owslib`` (when *land_cover=True*).
@@ -161,20 +180,41 @@ def plot_footprint_on_map(flx, grid, config, tower=None, ax=None,
     levels_fill = sorted(levels_fill)
 
     ax.contourf(lons, lats, flx, levels=20, cmap=cmap, alpha=alpha, zorder=2)
-    cs = ax.contour(lons, lats, flx, levels=levels_fill, colors="k",
-                    linewidths=1.0, linestyles="--", zorder=3)
-    ax.clabel(cs, fmt=lambda x: pct_labels.get(x, f"{x:.2e}"),
-              fontsize=8, inline=True)
+    cs = ax.contour(
+        lons,
+        lats,
+        flx,
+        levels=levels_fill,
+        colors="k",
+        linewidths=1.0,
+        linestyles="--",
+        zorder=3,
+    )
+    ax.clabel(cs, fmt=lambda x: pct_labels.get(x, f"{x:.2e}"), fontsize=8, inline=True)
 
     # Tower markers
     towers_to_plot = [tower] if tower is not None else config.towers
     for t in towers_to_plot:
-        ax.plot(t.lon, t.lat, "k^", markersize=10, markeredgecolor="white",
-                markeredgewidth=1.5, zorder=4)
-        ax.annotate(t.name, (t.lon, t.lat), textcoords="offset points",
-                    xytext=(8, 8), fontsize=9, fontweight="bold",
-                    color="black", zorder=4,
-                    bbox=dict(boxstyle="round,pad=0.2", fc="white", alpha=0.7))
+        ax.plot(
+            t.lon,
+            t.lat,
+            "k^",
+            markersize=10,
+            markeredgecolor="white",
+            markeredgewidth=1.5,
+            zorder=4,
+        )
+        ax.annotate(
+            t.name,
+            (t.lon, t.lat),
+            textcoords="offset points",
+            xytext=(8, 8),
+            fontsize=9,
+            fontweight="bold",
+            color="black",
+            zorder=4,
+            bbox=dict(boxstyle="round,pad=0.2", fc="white", alpha=0.7),
+        )
 
     # Basemap layer
     lon_min, lon_max = float(lons.min()), float(lons.max())
@@ -185,14 +225,12 @@ def plot_footprint_on_map(flx, grid, config, tower=None, ax=None,
         # Access through package module for monkeypatch compatibility
         _fetch = sys.modules[__package__]._fetch_land_cover
         lc_img, lc_extent = _fetch(bbox, size=land_cover_size)
-        ax.imshow(lc_img, extent=lc_extent, origin="upper",
-                  aspect="auto", zorder=0)
+        ax.imshow(lc_img, extent=lc_extent, origin="upper", aspect="auto", zorder=0)
         _geo.land_cover_legend(ax)
 
         if tile_source is not None:
             ctx = optional_import("contextily", "contextily")
-            ctx.add_basemap(ax, crs="EPSG:4326", source=tile_source,
-                            zorder=1)
+            ctx.add_basemap(ax, crs="EPSG:4326", source=tile_source, zorder=1)
     else:
         ctx = optional_import("contextily", "contextily")
         if tile_source is None:

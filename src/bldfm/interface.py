@@ -22,6 +22,7 @@ def _make_cache(config):
     """Create a GreensFunctionCache if caching is enabled."""
     if config.parallel.use_cache and config.solver.footprint:
         from .cache import GreensFunctionCache
+
         return GreensFunctionCache()
     return None
 
@@ -75,13 +76,21 @@ def run_bldfm_single(
     z0_val = met_step.get("z0")
     if z0_val is not None:
         z, profiles = vertical_profiles(
-            n=dom.nz, meas_height=tower.z_m, wind=(u_wind, v_wind),
-            z0=z0_val, mol=met_step["mol"], closure=sol.closure,
+            n=dom.nz,
+            meas_height=tower.z_m,
+            wind=(u_wind, v_wind),
+            z0=z0_val,
+            mol=met_step["mol"],
+            closure=sol.closure,
         )
     else:
         z, profiles = vertical_profiles(
-            n=dom.nz, meas_height=tower.z_m, wind=(u_wind, v_wind),
-            ustar=met_step["ustar"], mol=met_step["mol"], closure=sol.closure,
+            n=dom.nz,
+            meas_height=tower.z_m,
+            wind=(u_wind, v_wind),
+            ustar=met_step["ustar"],
+            mol=met_step["mol"],
+            closure=sol.closure,
         )
 
     # Step 3: surface flux
@@ -89,7 +98,10 @@ def run_bldfm_single(
         nxy = (dom.nx, dom.ny)
         domain = (dom.xmax, dom.ymax)
         surface_flux = ideal_source(
-            nxy, domain, src_loc=sol.src_loc, shape=sol.surface_flux_shape,
+            nxy,
+            domain,
+            src_loc=sol.src_loc,
+            shape=sol.surface_flux_shape,
         )
 
     # Step 4: solve
@@ -148,8 +160,9 @@ def run_bldfm_timeseries(
     results = []
     for i in range(n):
         logger.debug("  timestep %d/%d", i + 1, n)
-        result = run_bldfm_single(config, tower, met_index=i,
-                                  surface_flux=surface_flux, cache=cache)
+        result = run_bldfm_single(
+            config, tower, met_index=i, surface_flux=surface_flux, cache=cache
+        )
         results.append(result)
 
     return results
@@ -175,17 +188,21 @@ def run_bldfm_multitower(
     """
     logger.info(
         "Running multitower: %d towers x %d timesteps",
-        len(config.towers), config.met.n_timesteps,
+        len(config.towers),
+        config.met.n_timesteps,
     )
 
     results = {}
     for tower in config.towers:
-        results[tower.name] = run_bldfm_timeseries(config, tower, surface_flux=surface_flux)
+        results[tower.name] = run_bldfm_timeseries(
+            config, tower, surface_flux=surface_flux
+        )
 
     return results
 
 
 # --- Worker function for parallel execution (must be top-level for pickling) ---
+
 
 def _worker_single(args):
     """Worker function for parallel execution of a single (tower, timestep) pair."""
@@ -193,8 +210,10 @@ def _worker_single(args):
     # Reset inherited state from parent process to avoid fork-safety issues
     os.environ["NUMBA_NUM_THREADS"] = "1"
     from bldfm import config as cfg
+
     cfg.NUM_THREADS = 1
     from .fft_manager import reset_fft_manager
+
     reset_fft_manager()
     return run_bldfm_single(config, tower, met_index=met_index)
 
@@ -205,8 +224,10 @@ def _worker_timeseries(args):
     # Reset inherited state from parent process to avoid fork-safety issues
     os.environ["NUMBA_NUM_THREADS"] = "1"
     from bldfm import config as cfg
+
     cfg.NUM_THREADS = 1
     from .fft_manager import reset_fft_manager
+
     reset_fft_manager()
     return tower.name, run_bldfm_timeseries(config, tower)
 
@@ -255,7 +276,10 @@ def run_bldfm_parallel(
 
     logger.info(
         "Parallel run: %d towers x %d timesteps, %d workers, strategy=%s",
-        n_towers, n_time, max_workers, parallel_over,
+        n_towers,
+        n_time,
+        max_workers,
+        parallel_over,
     )
 
     if parallel_over == "towers":

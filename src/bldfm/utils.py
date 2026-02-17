@@ -270,7 +270,7 @@ def source_area_upwind(X, Y, meas_pt, wind):
     """
     xm, ym = meas_pt
     u, v = wind
-    speed = np.sqrt(u ** 2 + v ** 2)
+    speed = np.sqrt(u**2 + v**2)
     u_hat, v_hat = u / speed, v / speed
     return u_hat * (X - xm) + v_hat * (Y - ym)
 
@@ -296,9 +296,9 @@ def source_area_crosswind(X, Y, meas_pt, wind):
     """
     xm, ym = meas_pt
     u, v = wind
-    speed = np.sqrt(u ** 2 + v ** 2)
+    speed = np.sqrt(u**2 + v**2)
     u_hat, v_hat = u / speed, v / speed
-    return -(-v_hat * (X - xm) + u_hat * (Y - ym)) ** 2
+    return -((-v_hat * (X - xm) + u_hat * (Y - ym)) ** 2)
 
 
 def source_area_sector(X, Y, meas_pt, wind):

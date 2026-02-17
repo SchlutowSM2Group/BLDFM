@@ -8,6 +8,7 @@ directly. For the config-driven version, see ../interface/numeric_convergence_te
 
 import numpy as np
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
@@ -41,8 +42,16 @@ if __name__ == "__main__":
     )
 
     modess = [
-        (90, 90), (108, 108), (128, 128), (152, 152), (180, 180),
-        (216, 216), (256, 256), (304, 304), (362, 362), (432, 432),
+        (90, 90),
+        (108, 108),
+        (128, 128),
+        (152, 152),
+        (180, 180),
+        (216, 216),
+        (256, 256),
+        (304, 304),
+        (362, 362),
+        (432, 432),
     ]
     nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108]
 
@@ -77,8 +86,11 @@ if __name__ == "__main__":
     popt_cube, _ = curve_fit(cube, dxyz, conc_err)
 
     # --- Plotting ---
-    plt.plot(dxyz, expo(dxyz, *popt_expo),
-             label=f"$\\exp(-{int(popt_expo[1])}" + "\\,\\mathrm{m}/h)$")
+    plt.plot(
+        dxyz,
+        expo(dxyz, *popt_expo),
+        label=f"$\\exp(-{int(popt_expo[1])}" + "\\,\\mathrm{m}/h)$",
+    )
     plt.plot(dxyz, cube(dxyz, *popt_cube), label="$h^3$")
     plt.plot(dxyz, conc_err, "o")
     plt.title("Error convergence for HI-RES")

@@ -13,6 +13,7 @@ For the equivalent low-level API version, see examples/low_level/3d_plume.py.
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -35,16 +36,25 @@ if __name__ == "__main__":
 
     # Horizontal slice at z=0 (ground level)
     fig, ax = plt.subplots()
-    plot_vertical_slice(conc, result["grid"], "z", 0, ax=ax,
-                        title="Concentration at z0 (horizontal)")
-    fig.savefig("plots/ptsrc_concentration_xy_slice_at_z0.png", dpi=150, bbox_inches="tight")
+    plot_vertical_slice(
+        conc, result["grid"], "z", 0, ax=ax, title="Concentration at z0 (horizontal)"
+    )
+    fig.savefig(
+        "plots/ptsrc_concentration_xy_slice_at_z0.png", dpi=150, bbox_inches="tight"
+    )
     plt.close(fig)
 
     # Vertical slice through the plume centerline (xz plane)
     ny = conc.shape[1]
     fig, ax = plt.subplots()
-    plot_vertical_slice(conc, result["grid"], "y", ny // 2, ax=ax,
-                        title="Concentration (vertical xz slice)")
+    plot_vertical_slice(
+        conc,
+        result["grid"],
+        "y",
+        ny // 2,
+        ax=ax,
+        title="Concentration (vertical xz slice)",
+    )
     fig.savefig("plots/ptsrc_concentration_xz_slice.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 

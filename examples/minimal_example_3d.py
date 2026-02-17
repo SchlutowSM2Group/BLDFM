@@ -13,6 +13,7 @@ For the equivalent low-level API version, see examples/low_level/minimal_example
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -35,14 +36,26 @@ if __name__ == "__main__":
     # Vertical slice of concentration at y midpoint
     ny = conc.shape[1]
     fig, ax = plt.subplots()
-    plot_vertical_slice(conc, result["grid"], "y", ny // 2, ax=ax,
-                        title="Vertical slice of concentration")
+    plot_vertical_slice(
+        conc,
+        result["grid"],
+        "y",
+        ny // 2,
+        ax=ax,
+        title="Vertical slice of concentration",
+    )
     fig.savefig("plots/concentration_vertical_slice.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 
     fig, ax = plt.subplots()
-    plot_vertical_slice(flx, result["grid"], "y", ny // 2, ax=ax,
-                        title="Vertical slice of kinematic flux")
+    plot_vertical_slice(
+        flx,
+        result["grid"],
+        "y",
+        ny // 2,
+        ax=ax,
+        title="Vertical slice of kinematic flux",
+    )
     fig.savefig("plots/flux_vertical_slice.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 

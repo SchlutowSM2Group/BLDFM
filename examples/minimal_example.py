@@ -13,6 +13,7 @@ For the equivalent low-level API version, see examples/low_level/minimal_example
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -29,16 +30,20 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots()
     plot_footprint_field(
-        result["conc"], result["grid"],
-        ax=ax, title=f"Concentration at {config.towers[0].z_m} m",
+        result["conc"],
+        result["grid"],
+        ax=ax,
+        title=f"Concentration at {config.towers[0].z_m} m",
     )
     fig.savefig("plots/concentration_at_meas_height.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 
     fig, ax = plt.subplots()
     plot_footprint_field(
-        result["flx"], result["grid"],
-        ax=ax, title=f"Vertical kinematic flux at {config.towers[0].z_m} m",
+        result["flx"],
+        result["grid"],
+        ax=ax,
+        title=f"Vertical kinematic flux at {config.towers[0].z_m} m",
     )
     fig.savefig("plots/kinematic_flux_at_meas_height.png", dpi=150, bbox_inches="tight")
     plt.close(fig)

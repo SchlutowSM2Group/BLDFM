@@ -80,7 +80,9 @@ def test_netcdf_met_values_match(multitower_results_session):
             original_params = results[first_tower][t]["params"]
             for var in ("ustar", "mol", "wind_speed", "wind_dir"):
                 np.testing.assert_allclose(
-                    ds[var].values[t], original_params[var], rtol=1e-6,
+                    ds[var].values[t],
+                    original_params[var],
+                    rtol=1e-6,
                     err_msg=f"Mismatch for {var} at timestep {t}",
                 )
         ds.close()
@@ -154,7 +156,9 @@ def test_netcdf_timeseries_timestamps(multitower_results_session):
         ds.close()
 
 
-def test_netcdf_single_tower_timeseries(timeseries_results_session, timeseries_config_session):
+def test_netcdf_single_tower_timeseries(
+    timeseries_results_session, timeseries_config_session
+):
     """Test save/load roundtrip for a single tower timeseries."""
     from dataclasses import replace
 

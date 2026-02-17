@@ -6,8 +6,16 @@ import matplotlib.pyplot as plt
 from ._common import ensure_ax
 
 
-def plot_convergence(grid_sizes, errors, fits=None, marker="o", ax=None,
-                     xlabel="$h$ [m]", ylabel="Relative RMSE", title=None):
+def plot_convergence(
+    grid_sizes,
+    errors,
+    fits=None,
+    marker="o",
+    ax=None,
+    xlabel="$h$ [m]",
+    ylabel="Relative RMSE",
+    title=None,
+):
     """Log-log convergence plot.
 
     Parameters
@@ -56,8 +64,9 @@ def plot_convergence(grid_sizes, errors, fits=None, marker="o", ax=None,
     return ax
 
 
-def plot_vertical_profiles(z_list, profiles_list, labels, meas_height=None,
-                            figsize=None, title=None):
+def plot_vertical_profiles(
+    z_list, profiles_list, labels, meas_height=None, figsize=None, title=None
+):
     """Multi-panel (1x2) profile plot: velocity and diffusivity vs height.
 
     Left panel: u vs z.
@@ -118,8 +127,17 @@ def plot_vertical_profiles(z_list, profiles_list, labels, meas_height=None,
     return fig, axes
 
 
-def plot_vertical_slice(field, grid, slice_axis, slice_index, ax=None,
-                        cmap="viridis", title=None, xlabel=None, ylabel=None):
+def plot_vertical_slice(
+    field,
+    grid,
+    slice_axis,
+    slice_index,
+    ax=None,
+    cmap="viridis",
+    title=None,
+    xlabel=None,
+    ylabel=None,
+):
     """2D slice from a 3D field.
 
     Parameters

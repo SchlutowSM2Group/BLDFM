@@ -33,16 +33,23 @@ def test_single_run_with_synthetic_data():
     towers = generate_towers_grid(n_towers=1, z_m=5.0, seed=42)
     met = generate_synthetic_timeseries(n_timesteps=2, seed=42)
 
-    config = parse_config_dict({
-        "domain": {
-            "nx": 64, "ny": 64, "xmax": 200.0, "ymax": 200.0, "nz": 8,
-            "modes": [64, 64],
-            "ref_lat": towers[0]["lat"], "ref_lon": towers[0]["lon"],
-        },
-        "towers": towers[:1],
-        "met": met,
-        "solver": {"closure": "MOST", "footprint": True},
-    })
+    config = parse_config_dict(
+        {
+            "domain": {
+                "nx": 64,
+                "ny": 64,
+                "xmax": 200.0,
+                "ymax": 200.0,
+                "nz": 8,
+                "modes": [64, 64],
+                "ref_lat": towers[0]["lat"],
+                "ref_lon": towers[0]["lon"],
+            },
+            "towers": towers[:1],
+            "met": met,
+            "solver": {"closure": "MOST", "footprint": True},
+        }
+    )
 
     result = run_bldfm_single(config, config.towers[0], met_index=0)
     assert result["flx"] is not None
@@ -95,7 +102,9 @@ def test_multitower_structure(multitower_results_session, timeseries_config_sess
     assert not np.allclose(flx_0, flx_1)
 
 
-def test_timeseries_met_params_vary(timeseries_results_session, timeseries_config_session):
+def test_timeseries_met_params_vary(
+    timeseries_results_session, timeseries_config_session
+):
     """Test that time-varying ustar, mol, wind_dir, wind_speed propagate to each result."""
     results = timeseries_results_session
 
@@ -108,12 +117,14 @@ def test_timeseries_met_params_vary(timeseries_results_session, timeseries_confi
     # Met params should vary across timesteps (synthetic timeseries with seed=42)
     for key in ("ustar", "mol", "wind_speed", "wind_dir"):
         values = [r["params"][key] for r in results]
-        assert len(set(values)) > 1, (
-            f"Expected varying '{key}' across timesteps, got constant {values[0]}"
-        )
+        assert (
+            len(set(values)) > 1
+        ), f"Expected varying '{key}' across timesteps, got constant {values[0]}"
 
 
-def test_timeseries_footprints_evolve(timeseries_results_session, timeseries_config_session):
+def test_timeseries_footprints_evolve(
+    timeseries_results_session, timeseries_config_session
+):
     """Test that changing met conditions produce different footprints at each timestep."""
     results = timeseries_results_session
     config = timeseries_config_session
@@ -134,7 +145,9 @@ def test_timeseries_footprints_evolve(timeseries_results_session, timeseries_con
         not np.allclose(results[0]["flx"], results[i]["flx"])
         for i in range(1, len(results))
     )
-    assert differs, "All timestep footprints are identical despite varying met conditions"
+    assert (
+        differs
+    ), "All timestep footprints are identical despite varying met conditions"
 
 
 def test_timeseries_aggregated_footprint(timeseries_results_session):

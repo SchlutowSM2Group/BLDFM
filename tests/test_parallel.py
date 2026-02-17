@@ -21,7 +21,9 @@ class _TrackedPool(ProcessPoolExecutor):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._max_workers_requested = kwargs.get("max_workers", args[0] if args else None)
+        self._max_workers_requested = kwargs.get(
+            "max_workers", args[0] if args else None
+        )
         self._map_calls = []
         _TrackedPool.instances.append(self)
 
@@ -53,23 +55,32 @@ def parallel_config():
     """Config with 2 towers x 2 timesteps for parallel tests."""
     towers = generate_towers_grid(n_towers=2, z_m=10.0, layout="transect", seed=42)
     met = generate_synthetic_timeseries(n_timesteps=2, seed=42)
-    return parse_config_dict({
-        "domain": {
-            "nx": 64, "ny": 64, "xmax": 200.0, "ymax": 200.0, "nz": 8,
-            "modes": [64, 64],
-            "ref_lat": towers[0]["lat"], "ref_lon": towers[0]["lon"],
-        },
-        "towers": towers,
-        "met": met,
-        "solver": {"closure": "MOST", "footprint": True},
-        "parallel": {"max_workers": 2},
-    })
+    return parse_config_dict(
+        {
+            "domain": {
+                "nx": 64,
+                "ny": 64,
+                "xmax": 200.0,
+                "ymax": 200.0,
+                "nz": 8,
+                "modes": [64, 64],
+                "ref_lat": towers[0]["lat"],
+                "ref_lon": towers[0]["lon"],
+            },
+            "towers": towers,
+            "met": met,
+            "solver": {"closure": "MOST", "footprint": True},
+            "parallel": {"max_workers": 2},
+        }
+    )
 
 
 @pytest.mark.parametrize("strategy", ["towers", "time", "both"])
 def test_parallel_matches_serial(parallel_config, strategy):
     serial = run_bldfm_multitower(parallel_config)
-    parallel = run_bldfm_parallel(parallel_config, max_workers=2, parallel_over=strategy)
+    parallel = run_bldfm_parallel(
+        parallel_config, max_workers=2, parallel_over=strategy
+    )
 
     for name in serial:
         assert name in parallel

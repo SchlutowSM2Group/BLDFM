@@ -14,6 +14,7 @@ Usage:
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -32,7 +33,9 @@ if __name__ == "__main__":
         from bldfm import plot_footprint_on_map
 
         ax = plot_footprint_on_map(
-            result["flx"], result["grid"], config,
+            result["flx"],
+            result["grid"],
+            config,
             tower=config.towers[0],
             contour_pcts=[0.5, 0.8],
             title="Footprint on map tiles",
@@ -48,7 +51,9 @@ if __name__ == "__main__":
         from bldfm import plot_footprint_on_map
 
         ax = plot_footprint_on_map(
-            result["flx"], result["grid"], config,
+            result["flx"],
+            result["grid"],
+            config,
             tower=config.towers[0],
             contour_pcts=[0.5, 0.8],
             land_cover=True,
@@ -66,7 +71,8 @@ if __name__ == "__main__":
 
         met_ts = generate_synthetic_timeseries(n_timesteps=100, seed=42)
         ax = plot_wind_rose(
-            met_ts["wind_speed"], met_ts["wind_dir"],
+            met_ts["wind_speed"],
+            met_ts["wind_dir"],
             title="Synthetic wind rose",
         )
         ax.figure.savefig("plots/viz_wind_rose.png", dpi=150, bbox_inches="tight")
@@ -80,7 +86,8 @@ if __name__ == "__main__":
         from bldfm import plot_footprint_interactive
 
         fig = plot_footprint_interactive(
-            result["flx"], result["grid"],
+            result["flx"],
+            result["grid"],
             title="Interactive footprint — open in browser",
             xlim=(0, config.domain.xmax),
             ylim=(0, config.domain.ymax),
