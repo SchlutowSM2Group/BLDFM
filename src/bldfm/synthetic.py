@@ -157,9 +157,7 @@ def generate_towers_grid(
                 dy = (i - (side - 1) / 2) * spacing_m
                 offsets.append((dx, dy))
     elif layout == "transect":
-        offsets = [
-            ((i - (n_towers - 1) / 2) * spacing_m, 0.0) for i in range(n_towers)
-        ]
+        offsets = [((i - (n_towers - 1) / 2) * spacing_m, 0.0) for i in range(n_towers)]
     elif layout == "random":
         extent = spacing_m * np.sqrt(n_towers)
         offsets = [
@@ -167,17 +165,21 @@ def generate_towers_grid(
             for _ in range(n_towers)
         ]
     else:
-        raise ValueError(f"Unknown layout: {layout}. Use 'grid', 'transect', or 'random'.")
+        raise ValueError(
+            f"Unknown layout: {layout}. Use 'grid', 'transect', or 'random'."
+        )
 
     towers = []
     for i, (dx, dy) in enumerate(offsets):
         lat = center_lat + dy * deg_per_m_lat
         lon = center_lon + dx * deg_per_m_lon
-        towers.append({
-            "name": f"tower_{chr(65 + i)}" if i < 26 else f"tower_{i}",
-            "lat": round(lat, 6),
-            "lon": round(lon, 6),
-            "z_m": z_m,
-        })
+        towers.append(
+            {
+                "name": f"tower_{chr(65 + i)}" if i < 26 else f"tower_{i}",
+                "lat": round(lat, 6),
+                "lon": round(lon, 6),
+                "z_m": z_m,
+            }
+        )
 
     return towers

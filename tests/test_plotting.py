@@ -5,6 +5,7 @@ import pytest
 
 pytestmark = pytest.mark.plotting
 import matplotlib
+
 matplotlib.use("Agg")  # non-interactive backend for CI
 import matplotlib.pyplot as plt
 
@@ -24,6 +25,7 @@ from bldfm.synthetic import generate_synthetic_timeseries, generate_towers_grid
 
 
 # --- extract_percentile_contour ---
+
 
 def test_percentile_contour_properties(footprint_result_session):
     """Test that percentile contours return valid floats with monotonic area."""
@@ -46,6 +48,7 @@ def test_percentile_contour_properties(footprint_result_session):
 
 # --- plot_footprint_field ---
 
+
 def test_plot_footprint_field_variants(footprint_result_session):
     """Test footprint field plot: basic, with contours, and on custom axes."""
     result, _ = footprint_result_session
@@ -62,45 +65,60 @@ def test_plot_footprint_field_variants(footprint_result_session):
 
     # Custom axes
     fig, ax = plt.subplots()
-    returned_ax = plot_footprint_field(result["flx"], result["grid"], ax=ax, title="Test")
+    returned_ax = plot_footprint_field(
+        result["flx"], result["grid"], ax=ax, title="Test"
+    )
     assert returned_ax is ax
     plt.close("all")
 
 
 # --- plot_footprint_timeseries ---
 
+
 def test_plot_footprint_timeseries():
     towers = generate_towers_grid(n_towers=1, z_m=10.0, seed=42)
     met = generate_synthetic_timeseries(n_timesteps=3, seed=42)
-    config = parse_config_dict({
-        "domain": {
-            "nx": 64, "ny": 64, "xmax": 200.0, "ymax": 200.0, "nz": 8,
-            "modes": [64, 64],
-            "ref_lat": towers[0]["lat"], "ref_lon": towers[0]["lon"],
-        },
-        "towers": towers[:1],
-        "met": met,
-        "solver": {"closure": "MOST", "footprint": True},
-    })
+    config = parse_config_dict(
+        {
+            "domain": {
+                "nx": 64,
+                "ny": 64,
+                "xmax": 200.0,
+                "ymax": 200.0,
+                "nz": 8,
+                "modes": [64, 64],
+                "ref_lat": towers[0]["lat"],
+                "ref_lon": towers[0]["lon"],
+            },
+            "towers": towers[:1],
+            "met": met,
+            "solver": {"closure": "MOST", "footprint": True},
+        }
+    )
     results = run_bldfm_timeseries(config, config.towers[0])
     grid = results[0]["grid"]
 
-    ax = plot_footprint_timeseries(results, grid, pcts=[0.5, 0.8],
-                                   title="Footprint timeseries (test)")
+    ax = plot_footprint_timeseries(
+        results, grid, pcts=[0.5, 0.8], title="Footprint timeseries (test)"
+    )
     assert ax is not None
-    ax.figure.savefig("plots/test_footprint_timeseries.png", dpi=150,
-                      bbox_inches="tight")
+    ax.figure.savefig(
+        "plots/test_footprint_timeseries.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
 # --- plot_footprint_on_map (skip if contextily not installed) ---
 
+
 def test_plot_footprint_on_map_import_error(footprint_result_session):
     """Should raise ImportError with helpful message if contextily missing."""
     from bldfm.plotting import plot_footprint_on_map
+
     result, config = footprint_result_session
     try:
         import contextily
+
         pytest.skip("contextily is installed")
     except ImportError:
         with pytest.raises(ImportError, match="contextily"):
@@ -110,6 +128,7 @@ def test_plot_footprint_on_map_import_error(footprint_result_session):
 def test_plot_footprint_on_map_happy_path(footprint_result_session):
     """Test map plot with contextily tiles (requires network + contextily)."""
     from bldfm.plotting import plot_footprint_on_map
+
     try:
         import contextily
     except ImportError:
@@ -117,27 +136,33 @@ def test_plot_footprint_on_map_happy_path(footprint_result_session):
 
     result, config = footprint_result_session
     try:
-        ax = plot_footprint_on_map(result["flx"], result["grid"], config,
-                                    contour_pcts=[0.5, 0.8],
-                                    title="Map plot (test)")
+        ax = plot_footprint_on_map(
+            result["flx"],
+            result["grid"],
+            config,
+            contour_pcts=[0.5, 0.8],
+            title="Map plot (test)",
+        )
     except Exception as exc:
         # Network errors should not fail the test suite
         if "URLError" in type(exc).__name__ or "ConnectionError" in type(exc).__name__:
             pytest.skip(f"Network unavailable: {exc}")
         raise
     assert ax is not None
-    ax.figure.savefig("plots/test_footprint_on_map.png", dpi=150,
-                      bbox_inches="tight")
+    ax.figure.savefig("plots/test_footprint_on_map.png", dpi=150, bbox_inches="tight")
     plt.close("all")
 
 
 # --- plot_wind_rose (skip if windrose not installed) ---
 
+
 def test_plot_wind_rose_import_error():
     """Should raise ImportError with helpful message if windrose missing."""
     from bldfm.plotting import plot_wind_rose
+
     try:
         import windrose
+
         pytest.skip("windrose is installed")
     except ImportError:
         with pytest.raises(ImportError, match="windrose"):
@@ -147,6 +172,7 @@ def test_plot_wind_rose_import_error():
 def test_plot_wind_rose_happy_path():
     """Test wind rose plot with synthetic data (requires windrose)."""
     from bldfm.plotting import plot_wind_rose
+
     try:
         import windrose
     except ImportError:
@@ -158,23 +184,25 @@ def test_plot_wind_rose_happy_path():
 
     ax = plot_wind_rose(ws, wd, title="Wind rose (test)")
     assert ax is not None
-    ax.figure.savefig("plots/test_wind_rose.png", dpi=150,
-                      bbox_inches="tight")
+    ax.figure.savefig("plots/test_wind_rose.png", dpi=150, bbox_inches="tight")
     plt.close("all")
 
 
 # --- plot_footprint_interactive ---
 
+
 def test_plot_footprint_interactive(footprint_result_session):
     from bldfm.plotting import plot_footprint_interactive
+
     result, _ = footprint_result_session
     try:
         import plotly
     except ImportError:
         pytest.skip("plotly not installed")
 
-    fig = plot_footprint_interactive(result["flx"], result["grid"],
-                                     title="Test interactive")
+    fig = plot_footprint_interactive(
+        result["flx"], result["grid"], title="Test interactive"
+    )
     assert fig is not None
     assert hasattr(fig, "to_html")
     plt.close("all")
@@ -182,22 +210,27 @@ def test_plot_footprint_interactive(footprint_result_session):
 
 # --- plot_footprint_on_map: land_cover ---
 
+
 def test_plot_footprint_on_map_land_cover_import_error(footprint_result_session):
     """Should raise ImportError with helpful message if owslib missing."""
     from bldfm.plotting import plot_footprint_on_map
+
     result, config = footprint_result_session
     try:
         import owslib
+
         pytest.skip("owslib is installed")
     except ImportError:
         with pytest.raises(ImportError, match="owslib"):
-            plot_footprint_on_map(result["flx"], result["grid"], config,
-                                  land_cover=True)
+            plot_footprint_on_map(
+                result["flx"], result["grid"], config, land_cover=True
+            )
 
 
 def test_plot_footprint_on_map_land_cover_mock(footprint_result_session, monkeypatch):
     """Test land cover overlay with mocked WMS response."""
     from bldfm.plotting import plot_footprint_on_map
+
     result, config = footprint_result_session
 
     fake_img = np.random.rand(64, 64, 4).astype(np.float32)
@@ -208,8 +241,9 @@ def test_plot_footprint_on_map_land_cover_mock(footprint_result_session, monkeyp
 
     monkeypatch.setattr("bldfm.plotting._fetch_land_cover", mock_fetch)
 
-    ax = plot_footprint_on_map(result["flx"], result["grid"], config,
-                                land_cover=True, title="Land cover test")
+    ax = plot_footprint_on_map(
+        result["flx"], result["grid"], config, land_cover=True, title="Land cover test"
+    )
     assert ax is not None
     # Verify legend is present
     legend = ax.get_legend()
@@ -218,6 +252,7 @@ def test_plot_footprint_on_map_land_cover_mock(footprint_result_session, monkeyp
 
 
 # --- plot_footprint_comparison ---
+
 
 def test_plot_footprint_comparison(footprint_result_session):
     """Test multi-panel comparison plot."""
@@ -239,6 +274,7 @@ def test_plot_footprint_comparison(footprint_result_session):
 
 # --- plot_field_comparison ---
 
+
 def test_plot_field_comparison():
     """Test 2x2 field comparison with synthetic data."""
     rng = np.random.default_rng(42)
@@ -258,6 +294,7 @@ def test_plot_field_comparison():
 
 # --- plot_convergence ---
 
+
 def test_plot_convergence():
     """Test log-log convergence plot with and without fits."""
     h = np.array([10.0, 5.0, 2.5, 1.25])
@@ -269,14 +306,19 @@ def test_plot_convergence():
     plt.close("all")
 
     # With fits
-    ax = plot_convergence(h, err, fits=[
-        (lambda x: 1e-4 * x**2, {}, "$O(h^2)$"),
-    ])
+    ax = plot_convergence(
+        h,
+        err,
+        fits=[
+            (lambda x: 1e-4 * x**2, {}, "$O(h^2)$"),
+        ],
+    )
     assert ax is not None
     plt.close("all")
 
 
 # --- plot_vertical_profiles ---
+
 
 def test_plot_vertical_profiles():
     """Test vertical profile plot using real PBL profiles."""
@@ -286,7 +328,8 @@ def test_plot_vertical_profiles():
     z2, profs2 = vertical_profiles(32, 10.0, wind=(0, -5), z0=0.5, mol=100.0)
 
     fig, axes = plot_vertical_profiles(
-        [z1, z2], [profs1, profs2],
+        [z1, z2],
+        [profs1, profs2],
         labels=["L = -10 m", "L = +100 m"],
         meas_height=10.0,
     )
@@ -296,6 +339,7 @@ def test_plot_vertical_profiles():
 
 
 # --- plot_vertical_slice ---
+
 
 def test_plot_vertical_slice():
     """Test 2D slice from a 3D field for all axes."""
@@ -324,6 +368,7 @@ def test_plot_vertical_slice():
 
 
 # --- get_source_area ---
+
 
 def test_get_source_area_basic():
     """Test that get_source_area returns correct shape and value range."""
@@ -380,6 +425,7 @@ def test_source_area_base_functions_shapes(footprint_result_session):
 
 # --- plot_source_area_contours ---
 
+
 def test_plot_source_area_contours(footprint_result_session):
     """Test source area contour plotting returns axes."""
     from bldfm.utils import get_source_area
@@ -387,8 +433,9 @@ def test_plot_source_area_contours(footprint_result_session):
 
     result, _ = footprint_result_session
     rescaled = get_source_area(result["flx"], result["flx"])
-    ax = plot_source_area_contours(result["flx"], result["grid"], rescaled,
-                                   title="Test contours")
+    ax = plot_source_area_contours(
+        result["flx"], result["grid"], rescaled, title="Test contours"
+    )
     assert ax is not None
     plt.close("all")
 
@@ -401,13 +448,15 @@ def test_plot_source_area_contours_custom_ax(footprint_result_session):
     result, _ = footprint_result_session
     fig, ax = plt.subplots()
     rescaled = get_source_area(result["flx"], result["flx"])
-    returned_ax = plot_source_area_contours(result["flx"], result["grid"],
-                                            rescaled, ax=ax)
+    returned_ax = plot_source_area_contours(
+        result["flx"], result["grid"], rescaled, ax=ax
+    )
     assert returned_ax is ax
     plt.close("all")
 
 
 # --- plot_source_area_gallery ---
+
 
 def test_plot_source_area_gallery(footprint_result_session):
     """Test gallery plot creates 2x3 grid with 5 visible panels."""
@@ -415,7 +464,8 @@ def test_plot_source_area_gallery(footprint_result_session):
 
     result, _ = footprint_result_session
     fig, axes = plot_source_area_gallery(
-        result["flx"], result["grid"],
+        result["flx"],
+        result["grid"],
         meas_pt=result["tower_xy"],
         wind=(0.0, -5.0),
     )

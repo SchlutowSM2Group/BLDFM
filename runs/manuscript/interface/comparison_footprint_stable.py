@@ -7,13 +7,18 @@ figure generation.  The KM01 external model is called directly.
 
 import numpy as np
 import matplotlib
+
 matplotlib.use("Agg")
 
 from dataclasses import replace
 
 from bldfm import initialize, run_bldfm_single, compute_wind_fields
 from bldfm.config_parser import (
-    BLDFMConfig, DomainConfig, TowerConfig, MetConfig, SolverConfig,
+    BLDFMConfig,
+    DomainConfig,
+    TowerConfig,
+    MetConfig,
+    SolverConfig,
 )
 from bldfm.ffm_kormann_meixner import estimateFootprint as FKM
 from bldfm.plotting import plot_footprint_comparison
@@ -38,17 +43,24 @@ if __name__ == "__main__":
     # --- Build config ---
     initialize()
 
-    tower = TowerConfig(name="tower", lat=0.0, lon=0.0, z_m=meas_height,
-                        x=meas_pt[0], y=meas_pt[1])
+    tower = TowerConfig(
+        name="tower", lat=0.0, lon=0.0, z_m=meas_height, x=meas_pt[0], y=meas_pt[1]
+    )
 
     config = BLDFMConfig(
         domain=DomainConfig(
-            nx=nxy[0], ny=nxy[1], xmax=domain_ext[0], ymax=domain_ext[1],
-            nz=64, modes=(512, 512), halo=1000.0,
+            nx=nxy[0],
+            ny=nxy[1],
+            xmax=domain_ext[0],
+            ymax=domain_ext[1],
+            nz=64,
+            modes=(512, 512),
+            halo=1000.0,
         ),
         towers=[tower],
-        met=MetConfig(ustar=ustar, z0=z0, mol=mol,
-                      wind_speed=wind_speed, wind_dir=wind_dir),
+        met=MetConfig(
+            ustar=ustar, z0=z0, mol=mol, wind_speed=wind_speed, wind_dir=wind_dir
+        ),
         solver=SolverConfig(closure="MOST", footprint=True),
     )
 
@@ -66,9 +78,16 @@ if __name__ == "__main__":
     wd = np.arctan(u / v) * 180.0 / np.pi
 
     grid_x, grid_y, grid_ffm = FKM(
-        zm=meas_height, z0=z0, ws=wind_speed, ustar=ustar, mo_len=mol,
-        sigma_v=sigma_v, grid_domain=[0, xmx, 0, ymx], grid_res=dx,
-        mxy=meas_pt, wd=wd,
+        zm=meas_height,
+        z0=z0,
+        ws=wind_speed,
+        ustar=ustar,
+        mo_len=mol,
+        sigma_v=sigma_v,
+        grid_domain=[0, xmx, 0, ymx],
+        grid_res=dx,
+        mxy=meas_pt,
+        wd=wd,
     )
 
     # --- Plotting ---

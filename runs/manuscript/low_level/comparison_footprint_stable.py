@@ -7,6 +7,7 @@ directly. For the config-driven version, see ../interface/comparison_footprint_s
 
 import numpy as np
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -42,23 +43,44 @@ if __name__ == "__main__":
     surf_flx = ideal_source(nxy, domain)
     z, profs = vertical_profiles(nz, meas_height, wind, z0=z0, mol=mol, closure="MOST")
     grid, conc, flx = steady_state_transport_solver(
-        surf_flx, z, profs, domain, nz,
-        modes=modes, meas_pt=meas_pt, footprint=True, halo=halo,
+        surf_flx,
+        z,
+        profs,
+        domain,
+        nz,
+        modes=modes,
+        meas_pt=meas_pt,
+        footprint=True,
+        halo=halo,
     )
 
     # --- BLDFM with MOSTM closure (no along-wind diffusion) ---
     surf_flx = ideal_source(nxy, domain)
     z, profs = vertical_profiles(nz, meas_height, wind, z0=z0, mol=mol, closure="MOSTM")
     grid, conc_m, flx_m = steady_state_transport_solver(
-        surf_flx, z, profs, domain, nz,
-        modes=modes, meas_pt=meas_pt, footprint=True, halo=halo,
+        surf_flx,
+        z,
+        profs,
+        domain,
+        nz,
+        modes=modes,
+        meas_pt=meas_pt,
+        footprint=True,
+        halo=halo,
     )
 
     # --- Kormann-Meixner footprint model ---
     grid_x, grid_y, grid_ffm = FKM(
-        zm=meas_height, z0=z0, ws=umean, ustar=ustar, mo_len=mol,
-        sigma_v=sigma_v, grid_domain=[0, xmx, 0, ymx], grid_res=dx,
-        mxy=meas_pt, wd=wd,
+        zm=meas_height,
+        z0=z0,
+        ws=umean,
+        ustar=ustar,
+        mo_len=mol,
+        sigma_v=sigma_v,
+        grid_domain=[0, xmx, 0, ymx],
+        grid_res=dx,
+        mxy=meas_pt,
+        wd=wd,
     )
 
     # --- Plotting ---
@@ -74,18 +96,28 @@ if __name__ == "__main__":
     levels = np.linspace(vmin, vmax, lvls, endpoint=False)
     X, Y, Z = grid
 
-    axs[0].contour(X, Y, flx, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=linewidths)
+    axs[0].contour(
+        X, Y, flx, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=linewidths
+    )
     axs[0].set_title("BLDFM")
     axs[0].set_xlabel("x [m]")
     axs[0].set_ylabel("y [m]")
 
-    axs[1].contour(X, Y, flx_m, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=linewidths)
+    axs[1].contour(
+        X, Y, flx_m, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=linewidths
+    )
     axs[1].set_title("BLDFM-SP")
     axs[1].set_xlabel("x [m]")
 
     plot = axs[2].contour(
-        grid_x, grid_y, grid_ffm, levels,
-        cmap=cmap, vmin=vmin, vmax=vmax, linewidths=linewidths,
+        grid_x,
+        grid_y,
+        grid_ffm,
+        levels,
+        cmap=cmap,
+        vmin=vmin,
+        vmax=vmax,
+        linewidths=linewidths,
     )
     axs[2].set_title("KM01")
     axs[2].set_xlabel("x [m]")

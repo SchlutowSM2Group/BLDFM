@@ -19,21 +19,31 @@ logger = get_logger("multitower_example")
 towers = generate_towers_grid(n_towers=2, z_m=10.0, layout="transect", seed=42)
 met = generate_synthetic_timeseries(n_timesteps=3, seed=42)
 
-config = parse_config_dict({
-    "domain": {
-        "nx": 128, "ny": 64, "xmax": 500.0, "ymax": 250.0, "nz": 16,
-        "modes": [128, 64],
-        "ref_lat": towers[0]["lat"], "ref_lon": towers[0]["lon"],
-    },
-    "towers": towers,
-    "met": met,
-    "solver": {"closure": "MOST", "footprint": True},
-})
+config = parse_config_dict(
+    {
+        "domain": {
+            "nx": 128,
+            "ny": 64,
+            "xmax": 500.0,
+            "ymax": 250.0,
+            "nz": 16,
+            "modes": [128, 64],
+            "ref_lat": towers[0]["lat"],
+            "ref_lon": towers[0]["lon"],
+        },
+        "towers": towers,
+        "met": met,
+        "solver": {"closure": "MOST", "footprint": True},
+    }
+)
 
 if __name__ == "__main__":
     initialize()
-    logger.info("Running multitower example: %d towers x %d timesteps",
-                len(config.towers), config.met.n_timesteps)
+    logger.info(
+        "Running multitower example: %d towers x %d timesteps",
+        len(config.towers),
+        config.met.n_timesteps,
+    )
 
     results = run_bldfm_multitower(config)
 

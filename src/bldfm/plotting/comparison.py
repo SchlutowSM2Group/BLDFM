@@ -6,9 +6,18 @@ import matplotlib.pyplot as plt
 from ._common import format_colorbar_scientific
 
 
-def plot_footprint_comparison(fields, grids, labels, meas_pt=None, n_levels=6,
-                               vmin=None, vmax=None, cmap="turbo", figsize=None,
-                               title=None):
+def plot_footprint_comparison(
+    fields,
+    grids,
+    labels,
+    meas_pt=None,
+    n_levels=6,
+    vmin=None,
+    vmax=None,
+    cmap="turbo",
+    figsize=None,
+    title=None,
+):
     """Multi-panel contour plot comparing footprint models side-by-side.
 
     Parameters
@@ -56,16 +65,16 @@ def plot_footprint_comparison(fields, grids, labels, meas_pt=None, n_levels=6,
 
     for i, (flx, grid, label, ax) in enumerate(zip(fields, grids, labels, axes)):
         X, Y = grid
-        plot = ax.contour(X, Y, flx, levels, cmap=cmap, vmin=vmin, vmax=vmax,
-                          linewidths=4.0)
+        plot = ax.contour(
+            X, Y, flx, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=4.0
+        )
         ax.set_title(label)
         ax.set_xlabel("x [m]")
         if i == 0:
             ax.set_ylabel("y [m]")
 
         if meas_pt is not None:
-            ax.scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*",
-                       color="red", s=300)
+            ax.scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*", color="red", s=300)
 
     cbar = fig.colorbar(plot, ax=axes, shrink=0.8, location="bottom")
     format_colorbar_scientific(cbar, "$m^{-2}$")
@@ -115,8 +124,9 @@ def plot_field_comparison(fields, domain, src_pt=None, cmap="turbo", figsize=Non
     extent = [0, domain[0], 0, domain[1]]
     shrink = 0.7
 
-    fig, axs = plt.subplots(2, 2, figsize=figsize, sharex=True, sharey=True,
-                            layout="constrained")
+    fig, axs = plt.subplots(
+        2, 2, figsize=figsize, sharex=True, sharey=True, layout="constrained"
+    )
 
     # Top-left: concentration
     plot = axs[0, 0].imshow(conc, origin="lower", cmap=cmap, extent=extent)
@@ -151,9 +161,11 @@ def plot_field_comparison(fields, domain, src_pt=None, cmap="turbo", figsize=Non
     format_colorbar_scientific(cbar)
 
     if src_pt is not None:
-        axs[0, 0].scatter(src_pt[0], src_pt[1], zorder=5, marker="*",
-                          color="red", s=100)
-        axs[0, 1].scatter(src_pt[0], src_pt[1], zorder=5, marker="*",
-                          color="red", s=100)
+        axs[0, 0].scatter(
+            src_pt[0], src_pt[1], zorder=5, marker="*", color="red", s=100
+        )
+        axs[0, 1].scatter(
+            src_pt[0], src_pt[1], zorder=5, marker="*", color="red", s=100
+        )
 
     return fig, axs

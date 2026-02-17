@@ -128,7 +128,8 @@ def get_fft_manager(num_threads=1, cache_keepalive=30):
     if _fft_manager is not None and _fft_manager.num_threads != num_threads:
         logger.info(
             "Re-initializing FFTManager: num_threads %d -> %d",
-            _fft_manager.num_threads, num_threads,
+            _fft_manager.num_threads,
+            num_threads,
         )
         _fft_manager = None
     if _fft_manager is None:

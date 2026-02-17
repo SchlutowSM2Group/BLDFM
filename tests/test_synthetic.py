@@ -8,6 +8,7 @@ from bldfm.synthetic import generate_synthetic_timeseries, generate_towers_grid
 
 # --- generate_synthetic_timeseries ---
 
+
 class TestSyntheticTimeseries:
 
     def test_value_ranges(self):
@@ -49,6 +50,7 @@ class TestSyntheticTimeseries:
 
 
 # --- generate_towers_grid ---
+
 
 class TestTowersGrid:
 

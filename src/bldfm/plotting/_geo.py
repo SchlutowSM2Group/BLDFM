@@ -106,9 +106,15 @@ def land_cover_legend(ax, classes=None):
         classes = sorted(WORLDCOVER_CLASSES.keys())
 
     patches = [
-        Patch(facecolor=WORLDCOVER_CLASSES[c][0],
-              label=WORLDCOVER_CLASSES[c][1])
-        for c in classes if c in WORLDCOVER_CLASSES
+        Patch(facecolor=WORLDCOVER_CLASSES[c][0], label=WORLDCOVER_CLASSES[c][1])
+        for c in classes
+        if c in WORLDCOVER_CLASSES
     ]
-    ax.legend(handles=patches, loc="lower left", fontsize=7,
-              framealpha=0.8, title="Land cover", title_fontsize=8)
+    ax.legend(
+        handles=patches,
+        loc="lower left",
+        fontsize=7,
+        framealpha=0.8,
+        title="Land cover",
+        title_fontsize=8,
+    )

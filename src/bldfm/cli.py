@@ -24,19 +24,24 @@ def cmd_run(args):
 
     config = load_config(args.config)
     logger.info(f"Loaded config: {args.config}")
-    logger.info(f"  Domain: {config.domain.nx}x{config.domain.ny}, nz={config.domain.nz}")
+    logger.info(
+        f"  Domain: {config.domain.nx}x{config.domain.ny}, nz={config.domain.nz}"
+    )
     logger.info(f"  Towers: {len(config.towers)}")
     logger.info(f"  Timesteps: {config.met.n_timesteps}")
 
     if args.dry_run:
         logger.info("Dry run complete. Config is valid.")
         for tower in config.towers:
-            logger.info(f"  Tower '{tower.name}': lat={tower.lat}, lon={tower.lon}, "
-                        f"z_m={tower.z_m}, x={tower.x:.1f}, y={tower.y:.1f}")
+            logger.info(
+                f"  Tower '{tower.name}': lat={tower.lat}, lon={tower.lon}, "
+                f"z_m={tower.z_m}, x={tower.x:.1f}, y={tower.y:.1f}"
+            )
         return
 
     # Apply runtime settings
     from . import config as runtime_config
+
     runtime_config.NUM_THREADS = config.parallel.num_threads
     runtime_config.MAX_WORKERS = config.parallel.max_workers
     runtime_config.USE_CACHE = config.parallel.use_cache
@@ -59,6 +64,7 @@ def cmd_run(args):
 def _save_plots(results, logger):
     """Save a footprint PNG for each result."""
     import matplotlib
+
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from .plotting import plot_footprint_field
@@ -72,14 +78,22 @@ def _save_plots(results, logger):
 
         fig, ax = plt.subplots()
         plot_footprint_field(
-            result["flx"], result["grid"],
+            result["flx"],
+            result["grid"],
             ax=ax,
             contour_pcts=[0.5, 0.8],
             title=f"{name} (t={ts})",
         )
         tx, ty = result["tower_xy"]
-        ax.plot(tx, ty, "k^", markersize=10, markeredgecolor="white",
-                markeredgewidth=1.5, zorder=5)
+        ax.plot(
+            tx,
+            ty,
+            "k^",
+            markersize=10,
+            markeredgecolor="white",
+            markeredgewidth=1.5,
+            zorder=5,
+        )
         fig.savefig(fname, dpi=150, bbox_inches="tight")
         plt.close(fig)
         logger.info(f"  Saved {fname}")
@@ -96,10 +110,14 @@ def main():
     # 'run' subcommand
     run_parser = subparsers.add_parser("run", help="Run BLDFM from a YAML config file")
     run_parser.add_argument("config", help="Path to YAML configuration file")
-    run_parser.add_argument("--dry-run", action="store_true",
-                            help="Validate config without running the solver")
-    run_parser.add_argument("--plot", action="store_true",
-                            help="Save footprint plots to plots/")
+    run_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Validate config without running the solver",
+    )
+    run_parser.add_argument(
+        "--plot", action="store_true", help="Save footprint plots to plots/"
+    )
 
     args = parser.parse_args()
 

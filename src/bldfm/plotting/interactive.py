@@ -39,13 +39,15 @@ def plot_footprint_interactive(flx, grid, title=None, xlim=None, ylim=None):
         ymask = (y >= ylim[0]) & (y <= ylim[1])
         y, flx = y[ymask], flx[ymask, :]
 
-    fig = go.Figure(data=go.Heatmap(
-        z=flx,
-        x=x,
-        y=y,
-        colorscale="RdYlBu_r",
-        colorbar=dict(title="Footprint [m\u207b\u00b2]"),
-    ))
+    fig = go.Figure(
+        data=go.Heatmap(
+            z=flx,
+            x=x,
+            y=y,
+            colorscale="RdYlBu_r",
+            colorbar=dict(title="Footprint [m\u207b\u00b2]"),
+        )
+    )
     x_range = float(x.max() - x.min()) or 1.0
     y_range = float(y.max() - y.min()) or 1.0
     base_width = 650

@@ -26,9 +26,17 @@ import matplotlib.pyplot as plt
 from ._common import ensure_ax, format_colorbar_scientific
 
 
-def plot_source_area_contours(flx, grid, source_area_field, levels=None,
-                              ax=None, contour_colors=None, cmap="RdYlBu_r",
-                              title=None, **pcolormesh_kw):
+def plot_source_area_contours(
+    flx,
+    grid,
+    source_area_field,
+    levels=None,
+    ax=None,
+    contour_colors=None,
+    cmap="RdYlBu_r",
+    title=None,
+    **pcolormesh_kw,
+):
     """Plot footprint field with source area contour overlay.
 
     The ``source_area_field`` should be the output of
@@ -71,8 +79,7 @@ def plot_source_area_contours(flx, grid, source_area_field, levels=None,
     cbar = ax.figure.colorbar(pm, ax=ax)
     format_colorbar_scientific(cbar, label="Footprint [m$^{-2}$]")
 
-    cs = ax.contour(X, Y, source_area_field, levels=levels,
-                    colors=contour_colors)
+    cs = ax.contour(X, Y, source_area_field, levels=levels, colors=contour_colors)
     ax.clabel(cs, fmt=lambda x: f"{x:.0%}", fontsize=8, inline=True)
 
     ax.set_xlabel("x [m]")
@@ -84,8 +91,9 @@ def plot_source_area_contours(flx, grid, source_area_field, levels=None,
     return ax
 
 
-def plot_source_area_gallery(flx, grid, meas_pt, wind, levels=None,
-                             cmap="RdYlBu_r", figsize=None):
+def plot_source_area_gallery(
+    flx, grid, meas_pt, wind, levels=None, cmap="RdYlBu_r", figsize=None
+):
     """Multi-panel plot showing all 5 source area contour types.
 
     Parameters
@@ -138,8 +146,13 @@ def plot_source_area_gallery(flx, grid, meas_pt, wind, levels=None,
     for i, (name, g) in enumerate(contour_types):
         rescaled = get_source_area(flx, g)
         plot_source_area_contours(
-            flx, grid, rescaled, levels=levels,
-            ax=axes_flat[i], cmap=cmap, title=f"{name} contours",
+            flx,
+            grid,
+            rescaled,
+            levels=levels,
+            ax=axes_flat[i],
+            cmap=cmap,
+            title=f"{name} contours",
         )
 
     # Hide the unused 6th subplot

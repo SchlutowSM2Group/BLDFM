@@ -64,7 +64,9 @@ class GreensFunctionCache:
         logger.debug("Cache miss: %s", key[:12])
         return None
 
-    def put(self, z, profiles, domain, modes, meas_pt, halo, precision, grid, conc, flx):
+    def put(
+        self, z, profiles, domain, modes, meas_pt, halo, precision, grid, conc, flx
+    ):
         """Store a result in the cache."""
         key = self._compute_key(z, profiles, domain, modes, meas_pt, halo, precision)
         path = self.cache_dir / f"{key}.npz"

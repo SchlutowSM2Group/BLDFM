@@ -7,6 +7,7 @@ Uses the config-driven interface with dataclasses.replace() to sweep over
 
 import numpy as np
 import matplotlib
+
 matplotlib.use("Agg")
 
 from scipy.optimize import curve_fit
@@ -14,7 +15,11 @@ from dataclasses import replace
 
 from bldfm import initialize, run_bldfm_single
 from bldfm.config_parser import (
-    BLDFMConfig, DomainConfig, TowerConfig, MetConfig, SolverConfig,
+    BLDFMConfig,
+    DomainConfig,
+    TowerConfig,
+    MetConfig,
+    SolverConfig,
     ParallelConfig,
 )
 from bldfm.plotting import plot_convergence
@@ -55,14 +60,21 @@ if __name__ == "__main__":
 
     base_config = BLDFMConfig(
         domain=DomainConfig(
-            nx=nxy[0], ny=nxy[1], xmax=domain_ext[0], ymax=domain_ext[1],
-            nz=512, modes=(1024, 1024), halo=halo,
+            nx=nxy[0],
+            ny=nxy[1],
+            xmax=domain_ext[0],
+            ymax=domain_ext[1],
+            nz=512,
+            modes=(1024, 1024),
+            halo=halo,
         ),
         towers=[tower],
         met=MetConfig(ustar=ustar, mol=1e9, wind_speed=wind_speed, wind_dir=wind_dir),
         solver=SolverConfig(
-            closure="CONSTANT", analytic=True,
-            src_loc=src_pt, surface_flux_shape="point",
+            closure="CONSTANT",
+            analytic=True,
+            src_loc=src_pt,
+            surface_flux_shape="point",
         ),
         parallel=ParallelConfig(num_threads=16),
     )
@@ -74,8 +86,16 @@ if __name__ == "__main__":
 
     # --- Convergence sweep ---
     modess = [
-        (90, 90), (108, 108), (128, 128), (152, 152), (180, 180),
-        (216, 216), (256, 256), (304, 304), (362, 362), (432, 432),
+        (90, 90),
+        (108, 108),
+        (128, 128),
+        (152, 152),
+        (180, 180),
+        (216, 216),
+        (256, 256),
+        (304, 304),
+        (362, 362),
+        (432, 432),
     ]
     nzs = [22, 27, 32, 38, 46, 54, 64, 76, 90, 108]
 
@@ -85,7 +105,8 @@ if __name__ == "__main__":
     for i, (modes, nz) in enumerate(zip(modess, nzs)):
         logger.info("modes: %s, nz: %d", modes, nz)
 
-        sweep_config = replace(base_config,
+        sweep_config = replace(
+            base_config,
             domain=replace(base_config.domain, nz=nz, modes=modes),
             solver=replace(base_config.solver, analytic=False),
         )
@@ -106,12 +127,15 @@ if __name__ == "__main__":
     popt_cube, _ = curve_fit(cube, dxyz, conc_err)
 
     ax = plot_convergence(
-        dxyz, conc_err,
+        dxyz,
+        conc_err,
         fits=[
-            (lambda h, e0=popt_expo[0], r=popt_expo[1]: expo(h, e0, r),
-             {}, f"$\\exp(-{int(popt_expo[1])}" + "\\,\\mathrm{m}/h)$"),
-            (lambda h, e0=popt_cube[0]: cube(h, e0),
-             {}, "$h^3$"),
+            (
+                lambda h, e0=popt_expo[0], r=popt_expo[1]: expo(h, e0, r),
+                {},
+                f"$\\exp(-{int(popt_expo[1])}" + "\\,\\mathrm{m}/h)$",
+            ),
+            (lambda h, e0=popt_cube[0]: cube(h, e0), {}, "$h^3$"),
         ],
         title="Error convergence for ANALY",
     )

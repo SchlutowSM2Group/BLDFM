@@ -23,7 +23,12 @@ if __name__ == "__main__":
     for mol, color in zip(mols, colors):
 
         z, (u, v, Kx, Ky, Kz) = vertical_profiles(
-            n=8, meas_height=meas_height, wind=(5.0, 0.0), z0=0.1, closure="MOST", mol=mol
+            n=8,
+            meas_height=meas_height,
+            wind=(5.0, 0.0),
+            z0=0.1,
+            closure="MOST",
+            mol=mol,
         )
         K = Kz
 

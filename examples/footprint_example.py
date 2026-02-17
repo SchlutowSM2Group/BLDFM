@@ -12,6 +12,7 @@ For the equivalent low-level API version, see examples/low_level/footprint_examp
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -28,14 +29,22 @@ if __name__ == "__main__":
 
     fig, ax = plt.subplots()
     plot_footprint_field(
-        result["flx"], result["grid"],
+        result["flx"],
+        result["grid"],
         ax=ax,
         contour_pcts=[0.5, 0.8],
         title="Flux footprint",
     )
     tx, ty = result["tower_xy"]
-    ax.plot(tx, ty, "k^", markersize=10, markeredgecolor="white",
-            markeredgewidth=1.5, zorder=5)
+    ax.plot(
+        tx,
+        ty,
+        "k^",
+        markersize=10,
+        markeredgecolor="white",
+        markeredgewidth=1.5,
+        zorder=5,
+    )
     fig.savefig("plots/flux_footprint.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 
