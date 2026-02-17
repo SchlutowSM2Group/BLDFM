@@ -16,9 +16,12 @@ Key Features
 
 - **Numerical Solver**: Efficiently solves the steady-state advection-diffusion equation using Fourier transforms and numerical methods like the Semi-Implicit Euler (SIE) and Exponential Integrator (EI).
 - **Atmospheric Stability**: Computes vertical profiles of mean wind and eddy diffusivity using Monin-Obukhov Similarity Theory (MOST).
-- **Customizability**: Easily extendable with additional turbulence closures and parameterizations.
+- **Config-driven Workflows**: YAML configuration files and a CLI (``bldfm run config.yaml``) for reproducible simulations.
+- **Multi-tower & Timeseries**: Run footprints for multiple towers across time-varying meteorology, with parallel execution support.
+- **NetCDF I/O**: Save and load multi-tower results in CF-1.8 compliant NetCDF format via xarray.
+- **Plotting**: Footprint fields with percentile contours, geospatial map overlays (contextily), wind roses, and interactive Plotly plots.
+- **Caching**: Disk-based caching of Green's function results to avoid redundant solves.
 - **Validation**: Tested against analytical solutions and benchmark models, ensuring accuracy and reliability.
-- **Example Workflows**: Includes pre-configured scripts for footprint modeling and dispersion analysis.
 
 
 Getting Started
@@ -33,23 +36,30 @@ To begin using BLDFM, follow these steps in the root directory of the repository
 
       $ pip install -e .
 
-2. **Run Example Scripts**: 
-   Explore the example workflows in the runs subpackage:
+2. **Run via CLI**:
 
    .. code-block:: bash
 
-      $ python -m runs.comparison_footprint
+      $ bldfm run examples/configs/multitower.yaml --plot
 
-3. **Dive into the Documentation**: 
+3. **Or explore the example scripts**:
+
+   .. code-block:: bash
+
+      $ python examples/minimal_example.py
+
+4. **Dive into the Documentation**:
    Use the navigation links below to explore the package structure, API reference, and example workflows.
 
 
 Navigation
 ----------
 
-- `Quickstart Guide <quickstart.html>`_: A step-by-step guide to installing and running BLDFM.
+- `Quickstart Tutorial <tutorial_quickstart.html>`_: Install to first footprint in ~5 minutes.
+- `Full Tutorial <tutorial_full.html>`_: Verify every v1.0 feature step-by-step.
+- `Quick Reference <reference.html>`_: Concise code snippets for common workflows.
 - `Package Overview <overview.html>`_: Learn about the core modules and their interactions.
-- `Example Workflows <runs.html>`_: Explore pre-configured scripts in the ``runs`` subpackage.
+- `Example Workflows <runs.html>`_: Explore examples in ``examples/``, ``runs/low_level/``, and ``runs/manuscript/``.
 - `Test Suite <tests.html>`_: Understand how BLDFM ensures reliability through rigorous testing.
 - `API Reference <src.html>`_: Detailed documentation for all core modules and functions.
 
@@ -57,7 +67,7 @@ Navigation
 About BLDFM
 -----------
 
-BLDFM is developed by Mark Schlutow, Ray Chew, and Mathias Göckede. It is licensed under the GNU License and is provided as an open-source software package to support research and development in atmospheric sciences.
+BLDFM is developed by Mark Schlutow, Ray Chew, and Mathias Göckede. It is licensed under the MIT License and is provided as an open-source software package to support research and development in atmospheric sciences.
 
 For more details, visit the `GitHub repository <https://github.com/SchlutowSM2Group/BLDFM>`_.
 
@@ -68,7 +78,9 @@ For more details, visit the `GitHub repository <https://github.com/SchlutowSM2Gr
    :includehidden:
 
    Home <self>
-   quickstart
+   tutorial_quickstart
+   tutorial_full
+   reference
    overview
    API reference <src>
    GitHub repository <https://github.com/SchlutowSM2Group/BLDFM>

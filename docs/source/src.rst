@@ -1,46 +1,106 @@
 .. _src:
 
-The ``src`` subpackage
-======================
+The ``bldfm`` package
+=====================
 
-This subpackage contains the main code for the BLDFM model. It includes modules for the PBL model, the solver, and utility functions.
+This package contains the BLDFM model. It includes core modules for the PBL model, spectral solver, and utility functions, as well as higher-level modules for configuration, interface, I/O, caching, plotting, and synthetic data generation.
 
-It is organized into three main modules:
-   1. :py:mod:`src.pbl_model`: Computes vertical profiles of horizontal wind and eddy diffusivity in the planetary boundary layer using Monin-Obukhov Similarity Theory (MOST).
-   2. :py:mod:`src.solver`: Solves the steady-state advection-diffusion equation for scalar concentration fields using FFT-based methods and numerical integration schemes.
-   3. :py:mod:`src.utils`: Provides utility functions for preprocessing, synthetic input generation, and diagnostics.
+Core modules
+------------
 
-Modules
--------
+bldfm.pbl\_model module
+^^^^^^^^^^^^^^^^^^^^^^^
 
-src.pbl\_model module
-^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: src.pbl_model
+.. automodule:: bldfm.pbl_model
    :members:
    :undoc-members:
    :show-inheritance:
 
-src.solver module
-^^^^^^^^^^^^^^^^^
+bldfm.solver module
+^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: src.solver
+.. automodule:: bldfm.solver
    :members:
    :undoc-members:
    :show-inheritance:
 
-src.utils module
+bldfm.utils module
+^^^^^^^^^^^^^^^^^^
+
+.. automodule:: bldfm.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.fft\_manager module
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: bldfm.fft_manager
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Configuration and interface
+---------------------------
+
+bldfm.config\_parser module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: bldfm.config_parser
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.interface module
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: bldfm.interface
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.cli module
 ^^^^^^^^^^^^^^^^
 
-.. automodule:: src.utils
+.. automodule:: bldfm.cli
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. Module contents
-.. ---------------
+Data and I/O
+------------
 
-.. .. automodule:: src
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
+bldfm.synthetic module
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: bldfm.synthetic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.io module
+^^^^^^^^^^^^^^^
+
+.. automodule:: bldfm.io
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.cache module
+^^^^^^^^^^^^^^^^^^
+
+.. automodule:: bldfm.cache
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Plotting
+--------
+
+bldfm.plotting module
+^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: bldfm.plotting
+   :members:
+   :undoc-members:
+   :show-inheritance:

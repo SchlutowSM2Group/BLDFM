@@ -1,49 +1,122 @@
 .. _runs:
 
-The ``runs`` subpackage
-=======================
+Example scripts and workflows
+=============================
 
-This subpackage provides example workflows and pre-configured scripts to demonstrate the usage of BLDFM. These scripts showcase how to combine the core modules (`pbl_model`, `solver`, and `utils`) for practical applications, such as footprint modeling, dispersion analysis, and validation against analytical solutions and other models.
+BLDFM provides three tiers of example scripts:
 
-**Features:**
-   - Example configurations for common use cases.
-   - Demonstrates integration of vertical profiles, transport solvers, and diagnostics.
+- **``examples/``** — Config-driven, high-level interface (start here)
+- **``runs/low_level/``** — Direct API calls for power users
+- **``runs/manuscript/``** — Paper reproduction scripts using config + plotting library
 
-Examples
---------
 
-runs.minimal\_example module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+High-level examples (``examples/``)
+-------------------------------------
 
-.. automodule:: runs.minimal_example
+These scripts use YAML configs and the ``run_bldfm_single`` / ``run_bldfm_multitower``
+interface.  Each example has a corresponding YAML config in ``examples/configs/``.
+
+.. code-block:: bash
+
+    $ python examples/minimal_example.py
+    $ python examples/footprint_example.py
+    $ python examples/parallel_example.py
+    $ python examples/multitower_example.py
+    $ python examples/3d_plume.py
+    $ python examples/minimal_example_3d.py
+
+    # Or use the CLI
+    $ bldfm run examples/configs/multitower.yaml --plot
+
+
+Low-level examples (``runs/low_level/``)
+-----------------------------------------
+
+These scripts call ``vertical_profiles``, ``ideal_source``, and
+``steady_state_transport_solver`` directly, giving full control over every parameter.
+
+runs.low\_level.minimal\_example module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: runs.low_level.minimal_example
    :members:
    :undoc-members:
    :show-inheritance:
 
-runs.footprint\_example module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+runs.low\_level.footprint\_example module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. automodule:: runs.footprint_example
+.. automodule:: runs.low_level.footprint_example
    :members:
    :undoc-members:
    :show-inheritance:
 
-Comparisons
------------
+runs.low\_level.plot\_profiles module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-runs.comparison\_analytic module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. automodule:: runs.comparison_analytic
+.. automodule:: runs.low_level.plot_profiles
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-runs.comparison\_footprint module
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Manuscript figures (``runs/manuscript/``)
+------------------------------------------
 
-.. automodule:: runs.comparison_footprint
+These scripts reproduce the figures in the BLDFM paper.  They use the config-driven
+interface with ``dataclasses.replace()`` for parameter mutation and the plotting library
+for figure generation.
+
+To regenerate all manuscript figures:
+
+.. code-block:: bash
+
+    $ python -m runs.manuscript.generate_all
+
+runs.manuscript.comparison\_analytic module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: runs.manuscript.comparison_analytic
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+runs.manuscript.comparison\_footprint\_unstable module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: runs.manuscript.comparison_footprint_unstable
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+runs.manuscript.comparison\_footprint\_neutral module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: runs.manuscript.comparison_footprint_neutral
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+runs.manuscript.comparison\_footprint\_stable module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: runs.manuscript.comparison_footprint_stable
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+runs.manuscript.analytic\_convergence\_test module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: runs.manuscript.analytic_convergence_test
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+runs.manuscript.numeric\_convergence\_test module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: runs.manuscript.numeric_convergence_test
    :members:
    :undoc-members:
    :show-inheritance:
