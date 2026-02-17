@@ -1,7 +1,5 @@
 import logging
 import numpy as np
-import scipy.fft as fft
-import os
 import numba
 
 from datetime import datetime
@@ -29,46 +27,6 @@ def compute_wind_fields(u_rot, wind_dir):
     v = u_rot * np.cos(wind_dir)
 
     return u, v
-
-
-# def point_source(nxy, domain, src_pt):
-#    """
-#    Generates a point source field in Fourier space and transforms it back
-#    to the spatial domain.
-#
-#    Parameters:
-#        nxy (tuple): Number of grid points in the x and y directions (nx, ny).
-#        domain (tuple): Physical dimensions of the domain (xmax, ymax).
-#        src_pt (tuple): Coordinates of the source point (xs, ys).
-#
-#    Returns:
-#        numpy.ndarray: A 2D array representing the point source field in the spatial domain.
-#    """
-#    nx, ny = nxy
-#    xmx, ymx = domain
-#    xs, ys = src_pt
-#
-#    dx, dy = xmx / nx, ymx / ny
-#
-#    # Fourier summation index
-#    ilx = fft.fftfreq(nx, d=1.0 / nx)
-#    ily = fft.fftfreq(ny, d=1.0 / ny)
-#
-#    # define zonal and meridional wavenumbers
-#    lx = 2.0 * np.pi / dx / nx * ilx
-#    ly = 2.0 * np.pi / dy / ny * ily
-#
-#    Lx, Ly = np.meshgrid(lx, ly)
-#
-#    fftq0 = np.ones((ny, nx), dtype=np.complex128)
-#
-#    # shift to source point in Fourier space
-#    fftq0 = fftq0 * np.exp(-1j * (Lx * xs + Ly * ys)) / nx / ny
-#
-#    # normalize
-#    fftq0 = fftq0 / dx / dy
-#
-#    return fft.ifft2(fftq0, norm="forward").real
 
 
 def ideal_source(nxy, domain, src_loc=None, shape="diamond"):
@@ -204,12 +162,14 @@ def get_logger(name=None):
 
 
 def parallelize(func):
+    _compiled = {}
+
     def wrapper(*args, **kwargs):
-        if config.NUM_THREADS > 1:
-            return numba.jit(nopython=True, parallel=True, cache=True)(func)(
-                *args, **kwargs
-            )
-        else:
-            return numba.jit(nopython=True, cache=True)(func)(*args, **kwargs)
+        use_parallel = config.NUM_THREADS > 1
+        if use_parallel not in _compiled:
+            _compiled[use_parallel] = numba.jit(
+                nopython=True, parallel=use_parallel, cache=True
+            )(func)
+        return _compiled[use_parallel](*args, **kwargs)
 
     return wrapper
