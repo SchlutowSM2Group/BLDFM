@@ -127,7 +127,9 @@ def test_convergence_trend():
         )
 
 
-def _quick_solve(footprint=True, precision="single", modes=(128, 64), halo=None, meas_pt=(0.0, 0.0)):
+def _quick_solve(
+    footprint=True, precision="single", modes=(128, 64), halo=None, meas_pt=(0.0, 0.0)
+):
     """Helper: small solve at conftest scale for fast tests."""
     nxy = (128, 64)
     nz = 16

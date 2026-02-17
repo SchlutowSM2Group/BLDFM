@@ -82,9 +82,9 @@ def test_single_solve_memory():
         f"rss_delta={rss_delta:.1f}MB"
     )
 
-    assert rss_delta < SINGLE_SOLVE_THRESHOLD_MB, (
-        f"Single solve RSS delta {rss_delta:.1f}MB exceeds {SINGLE_SOLVE_THRESHOLD_MB}MB"
-    )
+    assert (
+        rss_delta < SINGLE_SOLVE_THRESHOLD_MB
+    ), f"Single solve RSS delta {rss_delta:.1f}MB exceeds {SINGLE_SOLVE_THRESHOLD_MB}MB"
 
 
 def test_sequential_solves_no_leak():

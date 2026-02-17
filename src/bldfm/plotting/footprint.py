@@ -50,7 +50,14 @@ def extract_percentile_contour(flx, grid, pct=0.8, level=0):
 
 
 def plot_footprint_field(
-    flx, grid, ax=None, contour_pcts=None, cmap="RdYlBu_r", title=None, level=0, **pcolormesh_kw
+    flx,
+    grid,
+    ax=None,
+    contour_pcts=None,
+    cmap="RdYlBu_r",
+    title=None,
+    level=0,
+    **pcolormesh_kw,
 ):
     """Plot a 2-D footprint field with optional percentile contours.
 
