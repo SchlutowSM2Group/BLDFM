@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bldfm.utils &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=56c4699f" />
+    <script src="../../_static/documentation_options.js?v=8313637b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Quick reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bldfm.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numba</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
+
+
+<div class="viewcode-block" id="compute_wind_fields">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.compute_wind_fields">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_wind_fields</span><span class="p">(</span><span class="n">u_rot</span><span class="p">,</span> <span class="n">wind_dir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the zonal (u) and meridional (v) wind components from a rotated</span>
+<span class="sd">    wind speed and direction.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        u_rot (float): Rotated wind speed.</span>
+<span class="sd">        wind_dir (float): Wind direction in degrees (clockwise from north).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: A tuple (u, v) where:</span>
+<span class="sd">            - u (float): Zonal wind component (east-west).</span>
+<span class="sd">            - v (float): Meridional wind component (north-south).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wind_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">wind_dir</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">u_rot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">wind_dir</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">u_rot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">wind_dir</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span></div>
+
+
+
+<div class="viewcode-block" id="ideal_source">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.ideal_source">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ideal_source</span><span class="p">(</span><span class="n">nxy</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">src_loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="s2">&quot;diamond&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a synthetic source field in the shape of a circle or diamond.</span>
+<span class="sd">    Useful for testing purposes.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        nxy (tuple): Number of grid points in the x and y directions (nx, ny).</span>
+<span class="sd">        domain (tuple): Physical dimensions of the domain (xmax, ymax).</span>
+<span class="sd">        shape (str): Shape of the source field. Options are &quot;circle&quot; or &quot;diamond&quot;. Default is &quot;diamond&quot;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.ndarray: A 2D array representing the source field.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">nxy</span>
+    <span class="n">xmx</span><span class="p">,</span> <span class="n">ymx</span> <span class="o">=</span> <span class="n">domain</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">xmx</span> <span class="o">/</span> <span class="n">nx</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">ymx</span> <span class="o">/</span> <span class="n">ny</span>
+
+    <span class="k">if</span> <span class="n">src_loc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># source in the middle of the domain</span>
+        <span class="n">src_loc</span> <span class="o">=</span> <span class="p">(</span><span class="n">xmx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ymx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span> <span class="o">=</span> <span class="n">src_loc</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">xmx</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ymx</span><span class="p">,</span> <span class="n">ny</span><span class="p">)</span>
+
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+
+    <span class="n">q0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;diamond&quot;</span><span class="p">:</span>
+        <span class="n">R0</span> <span class="o">=</span> <span class="n">xmx</span> <span class="o">/</span> <span class="mi">12</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">xs</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">ys</span><span class="p">)</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">R</span> <span class="o">&lt;</span> <span class="n">R0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;circle&quot;</span><span class="p">:</span>
+        <span class="n">R0</span> <span class="o">=</span> <span class="n">xmx</span> <span class="o">/</span> <span class="mi">12</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">X</span> <span class="o">-</span> <span class="n">xs</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">ys</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">R</span> <span class="o">&lt;</span> <span class="n">R0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">shape</span> <span class="o">==</span> <span class="s2">&quot;point&quot;</span><span class="p">:</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">dx</span>
+        <span class="n">Rsq</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">xs</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">ys</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">q0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">Rsq</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="n">sig</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">sig</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">q0</span></div>
+
+
+
+<div class="viewcode-block" id="point_measurement">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.point_measurement">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">point_measurement</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the convolution of two 2D arrays evaluated at a specific point.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        f (numpy.ndarray): First 2D array.</span>
+<span class="sd">        g (numpy.ndarray): Second 2D array.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: The result of the convolution at the specified point.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">f</span> <span class="o">*</span> <span class="n">g</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="setup_logging">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.setup_logging">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_logging</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">format_string</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">log_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">log_dir</span><span class="o">=</span><span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+    <span class="n">auto_file</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">run_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set up logging configuration with customizable options.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">        level (str or int): Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)</span>
+<span class="sd">        format_string (str): Custom format string for log messages</span>
+<span class="sd">        log_file (str): Optional specific log file name (overrides auto_file)</span>
+<span class="sd">        log_dir (str): Directory to store log files</span>
+<span class="sd">        auto_file (bool): If True, automatically generate timestamped filename</span>
+<span class="sd">        run_name (str): Optional run name to include in log filename</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span>
+
+    <span class="k">if</span> <span class="n">format_string</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">format_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+
+    <span class="c1"># Create handlers - always include console</span>
+    <span class="n">handlers</span> <span class="o">=</span> <span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()]</span>
+
+    <span class="c1"># Add file handler with timestamped filename</span>
+    <span class="k">if</span> <span class="n">auto_file</span> <span class="ow">and</span> <span class="n">log_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">timestamp</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">_%H%M%S&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">run_name</span><span class="p">:</span>
+            <span class="n">log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;bldfm_</span><span class="si">{</span><span class="n">run_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">.log&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;bldfm_</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">.log&quot;</span>
+
+    <span class="k">if</span> <span class="n">log_file</span><span class="p">:</span>
+        <span class="n">log_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">log_dir</span><span class="p">)</span>
+        <span class="n">log_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">full_log_path</span> <span class="o">=</span> <span class="n">log_path</span> <span class="o">/</span> <span class="n">log_file</span>
+        <span class="n">handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">full_log_path</span><span class="p">))</span>
+
+    <span class="c1"># Configure logging</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+        <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span>
+        <span class="nb">format</span><span class="o">=</span><span class="n">format_string</span><span class="p">,</span>
+        <span class="n">handlers</span><span class="o">=</span><span class="n">handlers</span><span class="p">,</span>
+        <span class="n">force</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Override any existing configuration</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Set specific logger for BLDFM</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;bldfm&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">log_file</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BLDFM logging initialized - writing to: </span><span class="si">{</span><span class="n">log_path</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">log_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">logger</span></div>
+
+
+
+<div class="viewcode-block" id="get_logger">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.get_logger">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_logger</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a logger instance for the given module.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;bldfm&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;bldfm.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="parallelize">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.parallelize">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parallelize</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="n">_compiled</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">use_parallel</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">NUM_THREADS</span> <span class="o">&gt;</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">use_parallel</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_compiled</span><span class="p">:</span>
+            <span class="n">_compiled</span><span class="p">[</span><span class="n">use_parallel</span><span class="p">]</span> <span class="o">=</span> <span class="n">numba</span><span class="o">.</span><span class="n">jit</span><span class="p">(</span>
+                <span class="n">nopython</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="n">use_parallel</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_compiled</span><span class="p">[</span><span class="n">use_parallel</span><span class="p">](</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+
+<div class="viewcode-block" id="get_source_area">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.get_source_area">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_source_area</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">g</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Rescale g so contour levels represent cumulative contribution of f.</span>
+
+<span class="sd">    For the transformed field, the contour at level R encloses the region</span>
+<span class="sd">    where sum(f) = R.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    f : ndarray</span>
+<span class="sd">        Function values (e.g., flux footprint).</span>
+<span class="sd">    g : ndarray</span>
+<span class="sd">        Function defining level sets (often same as f).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    g_rescaled : ndarray</span>
+<span class="sd">        Transformed field where contour values equal cumulative contribution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">f_flat</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">g_flat</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+    <span class="c1"># sort by g descending</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">g_flat</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">f_sorted</span> <span class="o">=</span> <span class="n">f_flat</span><span class="p">[</span><span class="n">order</span><span class="p">]</span>
+
+    <span class="c1"># cumulative sum as we lower threshold</span>
+    <span class="n">M_cum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">f_sorted</span><span class="p">)</span>
+
+    <span class="c1"># shift so each point gets sum of f over {g &gt; g[point]}</span>
+    <span class="n">M_shifted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">M_cum</span><span class="p">)</span>
+    <span class="n">M_shifted</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">M_cum</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># map back to original positions</span>
+    <span class="n">g_rescaled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">g_flat</span><span class="p">)</span>
+    <span class="n">g_rescaled</span><span class="p">[</span><span class="n">order</span><span class="p">]</span> <span class="o">=</span> <span class="n">M_shifted</span>
+
+    <span class="k">return</span> <span class="n">g_rescaled</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="source_area_contribution">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.source_area_contribution">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">source_area_contribution</span><span class="p">(</span><span class="n">flx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base function for contribution (isopleth) contours: g = flx.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    flx : ndarray (ny, nx)</span>
+<span class="sd">        Footprint field.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    g : ndarray (ny, nx)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">flx</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="source_area_circular">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.source_area_circular">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">source_area_circular</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base function for circular contours centered at measurement point.</span>
+
+<span class="sd">    g = -(r^2), so contours are concentric circles.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X, Y : ndarray (ny, nx)</span>
+<span class="sd">        Coordinate grids.</span>
+<span class="sd">    meas_pt : tuple (xm, ym)</span>
+<span class="sd">        Measurement (tower) location.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    g : ndarray (ny, nx)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xm</span><span class="p">,</span> <span class="n">ym</span> <span class="o">=</span> <span class="n">meas_pt</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">((</span><span class="n">X</span> <span class="o">-</span> <span class="n">xm</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">ym</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="source_area_upwind">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.source_area_upwind">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">source_area_upwind</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base function for upwind distance-band contours.</span>
+
+<span class="sd">    g = dot(wind_hat, r), where r is displacement from tower.</span>
+<span class="sd">    Contours are lines perpendicular to the wind direction.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X, Y : ndarray (ny, nx)</span>
+<span class="sd">        Coordinate grids.</span>
+<span class="sd">    meas_pt : tuple (xm, ym)</span>
+<span class="sd">        Measurement (tower) location.</span>
+<span class="sd">    wind : tuple (u, v)</span>
+<span class="sd">        Wind components (m/s).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    g : ndarray (ny, nx)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xm</span><span class="p">,</span> <span class="n">ym</span> <span class="o">=</span> <span class="n">meas_pt</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">wind</span>
+    <span class="n">speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">v</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">u_hat</span><span class="p">,</span> <span class="n">v_hat</span> <span class="o">=</span> <span class="n">u</span> <span class="o">/</span> <span class="n">speed</span><span class="p">,</span> <span class="n">v</span> <span class="o">/</span> <span class="n">speed</span>
+    <span class="k">return</span> <span class="n">u_hat</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">xm</span><span class="p">)</span> <span class="o">+</span> <span class="n">v_hat</span> <span class="o">*</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">ym</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="source_area_crosswind">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.source_area_crosswind">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">source_area_crosswind</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base function for crosswind ridge contours.</span>
+
+<span class="sd">    g = -(perpendicular distance from wind axis)^2.</span>
+<span class="sd">    Contours are symmetric ridges parallel to the wind direction.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X, Y : ndarray (ny, nx)</span>
+<span class="sd">        Coordinate grids.</span>
+<span class="sd">    meas_pt : tuple (xm, ym)</span>
+<span class="sd">        Measurement (tower) location.</span>
+<span class="sd">    wind : tuple (u, v)</span>
+<span class="sd">        Wind components (m/s).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    g : ndarray (ny, nx)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xm</span><span class="p">,</span> <span class="n">ym</span> <span class="o">=</span> <span class="n">meas_pt</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">wind</span>
+    <span class="n">speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">v</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">u_hat</span><span class="p">,</span> <span class="n">v_hat</span> <span class="o">=</span> <span class="n">u</span> <span class="o">/</span> <span class="n">speed</span><span class="p">,</span> <span class="n">v</span> <span class="o">/</span> <span class="n">speed</span>
+    <span class="k">return</span> <span class="o">-</span><span class="p">((</span><span class="o">-</span><span class="n">v_hat</span> <span class="o">*</span> <span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">xm</span><span class="p">)</span> <span class="o">+</span> <span class="n">u_hat</span> <span class="o">*</span> <span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">ym</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="source_area_sector">
+<a class="viewcode-back" href="../../src.html#bldfm.utils.source_area_sector">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">source_area_sector</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base function for angular sector contours from upwind axis.</span>
+
+<span class="sd">    g = -abs(theta), where theta is angular deviation from upwind direction.</span>
+<span class="sd">    Contours form pie-slice sectors centered on the upwind direction.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X, Y : ndarray (ny, nx)</span>
+<span class="sd">        Coordinate grids.</span>
+<span class="sd">    meas_pt : tuple (xm, ym)</span>
+<span class="sd">        Measurement (tower) location.</span>
+<span class="sd">    wind : tuple (u, v)</span>
+<span class="sd">        Wind components (m/s).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    g : ndarray (ny, nx)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">xm</span><span class="p">,</span> <span class="n">ym</span> <span class="o">=</span> <span class="n">meas_pt</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">wind</span>
+    <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">Y</span> <span class="o">-</span> <span class="n">ym</span><span class="p">,</span> <span class="n">X</span> <span class="o">-</span> <span class="n">xm</span><span class="p">)</span>
+    <span class="n">theta_upwind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="o">-</span><span class="n">v</span><span class="p">,</span> <span class="o">-</span><span class="n">u</span><span class="p">)</span>
+    <span class="n">theta_rel</span> <span class="o">=</span> <span class="n">theta</span> <span class="o">-</span> <span class="n">theta_upwind</span>
+    <span class="n">theta_rel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta_rel</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta_rel</span><span class="p">))</span>
+    <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">theta_rel</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Full tutorial: verifying all v1.0 features &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=56c4699f" />
+    <script src="_static/documentation_options.js?v=8313637b"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quick reference" href="reference.html" />
+    <link rel="prev" title="Quickstart tutorial" href="tutorial_quickstart.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Full tutorial: verifying all v1.0 features</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phase-0-housekeeping">Phase 0: Housekeeping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phase-1-config-system-synthetic-data-interface">Phase 1: Config system, synthetic data, interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phase-2-timeseries-and-multi-tower">Phase 2: Timeseries and multi-tower</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phase-3-caching-netcdf-i-o-parallel-execution">Phase 3: Caching, NetCDF I/O, parallel execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phase-4-plotting">Phase 4: Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#phase-5-documentation-and-tests">Phase 5: Documentation and tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#summary-checklist">Summary checklist</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Quick reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="tutorial_quickstart.html" title="previous chapter">Quickstart tutorial</a></li>
+      <li>Next: <a href="reference.html" title="next chapter">Quick reference</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="tutorial_quickstart.html" title="Previous document">Quickstart tutorial</a>
+        </li>
+        <li>
+          <a href="reference.html" title="Next document">Quick reference</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <section id="full-tutorial-verifying-all-v1-0-features">
+<h1>Full tutorial: verifying all v1.0 features<a class="headerlink" href="#full-tutorial-verifying-all-v1-0-features" title="Link to this heading">¶</a></h1>
+<p>This tutorial walks through every feature added in the v1.0 expansion,
+organised by implementation phase.  Each section includes verification checks
+so you can confirm the feature works correctly.</p>
+<nav class="contents local" id="sections">
+<p class="topic-title">Sections</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#prerequisites" id="id1">Prerequisites</a></p></li>
+<li><p><a class="reference internal" href="#phase-0-housekeeping" id="id2">Phase 0: Housekeeping</a></p>
+<ul>
+<li><p><a class="reference internal" href="#explicit-initialisation" id="id3">Explicit initialisation</a></p></li>
+<li><p><a class="reference internal" href="#vertical-profiles-return-tuple" id="id4">Vertical profiles return tuple</a></p></li>
+<li><p><a class="reference internal" href="#plot-profiles-py-compatibility" id="id5">plot_profiles.py compatibility</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#phase-1-config-system-synthetic-data-interface" id="id6">Phase 1: Config system, synthetic data, interface</a></p>
+<ul>
+<li><p><a class="reference internal" href="#config-parser-load-from-yaml" id="id7">Config parser — load from YAML</a></p></li>
+<li><p><a class="reference internal" href="#config-parser-parse-config-dict" id="id8">Config parser — parse_config_dict</a></p></li>
+<li><p><a class="reference internal" href="#tower-lat-lon-to-local-x-y" id="id9">Tower lat/lon to local x/y</a></p></li>
+<li><p><a class="reference internal" href="#metconfig-timeseries" id="id10">MetConfig timeseries</a></p></li>
+<li><p><a class="reference internal" href="#cli-dry-run" id="id11">CLI — dry-run</a></p></li>
+<li><p><a class="reference internal" href="#synthetic-data-timeseries" id="id12">Synthetic data — timeseries</a></p></li>
+<li><p><a class="reference internal" href="#synthetic-data-tower-layouts" id="id13">Synthetic data — tower layouts</a></p></li>
+<li><p><a class="reference internal" href="#high-level-interface-run-bldfm-single" id="id14">High-level interface — run_bldfm_single</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#phase-2-timeseries-and-multi-tower" id="id15">Phase 2: Timeseries and multi-tower</a></p>
+<ul>
+<li><p><a class="reference internal" href="#run-bldfm-timeseries" id="id16">run_bldfm_timeseries</a></p></li>
+<li><p><a class="reference internal" href="#run-bldfm-multitower" id="id17">run_bldfm_multitower</a></p></li>
+<li><p><a class="reference internal" href="#multitower-example-script" id="id18">Multitower example script</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#phase-3-caching-netcdf-i-o-parallel-execution" id="id19">Phase 3: Caching, NetCDF I/O, parallel execution</a></p>
+<ul>
+<li><p><a class="reference internal" href="#green-s-function-cache" id="id20">Green’s function cache</a></p></li>
+<li><p><a class="reference internal" href="#netcdf-i-o" id="id21">NetCDF I/O</a></p></li>
+<li><p><a class="reference internal" href="#parallel-execution" id="id22">Parallel execution</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#phase-4-plotting" id="id23">Phase 4: Plotting</a></p>
+<ul>
+<li><p><a class="reference internal" href="#plot-footprint-field-with-contours" id="id24">plot_footprint_field with contours</a></p></li>
+<li><p><a class="reference internal" href="#extract-percentile-contour" id="id25">extract_percentile_contour</a></p></li>
+<li><p><a class="reference internal" href="#plot-footprint-on-map-optional-contextily" id="id26">plot_footprint_on_map (optional: contextily)</a></p></li>
+<li><p><a class="reference internal" href="#plot-footprint-on-map-with-land-cover-optional-owslib" id="id27">plot_footprint_on_map with land cover (optional: owslib)</a></p></li>
+<li><p><a class="reference internal" href="#plot-wind-rose-optional-windrose" id="id28">plot_wind_rose (optional: windrose)</a></p></li>
+<li><p><a class="reference internal" href="#plot-footprint-timeseries" id="id29">plot_footprint_timeseries</a></p></li>
+<li><p><a class="reference internal" href="#plot-footprint-interactive-optional-plotly" id="id30">plot_footprint_interactive (optional: plotly)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#phase-5-documentation-and-tests" id="id31">Phase 5: Documentation and tests</a></p>
+<ul>
+<li><p><a class="reference internal" href="#sphinx-build" id="id32">Sphinx build</a></p></li>
+<li><p><a class="reference internal" href="#full-test-suite" id="id33">Full test suite</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#summary-checklist" id="id34">Summary checklist</a></p></li>
+</ul>
+</nav>
+<section id="prerequisites">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Prerequisites</a><a class="headerlink" href="#prerequisites" title="Link to this heading">¶</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev,plotting]&quot;</span>
+</pre></div>
+</div>
+<p>All code below assumes you are in the repository root and have an active Python
+session (script or interactive shell).  Small grid sizes are used throughout
+for fast execution.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bldfm</span>
+<span class="n">bldfm</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="phase-0-housekeeping">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Phase 0: Housekeeping</a><a class="headerlink" href="#phase-0-housekeeping" title="Link to this heading">¶</a></h2>
+<section id="explicit-initialisation">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Explicit initialisation</a><a class="headerlink" href="#explicit-initialisation" title="Link to this heading">¶</a></h3>
+<p>Import-time side effects were removed in Phase 0.  You must call
+<code class="docutils literal notranslate"><span class="pre">initialize()</span></code> explicitly before running simulations.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bldfm</span>
+
+<span class="c1"># Before initialisation</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Before: bldfm._initialized = </span><span class="si">{</span><span class="n">bldfm</span><span class="o">.</span><span class="n">_initialized</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">bldfm</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;After: bldfm._initialized = </span><span class="si">{</span><span class="n">bldfm</span><span class="o">.</span><span class="n">_initialized</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Verify</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="k">assert</span> <span class="n">bldfm</span><span class="o">.</span><span class="n">_initialized</span> <span class="ow">is</span> <span class="kc">True</span>
+<span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="s2">&quot;logs&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="s2">&quot;plots&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 0 — initialize(): OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">initialize()</span></code> a second time is a no-op.</p>
+</section>
+<section id="vertical-profiles-return-tuple">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Vertical profiles return tuple</a><a class="headerlink" href="#vertical-profiles-return-tuple" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">vertical_profiles</span></code> now returns a <strong>5-tuple</strong> <code class="docutils literal notranslate"><span class="pre">(u,</span> <span class="pre">v,</span> <span class="pre">Kx,</span> <span class="pre">Ky,</span> <span class="pre">Kz)</span></code> as the
+profiles component.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.pbl_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">vertical_profiles</span>
+
+<span class="n">z</span><span class="p">,</span> <span class="n">profiles</span> <span class="o">=</span> <span class="n">vertical_profiles</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">meas_height</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">wind</span><span class="o">=</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span> <span class="n">ustar</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+<span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">Kx</span><span class="p">,</span> <span class="n">Ky</span><span class="p">,</span> <span class="n">Kz</span> <span class="o">=</span> <span class="n">profiles</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;z shape: </span><span class="si">{</span><span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;u shape: </span><span class="si">{</span><span class="n">u</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;u at measurement height: </span><span class="si">{</span><span class="n">u</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">profiles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;Expected 5-tuple: (u, v, Kx, Ky, Kz)&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 0 — vertical_profiles 5-tuple: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="plot-profiles-py-compatibility">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">plot_profiles.py compatibility</a><a class="headerlink" href="#plot-profiles-py-compatibility" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">examples/low_level/plot_profiles.py</span></code> script was updated to unpack the new tuple:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>examples/low_level/plot_profiles.py
+</pre></div>
+</div>
+<p>This should create <code class="docutils literal notranslate"><span class="pre">plots/most_profiles.png</span></code> without errors.</p>
+</section>
+</section>
+<section id="phase-1-config-system-synthetic-data-interface">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Phase 1: Config system, synthetic data, interface</a><a class="headerlink" href="#phase-1-config-system-synthetic-data-interface" title="Link to this heading">¶</a></h2>
+<section id="config-parser-load-from-yaml">
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Config parser — load from YAML</a><a class="headerlink" href="#config-parser-load-from-yaml" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.config_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span><span class="p">,</span> <span class="n">BLDFMConfig</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;examples/configs/multitower.yaml&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Domain: nx=</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">nx</span><span class="si">}</span><span class="s2">, ny=</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">ny</span><span class="si">}</span><span class="s2">, nz=</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">nz</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Domain ref: (</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">ref_lat</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">ref_lon</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Solver: closure=</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">closure</span><span class="si">}</span><span class="s2">, footprint=</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">footprint</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output: format=</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">format</span><span class="si">}</span><span class="s2">, dir=</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">output</span><span class="o">.</span><span class="n">directory</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parallel: workers=</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">parallel</span><span class="o">.</span><span class="n">max_workers</span><span class="si">}</span><span class="s2">, cache=</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">parallel</span><span class="o">.</span><span class="n">use_cache</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">BLDFMConfig</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">nx</span> <span class="o">==</span> <span class="mi">128</span>
+<span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">footprint</span> <span class="ow">is</span> <span class="kc">True</span>
+<span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">met</span><span class="o">.</span><span class="n">n_timesteps</span> <span class="o">==</span> <span class="mi">3</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 1 — load_config: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="config-parser-parse-config-dict">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Config parser — parse_config_dict</a><a class="headerlink" href="#config-parser-parse-config-dict" title="Link to this heading">¶</a></h3>
+<p>You can also build a config from a plain Python dictionary:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.config_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_config_dict</span>
+
+<span class="n">config2</span> <span class="o">=</span> <span class="n">parse_config_dict</span><span class="p">({</span>
+    <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;nx&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s2">&quot;ny&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span> <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="mf">250.0</span><span class="p">,</span> <span class="s2">&quot;nz&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="s2">&quot;ref_lat&quot;</span><span class="p">:</span> <span class="mf">50.95</span><span class="p">,</span> <span class="s2">&quot;ref_lon&quot;</span><span class="p">:</span> <span class="mf">11.586</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;towers&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;test_tower&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">50.9505</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">11.5865</span><span class="p">,</span> <span class="s2">&quot;z_m&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">}],</span>
+    <span class="s2">&quot;met&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ustar&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">100.0</span><span class="p">,</span> <span class="s2">&quot;wind_speed&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span> <span class="s2">&quot;wind_dir&quot;</span><span class="p">:</span> <span class="mf">270.0</span><span class="p">},</span>
+    <span class="s2">&quot;solver&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;closure&quot;</span><span class="p">:</span> <span class="s2">&quot;MOST&quot;</span><span class="p">,</span> <span class="s2">&quot;footprint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+<span class="p">})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tower local coords: x=</span><span class="si">{</span><span class="n">config2</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="n">config2</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">config2</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">!=</span> <span class="mf">0.0</span> <span class="ow">or</span> <span class="n">config2</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="o">!=</span> <span class="mf">0.0</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 1 — parse_config_dict + local coords: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="tower-lat-lon-to-local-x-y">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Tower lat/lon to local x/y</a><a class="headerlink" href="#tower-lat-lon-to-local-x-y" title="Link to this heading">¶</a></h3>
+<p>When <code class="docutils literal notranslate"><span class="pre">ref_lat</span></code> and <code class="docutils literal notranslate"><span class="pre">ref_lon</span></code> are set, each tower’s local <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y)</span></code>
+coordinates are computed automatically from its <code class="docutils literal notranslate"><span class="pre">(lat,</span> <span class="pre">lon)</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: lat=</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">lat</span><span class="si">}</span><span class="s2">, lon=</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">lon</span><span class="si">}</span><span class="s2"> -&gt; x=</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">x</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> m, y=</span><span class="si">{</span><span class="n">t</span><span class="o">.</span><span class="n">y</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> m&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="metconfig-timeseries">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">MetConfig timeseries</a><a class="headerlink" href="#metconfig-timeseries" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">MetConfig</span></code> class supports both scalar and list-valued fields.  List
+values represent a timeseries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;n_timesteps: </span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">met</span><span class="o">.</span><span class="n">n_timesteps</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">step0</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">met</span><span class="o">.</span><span class="n">get_step</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Step 0: </span><span class="si">{</span><span class="n">step0</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">met</span><span class="o">.</span><span class="n">n_timesteps</span> <span class="o">==</span> <span class="mi">3</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 1 — MetConfig: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="cli-dry-run">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">CLI — dry-run</a><a class="headerlink" href="#cli-dry-run" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>bldfm<span class="w"> </span>run<span class="w"> </span>examples/configs/multitower.yaml<span class="w"> </span>--dry-run
+</pre></div>
+</div>
+<p>This should print the config summary (domain, towers with local x/y, number of
+timesteps) and exit without running the solver.</p>
+</section>
+<section id="synthetic-data-timeseries">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Synthetic data — timeseries</a><a class="headerlink" href="#synthetic-data-timeseries" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.synthetic</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_synthetic_timeseries</span>
+
+<span class="n">met</span> <span class="o">=</span> <span class="n">generate_synthetic_timeseries</span><span class="p">(</span><span class="n">n_timesteps</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Keys: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">met</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Timestamps: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">met</span><span class="p">[</span><span class="s1">&#39;timestamps&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ustar range: [</span><span class="si">{</span><span class="nb">min</span><span class="p">(</span><span class="n">met</span><span class="p">[</span><span class="s1">&#39;ustar&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">met</span><span class="p">[</span><span class="s1">&#39;ustar&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;MOL range: [</span><span class="si">{</span><span class="nb">min</span><span class="p">(</span><span class="n">met</span><span class="p">[</span><span class="s1">&#39;mol&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">met</span><span class="p">[</span><span class="s1">&#39;mol&#39;</span><span class="p">])</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">met</span><span class="p">[</span><span class="s2">&quot;ustar&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">24</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">met</span><span class="p">[</span><span class="s2">&quot;timestamps&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">24</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 1 — generate_synthetic_timeseries: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="synthetic-data-tower-layouts">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Synthetic data — tower layouts</a><a class="headerlink" href="#synthetic-data-tower-layouts" title="Link to this heading">¶</a></h3>
+<p>Three spatial layouts are available: <code class="docutils literal notranslate"><span class="pre">&quot;grid&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;transect&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;random&quot;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.synthetic</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_towers_grid</span>
+
+<span class="k">for</span> <span class="n">layout</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="s2">&quot;transect&quot;</span><span class="p">,</span> <span class="s2">&quot;random&quot;</span><span class="p">]:</span>
+    <span class="n">towers</span> <span class="o">=</span> <span class="n">generate_towers_grid</span><span class="p">(</span><span class="n">n_towers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">z_m</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">layout</span><span class="si">}</span><span class="s2"> layout:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">towers</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">t</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: (</span><span class="si">{</span><span class="n">t</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">t</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">towers</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 1 — generate_towers_grid: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="high-level-interface-run-bldfm-single">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">High-level interface — run_bldfm_single</a><a class="headerlink" href="#high-level-interface-run-bldfm-single" title="Link to this heading">¶</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">run_bldfm_single</span></code> encapsulates the 3-step manual workflow (wind fields,
+vertical profiles, solver) into one config-driven call:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_bldfm_single</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.config_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_config_dict</span>
+
+<span class="n">config_small</span> <span class="o">=</span> <span class="n">parse_config_dict</span><span class="p">({</span>
+    <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;nx&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s2">&quot;ny&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span> <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="mf">250.0</span><span class="p">,</span> <span class="s2">&quot;nz&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="s2">&quot;modes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span> <span class="s2">&quot;ref_lat&quot;</span><span class="p">:</span> <span class="mf">50.95</span><span class="p">,</span> <span class="s2">&quot;ref_lon&quot;</span><span class="p">:</span> <span class="mf">11.586</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;towers&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tower_A&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">50.9505</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">11.5865</span><span class="p">,</span> <span class="s2">&quot;z_m&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">}],</span>
+    <span class="s2">&quot;met&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ustar&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">100.0</span><span class="p">,</span> <span class="s2">&quot;wind_speed&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span> <span class="s2">&quot;wind_dir&quot;</span><span class="p">:</span> <span class="mf">270.0</span><span class="p">},</span>
+    <span class="s2">&quot;solver&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;closure&quot;</span><span class="p">:</span> <span class="s2">&quot;MOST&quot;</span><span class="p">,</span> <span class="s2">&quot;footprint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+<span class="p">})</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">run_bldfm_single</span><span class="p">(</span><span class="n">config_small</span><span class="p">,</span> <span class="n">config_small</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Result keys: </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;flx shape: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;flx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;conc shape: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;conc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tower: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;tower_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">expected_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;conc&quot;</span><span class="p">,</span> <span class="s2">&quot;flx&quot;</span><span class="p">,</span> <span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="s2">&quot;timestamp&quot;</span><span class="p">,</span> <span class="s2">&quot;tower_name&quot;</span><span class="p">}</span>
+<span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="n">expected_keys</span>
+<span class="k">assert</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 1 — run_bldfm_single: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="phase-2-timeseries-and-multi-tower">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">Phase 2: Timeseries and multi-tower</a><a class="headerlink" href="#phase-2-timeseries-and-multi-tower" title="Link to this heading">¶</a></h2>
+<section id="run-bldfm-timeseries">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">run_bldfm_timeseries</a><a class="headerlink" href="#run-bldfm-timeseries" title="Link to this heading">¶</a></h3>
+<p>Runs the solver for all timesteps in the met config for a single tower:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_bldfm_timeseries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.synthetic</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_synthetic_timeseries</span><span class="p">,</span> <span class="n">generate_towers_grid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.config_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_config_dict</span>
+
+<span class="n">met_ts</span> <span class="o">=</span> <span class="n">generate_synthetic_timeseries</span><span class="p">(</span><span class="n">n_timesteps</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">config_ts</span> <span class="o">=</span> <span class="n">parse_config_dict</span><span class="p">({</span>
+    <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;nx&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s2">&quot;ny&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span> <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="mf">250.0</span><span class="p">,</span> <span class="s2">&quot;nz&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="s2">&quot;modes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span> <span class="s2">&quot;ref_lat&quot;</span><span class="p">:</span> <span class="mf">50.95</span><span class="p">,</span> <span class="s2">&quot;ref_lon&quot;</span><span class="p">:</span> <span class="mf">11.586</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;towers&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;tower_A&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">50.9505</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">11.5865</span><span class="p">,</span> <span class="s2">&quot;z_m&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">}],</span>
+    <span class="s2">&quot;met&quot;</span><span class="p">:</span> <span class="n">met_ts</span><span class="p">,</span>
+    <span class="s2">&quot;solver&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;closure&quot;</span><span class="p">:</span> <span class="s2">&quot;MOST&quot;</span><span class="p">,</span> <span class="s2">&quot;footprint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+<span class="p">})</span>
+
+<span class="n">ts_results</span> <span class="o">=</span> <span class="n">run_bldfm_timeseries</span><span class="p">(</span><span class="n">config_ts</span><span class="p">,</span> <span class="n">config_ts</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of results: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ts_results</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ts_results</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  t=</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">: flx max=</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;flx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ts_results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 2 — run_bldfm_timeseries: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="run-bldfm-multitower">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">run_bldfm_multitower</a><a class="headerlink" href="#run-bldfm-multitower" title="Link to this heading">¶</a></h3>
+<p>Runs the solver for all towers and all timesteps:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_bldfm_multitower</span>
+
+<span class="n">towers_mt</span> <span class="o">=</span> <span class="n">generate_towers_grid</span><span class="p">(</span><span class="n">n_towers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">z_m</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;transect&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">config_mt</span> <span class="o">=</span> <span class="n">parse_config_dict</span><span class="p">({</span>
+    <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;nx&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s2">&quot;ny&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span> <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="mf">250.0</span><span class="p">,</span> <span class="s2">&quot;nz&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span>
+        <span class="s2">&quot;modes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span>
+        <span class="s2">&quot;ref_lat&quot;</span><span class="p">:</span> <span class="n">towers_mt</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lat&quot;</span><span class="p">],</span> <span class="s2">&quot;ref_lon&quot;</span><span class="p">:</span> <span class="n">towers_mt</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lon&quot;</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;towers&quot;</span><span class="p">:</span> <span class="n">towers_mt</span><span class="p">,</span>
+    <span class="s2">&quot;met&quot;</span><span class="p">:</span> <span class="n">generate_synthetic_timeseries</span><span class="p">(</span><span class="n">n_timesteps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span>
+    <span class="s2">&quot;solver&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;closure&quot;</span><span class="p">:</span> <span class="s2">&quot;MOST&quot;</span><span class="p">,</span> <span class="s2">&quot;footprint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+<span class="p">})</span>
+
+<span class="n">mt_results</span> <span class="o">=</span> <span class="n">run_bldfm_multitower</span><span class="p">(</span><span class="n">config_mt</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tower names: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">mt_results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">res_list</span> <span class="ow">in</span> <span class="n">mt_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">res_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> timesteps&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">mt_results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">mt_results</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">mt_results</span><span class="p">[</span><span class="n">name</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 2 — run_bldfm_multitower: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="multitower-example-script">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Multitower example script</a><a class="headerlink" href="#multitower-example-script" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>examples/multitower_example.py
+</pre></div>
+</div>
+<p>This should create <code class="docutils literal notranslate"><span class="pre">plots/multitower_footprints.png</span></code>.</p>
+</section>
+</section>
+<section id="phase-3-caching-netcdf-i-o-parallel-execution">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">Phase 3: Caching, NetCDF I/O, parallel execution</a><a class="headerlink" href="#phase-3-caching-netcdf-i-o-parallel-execution" title="Link to this heading">¶</a></h2>
+<section id="green-s-function-cache">
+<h3><a class="toc-backref" href="#id20" role="doc-backlink">Green’s function cache</a><a class="headerlink" href="#green-s-function-cache" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">GreensFunctionCache</span></code> stores solver outputs as SHA-256 keyed <code class="docutils literal notranslate"><span class="pre">.npz</span></code>
+files to avoid redundant solves:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">GreensFunctionCache</span><span class="p">,</span> <span class="n">run_bldfm_single</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+
+<span class="n">cache_dir</span> <span class="o">=</span> <span class="s2">&quot;.bldfm_cache_tutorial&quot;</span>
+<span class="n">cache</span> <span class="o">=</span> <span class="n">GreensFunctionCache</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_dir</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cache directory: </span><span class="si">{</span><span class="n">cache</span><span class="o">.</span><span class="n">cache_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># First run (cache miss)</span>
+<span class="n">result1</span> <span class="o">=</span> <span class="n">run_bldfm_single</span><span class="p">(</span><span class="n">config_small</span><span class="p">,</span> <span class="n">config_small</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;First run complete (cache miss)&quot;</span><span class="p">)</span>
+
+<span class="c1"># Second run (cache hit — should be faster)</span>
+<span class="n">result2</span> <span class="o">=</span> <span class="n">run_bldfm_single</span><span class="p">(</span><span class="n">config_small</span><span class="p">,</span> <span class="n">config_small</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Second run complete (cache hit)&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Results identical: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">result1</span><span class="p">[</span><span class="s1">&#39;flx&#39;</span><span class="p">],</span><span class="w"> </span><span class="n">result2</span><span class="p">[</span><span class="s1">&#39;flx&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">cache_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cache</span><span class="o">.</span><span class="n">cache_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.npz&quot;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cache files: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cache_files</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">cache_files</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span>
+
+<span class="c1"># Clean up</span>
+<span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 3 — GreensFunctionCache: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="netcdf-i-o">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">NetCDF I/O</a><a class="headerlink" href="#netcdf-i-o" title="Link to this heading">¶</a></h3>
+<p>Save multi-tower results to CF-1.8 compliant NetCDF and load them back:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_footprints_to_netcdf</span><span class="p">,</span> <span class="n">load_footprints_from_netcdf</span>
+
+<span class="n">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">mt_results</span><span class="p">,</span> <span class="n">config_mt</span><span class="p">,</span> <span class="s2">&quot;output/tutorial_footprints.nc&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved to output/tutorial_footprints.nc&quot;</span><span class="p">)</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">load_footprints_from_netcdf</span><span class="p">(</span><span class="s2">&quot;output/tutorial_footprints.nc&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Dimensions: </span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variables: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Global attrs: </span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Footprint shape: </span><span class="si">{</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;footprint&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tower names: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;tower&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CF Convention: </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Conventions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Conventions&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;CF-1.8&quot;</span>
+<span class="k">assert</span> <span class="s2">&quot;footprint&quot;</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span>
+<span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;tower&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 3 — NetCDF I/O: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="parallel-execution">
+<h3><a class="toc-backref" href="#id22" role="doc-backlink">Parallel execution</a><a class="headerlink" href="#parallel-execution" title="Link to this heading">¶</a></h3>
+<p>Distribute work across CPU cores using <code class="docutils literal notranslate"><span class="pre">ProcessPoolExecutor</span></code>.  Three
+strategies are available: <code class="docutils literal notranslate"><span class="pre">&quot;towers&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;time&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;both&quot;</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_bldfm_parallel</span>
+
+<span class="n">par_results</span> <span class="o">=</span> <span class="n">run_bldfm_parallel</span><span class="p">(</span><span class="n">config_mt</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">parallel_over</span><span class="o">=</span><span class="s2">&quot;towers&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parallel (towers) — towers: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">par_results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">res_list</span> <span class="ow">in</span> <span class="n">par_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">res_list</span><span class="p">)</span><span class="si">}</span><span class="s2"> timesteps&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">set</span><span class="p">(</span><span class="n">par_results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">mt_results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 3 — run_bldfm_parallel: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The same interface supports <code class="docutils literal notranslate"><span class="pre">parallel_over=&quot;time&quot;</span></code> (distribute timesteps) and
+<code class="docutils literal notranslate"><span class="pre">parallel_over=&quot;both&quot;</span></code> (flatten all tower × timestep pairs).  Each subprocess
+disables numba parallelism (<code class="docutils literal notranslate"><span class="pre">NUM_THREADS=1</span></code>) to avoid CPU oversubscription.</p>
+</section>
+</section>
+<section id="phase-4-plotting">
+<h2><a class="toc-backref" href="#id23" role="doc-backlink">Phase 4: Plotting</a><a class="headerlink" href="#phase-4-plotting" title="Link to this heading">¶</a></h2>
+<p>All code below uses <code class="docutils literal notranslate"><span class="pre">matplotlib.use(&quot;Agg&quot;)</span></code>.  Remove that line if you want
+interactive display.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+</pre></div>
+</div>
+<section id="plot-footprint-field-with-contours">
+<h3><a class="toc-backref" href="#id24" role="doc-backlink">plot_footprint_field with contours</a><a class="headerlink" href="#plot-footprint-field-with-contours" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_field</span><span class="p">(</span>
+    <span class="n">result1</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result1</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span>
+    <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+    <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Footprint with 50</span><span class="si">% a</span><span class="s2">nd 80</span><span class="si">% c</span><span class="s2">ontours&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/tutorial_contours.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved plots/tutorial_contours.png&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You should see a pcolormesh with two dashed contour lines.</p>
+</section>
+<section id="extract-percentile-contour">
+<h3><a class="toc-backref" href="#id25" role="doc-backlink">extract_percentile_contour</a><a class="headerlink" href="#extract-percentile-contour" title="Link to this heading">¶</a></h3>
+<p>Compute the contour level and enclosed area for a given percentile:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">extract_percentile_contour</span>
+
+<span class="n">level_50</span><span class="p">,</span> <span class="n">area_50</span> <span class="o">=</span> <span class="n">extract_percentile_contour</span><span class="p">(</span><span class="n">result1</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result1</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">pct</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">level_80</span><span class="p">,</span> <span class="n">area_80</span> <span class="o">=</span> <span class="n">extract_percentile_contour</span><span class="p">(</span><span class="n">result1</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result1</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">pct</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;50% contour: level=</span><span class="si">{</span><span class="n">level_50</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">, area=</span><span class="si">{</span><span class="n">area_50</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> m^2&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;80% contour: level=</span><span class="si">{</span><span class="n">level_80</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">, area=</span><span class="si">{</span><span class="n">area_80</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> m^2&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">area_80</span> <span class="o">&gt;</span> <span class="n">area_50</span><span class="p">,</span> <span class="s2">&quot;80</span><span class="si">% a</span><span class="s2">rea should be larger than 50%&quot;</span>
+<span class="k">assert</span> <span class="n">level_50</span> <span class="o">&gt;</span> <span class="n">level_80</span><span class="p">,</span> <span class="s2">&quot;50</span><span class="si">% le</span><span class="s2">vel should be higher (more restrictive)&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 4 — extract_percentile_contour: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="plot-footprint-on-map-optional-contextily">
+<h3><a class="toc-backref" href="#id26" role="doc-backlink">plot_footprint_on_map (optional: contextily)</a><a class="headerlink" href="#plot-footprint-on-map-optional-contextily" title="Link to this heading">¶</a></h3>
+<p>Overlays footprint contours and tower markers on map tiles:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_on_map</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_on_map</span><span class="p">(</span>
+        <span class="n">result1</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result1</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">config_small</span><span class="p">,</span>
+        <span class="n">tower</span><span class="o">=</span><span class="n">config_small</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Footprint on map&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/tutorial_map.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved plots/tutorial_map.png&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping map plot (install contextily): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="plot-footprint-on-map-with-land-cover-optional-owslib">
+<h3><a class="toc-backref" href="#id27" role="doc-backlink">plot_footprint_on_map with land cover (optional: owslib)</a><a class="headerlink" href="#plot-footprint-on-map-with-land-cover-optional-owslib" title="Link to this heading">¶</a></h3>
+<p>Overlays footprint on ESA WorldCover 2021 land cover classes instead of
+street map tiles.  Useful for interpreting what surface types (forest,
+cropland, water, etc.) fall within the footprint source area:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_on_map</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_on_map</span><span class="p">(</span>
+        <span class="n">result1</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result1</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">config_small</span><span class="p">,</span>
+        <span class="n">tower</span><span class="o">=</span><span class="n">config_small</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span>
+        <span class="n">land_cover</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Footprint on land cover&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/tutorial_landcover.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved plots/tutorial_landcover.png&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping land cover plot (install owslib): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="plot-wind-rose-optional-windrose">
+<h3><a class="toc-backref" href="#id28" role="doc-backlink">plot_wind_rose (optional: windrose)</a><a class="headerlink" href="#plot-wind-rose-optional-windrose" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_wind_rose</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_wind_rose</span><span class="p">(</span>
+        <span class="n">met_ts</span><span class="p">[</span><span class="s2">&quot;wind_speed&quot;</span><span class="p">],</span> <span class="n">met_ts</span><span class="p">[</span><span class="s2">&quot;wind_dir&quot;</span><span class="p">],</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Synthetic wind rose&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/tutorial_windrose.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved plots/tutorial_windrose.png&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping wind rose (install windrose): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="plot-footprint-timeseries">
+<h3><a class="toc-backref" href="#id29" role="doc-backlink">plot_footprint_timeseries</a><a class="headerlink" href="#plot-footprint-timeseries" title="Link to this heading">¶</a></h3>
+<p>Track how the footprint extent evolves across timesteps:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_timeseries</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_timeseries</span><span class="p">(</span>
+    <span class="n">ts_results</span><span class="p">,</span> <span class="n">ts_results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span>
+    <span class="n">pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Footprint area evolution&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/tutorial_timeseries.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved plots/tutorial_timeseries.png&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Phase 4 — plot_footprint_timeseries: OK&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="plot-footprint-interactive-optional-plotly">
+<h3><a class="toc-backref" href="#id30" role="doc-backlink">plot_footprint_interactive (optional: plotly)</a><a class="headerlink" href="#plot-footprint-interactive-optional-plotly" title="Link to this heading">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_interactive</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plot_footprint_interactive</span><span class="p">(</span>
+        <span class="n">result1</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result1</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Interactive footprint&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">write_html</span><span class="p">(</span><span class="s2">&quot;plots/tutorial_interactive.html&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved plots/tutorial_interactive.html — open in browser&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping interactive plot (install plotly): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="phase-5-documentation-and-tests">
+<h2><a class="toc-backref" href="#id31" role="doc-backlink">Phase 5: Documentation and tests</a><a class="headerlink" href="#phase-5-documentation-and-tests" title="Link to this heading">¶</a></h2>
+<section id="sphinx-build">
+<h3><a class="toc-backref" href="#id32" role="doc-backlink">Sphinx build</a><a class="headerlink" href="#sphinx-build" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>docs
+$<span class="w"> </span>sphinx-build<span class="w"> </span>-W<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span><span class="nb">source</span><span class="w"> </span>build/html
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">-W</span></code> flag treats warnings as errors.  The build should complete with zero
+warnings.  To preview:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span><span class="m">8000</span><span class="w"> </span>-d<span class="w"> </span>build/html
+<span class="c1"># Open http://localhost:8000</span>
+</pre></div>
+</div>
+</section>
+<section id="full-test-suite">
+<h3><a class="toc-backref" href="#id33" role="doc-backlink">Full test suite</a><a class="headerlink" href="#full-test-suite" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="w"> </span>-v
+</pre></div>
+</div>
+<p>All tests should pass.</p>
+</section>
+</section>
+<section id="summary-checklist">
+<h2><a class="toc-backref" href="#id34" role="doc-backlink">Summary checklist</a><a class="headerlink" href="#summary-checklist" title="Link to this heading">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 10.0%" />
+<col style="width: 35.0%" />
+<col style="width: 55.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Phase</p></th>
+<th class="head"><p>Feature</p></th>
+<th class="head"><p>Verification</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">initialize()</span></code> explicit</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_initialized</span></code> flips to <code class="docutils literal notranslate"><span class="pre">True</span></code>; <code class="docutils literal notranslate"><span class="pre">logs/</span></code>, <code class="docutils literal notranslate"><span class="pre">plots/</span></code> created</p></td>
+</tr>
+<tr class="row-odd"><td><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">vertical_profiles</span></code> 5-tuple</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">len(profiles)</span> <span class="pre">==</span> <span class="pre">5</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">plot_profiles.py</span></code> compatibility</p></td>
+<td><p>Script runs; <code class="docutils literal notranslate"><span class="pre">most_profiles.png</span></code> created</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">load_config()</span></code></p></td>
+<td><p>Returns <code class="docutils literal notranslate"><span class="pre">BLDFMConfig</span></code>; fields match YAML</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">parse_config_dict()</span></code></p></td>
+<td><p>Dict → config; tower local coords computed</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>Tower lat/lon → local x/y</p></td>
+<td><p>Non-zero <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code> values</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">MetConfig</span></code> timeseries</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">n_timesteps</span></code>, <code class="docutils literal notranslate"><span class="pre">get_step()</span></code> return scalar dicts</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>CLI <code class="docutils literal notranslate"><span class="pre">--dry-run</span></code></p></td>
+<td><p>Prints summary, no solver execution</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">generate_synthetic_timeseries()</span></code></p></td>
+<td><p>Correct length; ustar/MOL in expected ranges</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">generate_towers_grid()</span></code></p></td>
+<td><p>grid / transect / random produce distinct layouts</p></td>
+</tr>
+<tr class="row-even"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">run_bldfm_single()</span></code></p></td>
+<td><p>Returns dict with 6 keys; <code class="docutils literal notranslate"><span class="pre">flx.shape</span> <span class="pre">==</span> <span class="pre">(ny,</span> <span class="pre">nx)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">run_bldfm_timeseries()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">len(results)</span> <span class="pre">==</span> <span class="pre">n_timesteps</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">run_bldfm_multitower()</span></code></p></td>
+<td><p>Dict of <code class="docutils literal notranslate"><span class="pre">tower_name</span> <span class="pre">→</span> <span class="pre">[results]</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GreensFunctionCache</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.npz</span></code> files created; cache hit matches miss</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">save/load_footprints_to_netcdf()</span></code></p></td>
+<td><p>CF-1.8; round-trip dimensions match</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">run_bldfm_parallel()</span></code></p></td>
+<td><p>Same structure as sequential; 3 strategies work</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">plot_footprint_field()</span></code></p></td>
+<td><p>Pcolormesh + dashed contour lines</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">extract_percentile_contour()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">area_80</span> <span class="pre">&gt;</span> <span class="pre">area_50</span></code>; <code class="docutils literal notranslate"><span class="pre">level_50</span> <span class="pre">&gt;</span> <span class="pre">level_80</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">plot_footprint_on_map()</span></code></p></td>
+<td><p>Map tiles + contours (if contextily installed)</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">plot_wind_rose()</span></code></p></td>
+<td><p>Polar wind rose (if windrose installed)</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">plot_footprint_timeseries()</span></code></p></td>
+<td><p>Line plot of area vs. timestep</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">plot_footprint_interactive()</span></code></p></td>
+<td><p>Plotly HTML (if plotly installed)</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>Sphinx build <code class="docutils literal notranslate"><span class="pre">-W</span></code></p></td>
+<td><p>Zero warnings</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">tests/</span> <span class="pre">-v</span></code></p></td>
+<td><p>All tests pass</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="tutorial_quickstart.html" title="Previous document">Quickstart tutorial</a>
+        </li>
+        <li>
+          <a href="reference.html" title="Next document">Quick reference</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/tutorial_full.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

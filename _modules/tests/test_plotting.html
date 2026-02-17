@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tests.test_plotting &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=56c4699f" />
+    <script src="../../_static/documentation_options.js?v=8313637b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Quick reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for tests.test_plotting</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Tests for the plotting module.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="n">pytestmark</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">plotting</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>  <span class="c1"># non-interactive backend for CI</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.config_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_config_dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_bldfm_timeseries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">extract_percentile_contour</span><span class="p">,</span>
+    <span class="n">plot_footprint_field</span><span class="p">,</span>
+    <span class="n">plot_footprint_timeseries</span><span class="p">,</span>
+    <span class="n">plot_footprint_comparison</span><span class="p">,</span>
+    <span class="n">plot_field_comparison</span><span class="p">,</span>
+    <span class="n">plot_convergence</span><span class="p">,</span>
+    <span class="n">plot_vertical_profiles</span><span class="p">,</span>
+    <span class="n">plot_vertical_slice</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.synthetic</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_synthetic_timeseries</span><span class="p">,</span> <span class="n">generate_towers_grid</span>
+
+
+<span class="c1"># --- extract_percentile_contour ---</span>
+
+
+<div class="viewcode-block" id="test_percentile_contour_properties">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_percentile_contour_properties">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_percentile_contour_properties</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that percentile contours return valid floats with monotonic area.&quot;&quot;&quot;</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+
+    <span class="c1"># Returns floats</span>
+    <span class="n">level_50</span><span class="p">,</span> <span class="n">area_50</span> <span class="o">=</span> <span class="n">extract_percentile_contour</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">level_80</span><span class="p">,</span> <span class="n">area_80</span> <span class="o">=</span> <span class="n">extract_percentile_contour</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="mf">0.8</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level_50</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">area_50</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">level_50</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">assert</span> <span class="n">area_50</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="c1"># Higher percentile -&gt; more area</span>
+    <span class="k">assert</span> <span class="n">area_80</span> <span class="o">&gt;</span> <span class="n">area_50</span>
+
+    <span class="c1"># Higher percentile -&gt; lower threshold level</span>
+    <span class="k">assert</span> <span class="n">level_80</span> <span class="o">&lt;</span> <span class="n">level_50</span></div>
+
+
+
+<span class="c1"># --- plot_footprint_field ---</span>
+
+
+<div class="viewcode-block" id="test_plot_footprint_field_variants">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_field_variants">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_field_variants</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test footprint field plot: basic, with contours, and on custom axes.&quot;&quot;&quot;</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+
+    <span class="c1"># Basic</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_field</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+    <span class="c1"># With contours</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_field</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Custom axes</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">returned_ax</span> <span class="o">=</span> <span class="n">plot_footprint_field</span><span class="p">(</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">returned_ax</span> <span class="ow">is</span> <span class="n">ax</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- plot_footprint_timeseries ---</span>
+
+
+<div class="viewcode-block" id="test_plot_footprint_timeseries">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_timeseries">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_timeseries</span><span class="p">():</span>
+    <span class="n">towers</span> <span class="o">=</span> <span class="n">generate_towers_grid</span><span class="p">(</span><span class="n">n_towers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z_m</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">met</span> <span class="o">=</span> <span class="n">generate_synthetic_timeseries</span><span class="p">(</span><span class="n">n_timesteps</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">parse_config_dict</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;nx&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+                <span class="s2">&quot;ny&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+                <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="mf">200.0</span><span class="p">,</span>
+                <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="mf">200.0</span><span class="p">,</span>
+                <span class="s2">&quot;nz&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+                <span class="s2">&quot;modes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span>
+                <span class="s2">&quot;ref_lat&quot;</span><span class="p">:</span> <span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lat&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;ref_lon&quot;</span><span class="p">:</span> <span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lon&quot;</span><span class="p">],</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;towers&quot;</span><span class="p">:</span> <span class="n">towers</span><span class="p">[:</span><span class="mi">1</span><span class="p">],</span>
+            <span class="s2">&quot;met&quot;</span><span class="p">:</span> <span class="n">met</span><span class="p">,</span>
+            <span class="s2">&quot;solver&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;closure&quot;</span><span class="p">:</span> <span class="s2">&quot;MOST&quot;</span><span class="p">,</span> <span class="s2">&quot;footprint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">run_bldfm_timeseries</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
+
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_timeseries</span><span class="p">(</span>
+        <span class="n">results</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Footprint timeseries (test)&quot;</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_footprint_timeseries.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- plot_footprint_on_map (skip if contextily not installed) ---</span>
+
+
+<div class="viewcode-block" id="test_plot_footprint_on_map_import_error">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_on_map_import_error">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_on_map_import_error</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Should raise ImportError with helpful message if contextily missing.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_on_map</span>
+
+    <span class="n">result</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">contextily</span>
+
+        <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;contextily is installed&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;contextily&quot;</span><span class="p">):</span>
+            <span class="n">plot_footprint_on_map</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_plot_footprint_on_map_happy_path">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_on_map_happy_path">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_on_map_happy_path</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test map plot with contextily tiles (requires network + contextily).&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_on_map</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">contextily</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;contextily not installed&quot;</span><span class="p">)</span>
+
+    <span class="n">result</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_on_map</span><span class="p">(</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span>
+            <span class="n">config</span><span class="p">,</span>
+            <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">],</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Map plot (test)&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="c1"># Network errors should not fail the test suite</span>
+        <span class="k">if</span> <span class="s2">&quot;URLError&quot;</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">or</span> <span class="s2">&quot;ConnectionError&quot;</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
+            <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Network unavailable: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span>
+    <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/test_footprint_on_map.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- plot_wind_rose (skip if windrose not installed) ---</span>
+
+
+<div class="viewcode-block" id="test_plot_wind_rose_import_error">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_wind_rose_import_error">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_wind_rose_import_error</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Should raise ImportError with helpful message if windrose missing.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_wind_rose</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">windrose</span>
+
+        <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;windrose is installed&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;windrose&quot;</span><span class="p">):</span>
+            <span class="n">plot_wind_rose</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">270</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="test_plot_wind_rose_happy_path">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_wind_rose_happy_path">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_wind_rose_happy_path</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test wind rose plot with synthetic data (requires windrose).&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_wind_rose</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">windrose</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;windrose not installed&quot;</span><span class="p">)</span>
+
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">ws</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">wd</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_wind_rose</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">wd</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Wind rose (test)&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/test_wind_rose.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- plot_footprint_interactive ---</span>
+
+
+<div class="viewcode-block" id="test_plot_footprint_interactive">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_interactive">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_interactive</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_interactive</span>
+
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">plotly</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;plotly not installed&quot;</span><span class="p">)</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plot_footprint_interactive</span><span class="p">(</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Test interactive&quot;</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="s2">&quot;to_html&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- plot_footprint_on_map: land_cover ---</span>
+
+
+<div class="viewcode-block" id="test_plot_footprint_on_map_land_cover_import_error">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_on_map_land_cover_import_error">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_on_map_land_cover_import_error</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Should raise ImportError with helpful message if owslib missing.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_on_map</span>
+
+    <span class="n">result</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">owslib</span>
+
+        <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="s2">&quot;owslib is installed&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;owslib&quot;</span><span class="p">):</span>
+            <span class="n">plot_footprint_on_map</span><span class="p">(</span>
+                <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">,</span> <span class="n">land_cover</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_plot_footprint_on_map_land_cover_mock">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_on_map_land_cover_mock">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_on_map_land_cover_mock</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test land cover overlay with mocked WMS response.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_on_map</span>
+
+    <span class="n">result</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+
+    <span class="n">fake_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">mock_fetch</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)):</span>
+        <span class="n">extent</span> <span class="o">=</span> <span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">fake_img</span><span class="p">,</span> <span class="n">extent</span>
+
+    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setattr</span><span class="p">(</span><span class="s2">&quot;bldfm.plotting._fetch_land_cover&quot;</span><span class="p">,</span> <span class="n">mock_fetch</span><span class="p">)</span>
+
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_on_map</span><span class="p">(</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">,</span> <span class="n">land_cover</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Land cover test&quot;</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="c1"># Verify legend is present</span>
+    <span class="n">legend</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">legend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- plot_footprint_comparison ---</span>
+
+
+<div class="viewcode-block" id="test_plot_footprint_comparison">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_comparison">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_comparison</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test multi-panel comparison plot.&quot;&quot;&quot;</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="n">flx</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
+    <span class="n">grid_2d</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plot_footprint_comparison</span><span class="p">(</span>
+        <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="n">flx</span><span class="p">,</span> <span class="n">flx</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">],</span>
+        <span class="n">grids</span><span class="o">=</span><span class="p">[</span><span class="n">grid_2d</span><span class="p">,</span> <span class="n">grid_2d</span><span class="p">],</span>
+        <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Model A&quot;</span><span class="p">,</span> <span class="s2">&quot;Model B&quot;</span><span class="p">],</span>
+        <span class="n">meas_pt</span><span class="o">=</span><span class="p">(</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- plot_field_comparison ---</span>
+
+
+<div class="viewcode-block" id="test_plot_field_comparison">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_field_comparison">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_field_comparison</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test 2x2 field comparison with synthetic data.&quot;&quot;&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;conc&quot;</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span>
+        <span class="s2">&quot;flx&quot;</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span>
+        <span class="s2">&quot;conc_ref&quot;</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span>
+        <span class="s2">&quot;flx_ref&quot;</span><span class="p">:</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">shape</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plot_field_comparison</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">src_pt</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="k">assert</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">axs</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- plot_convergence ---</span>
+
+
+<div class="viewcode-block" id="test_plot_convergence">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_convergence">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_convergence</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test log-log convergence plot with and without fits.&quot;&quot;&quot;</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">1.25</span><span class="p">])</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1e-2</span><span class="p">,</span> <span class="mf">2.5e-3</span><span class="p">,</span> <span class="mf">6.25e-4</span><span class="p">,</span> <span class="mf">1.56e-4</span><span class="p">])</span>
+
+    <span class="c1"># Without fits</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_convergence</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Convergence test&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+    <span class="c1"># With fits</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_convergence</span><span class="p">(</span>
+        <span class="n">h</span><span class="p">,</span>
+        <span class="n">err</span><span class="p">,</span>
+        <span class="n">fits</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mf">1e-4</span> <span class="o">*</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="p">{},</span> <span class="s2">&quot;$O(h^2)$&quot;</span><span class="p">),</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- plot_vertical_profiles ---</span>
+
+
+<div class="viewcode-block" id="test_plot_vertical_profiles">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_vertical_profiles">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_vertical_profiles</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test vertical profile plot using real PBL profiles.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.pbl_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">vertical_profiles</span>
+
+    <span class="n">z1</span><span class="p">,</span> <span class="n">profs1</span> <span class="o">=</span> <span class="n">vertical_profiles</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">wind</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">),</span> <span class="n">z0</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">mol</span><span class="o">=-</span><span class="mf">10.0</span><span class="p">)</span>
+    <span class="n">z2</span><span class="p">,</span> <span class="n">profs2</span> <span class="o">=</span> <span class="n">vertical_profiles</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="n">wind</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">5</span><span class="p">),</span> <span class="n">z0</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plot_vertical_profiles</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">z1</span><span class="p">,</span> <span class="n">z2</span><span class="p">],</span>
+        <span class="p">[</span><span class="n">profs1</span><span class="p">,</span> <span class="n">profs2</span><span class="p">],</span>
+        <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;L = -10 m&quot;</span><span class="p">,</span> <span class="s2">&quot;L = +100 m&quot;</span><span class="p">],</span>
+        <span class="n">meas_height</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- plot_vertical_slice ---</span>
+
+
+<div class="viewcode-block" id="test_plot_vertical_slice">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_vertical_slice">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_vertical_slice</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test 2D slice from a 3D field for all axes.&quot;&quot;&quot;</span>
+    <span class="n">nz</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span>
+    <span class="n">field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">nx</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="n">ny</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">nz</span><span class="p">),</span>
+        <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># Transpose to (nz, ny, nx) ordering for grid arrays</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">):</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_vertical_slice</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">slice_axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">slice_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Invalid axis raises ValueError</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;slice_axis&quot;</span><span class="p">):</span>
+        <span class="n">plot_vertical_slice</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">slice_axis</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">slice_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- get_source_area ---</span>
+
+
+<div class="viewcode-block" id="test_get_source_area_basic">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_get_source_area_basic">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_source_area_basic</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that get_source_area returns correct shape and value range.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_source_area</span>
+
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">))</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">f</span> <span class="o">/</span> <span class="n">f</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  <span class="c1"># normalize to unit sum</span>
+
+    <span class="n">rescaled</span> <span class="o">=</span> <span class="n">get_source_area</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">rescaled</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">f</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">assert</span> <span class="n">rescaled</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mf">0.0</span>
+    <span class="k">assert</span> <span class="n">rescaled</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">1.0</span></div>
+
+
+
+<div class="viewcode-block" id="test_get_source_area_monotone">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_get_source_area_monotone">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_get_source_area_monotone</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that higher g values map to lower rescaled values.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_source_area</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">]])</span>
+    <span class="n">rescaled</span> <span class="o">=</span> <span class="n">get_source_area</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="c1"># Highest-f cell (0.4) should get rescaled=0 (nothing above it)</span>
+    <span class="k">assert</span> <span class="n">rescaled</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span>
+    <span class="c1"># Second-highest (0.3) should get cumsum of just the top cell</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">rescaled</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">0.4</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_source_area_base_functions_shapes">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_source_area_base_functions_shapes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_source_area_base_functions_shapes</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that all 5 base function constructors return correct shapes.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">source_area_contribution</span><span class="p">,</span>
+        <span class="n">source_area_circular</span><span class="p">,</span>
+        <span class="n">source_area_upwind</span><span class="p">,</span>
+        <span class="n">source_area_crosswind</span><span class="p">,</span>
+        <span class="n">source_area_sector</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="n">flx</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
+    <span class="n">meas_pt</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;tower_xy&quot;</span><span class="p">]</span>
+    <span class="n">wind</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;contribution&quot;</span><span class="p">,</span> <span class="n">source_area_contribution</span><span class="p">(</span><span class="n">flx</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;circular&quot;</span><span class="p">,</span> <span class="n">source_area_circular</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;upwind&quot;</span><span class="p">,</span> <span class="n">source_area_upwind</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;crosswind&quot;</span><span class="p">,</span> <span class="n">source_area_crosswind</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;sector&quot;</span><span class="p">,</span> <span class="n">source_area_sector</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">)),</span>
+    <span class="p">]:</span>
+        <span class="k">assert</span> <span class="n">g</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">flx</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> shape mismatch&quot;</span></div>
+
+
+
+<span class="c1"># --- plot_source_area_contours ---</span>
+
+
+<div class="viewcode-block" id="test_plot_source_area_contours">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_source_area_contours">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_source_area_contours</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test source area contour plotting returns axes.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_source_area</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_source_area_contours</span>
+
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="n">rescaled</span> <span class="o">=</span> <span class="n">get_source_area</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">])</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_source_area_contours</span><span class="p">(</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">rescaled</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Test contours&quot;</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_plot_source_area_contours_custom_ax">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_source_area_contours_custom_ax">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_source_area_contours_custom_ax</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test source area contour plotting on provided axes.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_source_area</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_source_area_contours</span>
+
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">rescaled</span> <span class="o">=</span> <span class="n">get_source_area</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">])</span>
+    <span class="n">returned_ax</span> <span class="o">=</span> <span class="n">plot_source_area_contours</span><span class="p">(</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">rescaled</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">returned_ax</span> <span class="ow">is</span> <span class="n">ax</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># --- plot_source_area_gallery ---</span>
+
+
+<div class="viewcode-block" id="test_plot_source_area_gallery">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_source_area_gallery">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_source_area_gallery</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test gallery plot creates 2x3 grid with 5 visible panels.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_source_area_gallery</span>
+
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plot_source_area_gallery</span><span class="p">(</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
+        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span>
+        <span class="n">meas_pt</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;tower_xy&quot;</span><span class="p">],</span>
+        <span class="n">wind</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="n">axes</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get_visible</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

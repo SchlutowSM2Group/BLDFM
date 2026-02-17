@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bldfm.fft_manager &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=56c4699f" />
+    <script src="../../_static/documentation_options.js?v=8313637b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Quick reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bldfm.fft_manager</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pyfftw</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyfftw.interfaces.numpy_fft</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pyfftw_fft</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyfftw.interfaces.cache</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pickle</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;bldfm.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+
+<div class="viewcode-block" id="FFTManager">
+<a class="viewcode-back" href="../../src.html#bldfm.fft_manager.FFTManager">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FFTManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Manages pyFFTW with wisdom and caching for optimal performance in Dask environments.</span>
+
+<span class="sd">    This class addresses memory issues in Dask parallelized environments by:</span>
+<span class="sd">    - Using pyfftw numpy interface for compatibility</span>
+<span class="sd">    - Loading/saving FFTW wisdom for optimal planning</span>
+<span class="sd">    - Enabling pyfftw caching to prevent repeated object allocation</span>
+<span class="sd">    - Providing proper memory management and cleanup</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">wisdom_file</span><span class="o">=</span><span class="s2">&quot;fftw_wisdom.pkl&quot;</span><span class="p">,</span> <span class="n">num_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cache_keepalive</span><span class="o">=</span><span class="mi">30</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wisdom_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">wisdom_file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_threads</span> <span class="o">=</span> <span class="n">num_threads</span>
+
+        <span class="c1"># Configure threading</span>
+        <span class="n">pyfftw</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">NUM_THREADS</span> <span class="o">=</span> <span class="n">num_threads</span>
+
+        <span class="c1"># Enable caching to prevent memory issues in Dask workers</span>
+        <span class="n">pyfftw</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
+        <span class="n">pyfftw</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_keepalive_time</span><span class="p">(</span><span class="n">cache_keepalive</span><span class="p">)</span>
+
+        <span class="c1"># Load existing wisdom</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_wisdom</span><span class="p">()</span>
+
+        <span class="c1"># Register cleanup on exit</span>
+        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cleanup</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;FFTManager initialized with </span><span class="si">{</span><span class="n">num_threads</span><span class="si">}</span><span class="s2"> threads, cache keepalive </span><span class="si">{</span><span class="n">cache_keepalive</span><span class="si">}</span><span class="s2">s&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_wisdom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load FFTW wisdom from file if it exists.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wisdom_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wisdom_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">wisdom</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                    <span class="n">import_results</span> <span class="o">=</span> <span class="n">pyfftw</span><span class="o">.</span><span class="n">import_wisdom</span><span class="p">(</span><span class="n">wisdom</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">import_results</span><span class="p">):</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Successfully loaded wisdom from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wisdom_file</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s2">&quot;Wisdom import partially failed, will be regenerated&quot;</span>
+                        <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;No existing wisdom file found, will be generated during first use&quot;</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to load wisdom: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_wisdom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save FFTW wisdom to file.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">wisdom</span> <span class="o">=</span> <span class="n">pyfftw</span><span class="o">.</span><span class="n">export_wisdom</span><span class="p">()</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wisdom_file</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">wisdom</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wisdom saved to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wisdom_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to save wisdom: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FFTManager.fft2">
+<a class="viewcode-back" href="../../src.html#bldfm.fft_manager.FFTManager.fft2">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fft2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;backward&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform 2D forward FFT using pyfftw numpy interface.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            input_data: Input array for FFT</span>
+<span class="sd">            norm: Normalization mode (&quot;forward&quot;, &quot;backward&quot;, &quot;ortho&quot;)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Complex array with FFT result</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">pyfftw_fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FFTManager.ifft2">
+<a class="viewcode-back" href="../../src.html#bldfm.fft_manager.FFTManager.ifft2">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ifft2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;backward&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform 2D inverse FFT using pyfftw numpy interface.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            input_data: Input array for inverse FFT</span>
+<span class="sd">            norm: Normalization mode (&quot;forward&quot;, &quot;backward&quot;, &quot;ortho&quot;)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Complex array with inverse FFT result</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">pyfftw_fft</span><span class="o">.</span><span class="n">ifft2</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FFTManager.clear_cache">
+<a class="viewcode-back" href="../../src.html#bldfm.fft_manager.FFTManager.clear_cache">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear pyfftw cache.&quot;&quot;&quot;</span>
+        <span class="n">pyfftw</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">disable</span><span class="p">()</span>
+        <span class="n">pyfftw</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">enable</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;PyFFTW cache cleared&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cleanup function called on exit.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_wisdom</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear_cache</span><span class="p">()</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;FFTManager cleanup completed&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># Global FFT manager instance</span>
+<span class="n">_fft_manager</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="get_fft_manager">
+<a class="viewcode-back" href="../../src.html#bldfm.fft_manager.get_fft_manager">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_fft_manager</span><span class="p">(</span><span class="n">num_threads</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cache_keepalive</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get or create the global FFT manager instance.</span>
+
+<span class="sd">    If the manager already exists with different num_threads, it is</span>
+<span class="sd">    re-initialised with the new thread count.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_fft_manager</span>
+    <span class="k">if</span> <span class="n">_fft_manager</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_fft_manager</span><span class="o">.</span><span class="n">num_threads</span> <span class="o">!=</span> <span class="n">num_threads</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Re-initializing FFTManager: num_threads </span><span class="si">%d</span><span class="s2"> -&gt; </span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">_fft_manager</span><span class="o">.</span><span class="n">num_threads</span><span class="p">,</span>
+            <span class="n">num_threads</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_fft_manager</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">_fft_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_fft_manager</span> <span class="o">=</span> <span class="n">FFTManager</span><span class="p">(</span>
+            <span class="n">num_threads</span><span class="o">=</span><span class="n">num_threads</span><span class="p">,</span> <span class="n">cache_keepalive</span><span class="o">=</span><span class="n">cache_keepalive</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_fft_manager</span></div>
+
+
+
+<div class="viewcode-block" id="reset_fft_manager">
+<a class="viewcode-back" href="../../src.html#bldfm.fft_manager.reset_fft_manager">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reset_fft_manager</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reset FFTManager singleton (call in forked worker processes).&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">_fft_manager</span>
+    <span class="n">_fft_manager</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="fft2">
+<a class="viewcode-back" href="../../src.html#bldfm.fft_manager.fft2">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fft2</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;backward&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Global function for 2D FFT using the FFT manager.&quot;&quot;&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">get_fft_manager</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ifft2">
+<a class="viewcode-back" href="../../src.html#bldfm.fft_manager.ifft2">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">ifft2</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;backward&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Global function for 2D inverse FFT using the FFT manager.&quot;&quot;&quot;</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">get_fft_manager</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">manager</span><span class="o">.</span><span class="n">ifft2</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

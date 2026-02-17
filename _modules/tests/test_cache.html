@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tests.test_cache &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=56c4699f" />
+    <script src="../../_static/documentation_options.js?v=8313637b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Quick reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for tests.test_cache</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Tests for Green&#39;s function caching.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="n">pytestmark</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">unit</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">GreensFunctionCache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.config_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_config_dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_bldfm_single</span>
+
+
+<div class="viewcode-block" id="cache">
+<a class="viewcode-back" href="../../tests.html#tests.test_cache.cache">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cache</span><span class="p">(</span><span class="n">tmp_path</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">GreensFunctionCache</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">tmp_path</span> <span class="o">/</span> <span class="s2">&quot;cache&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="solver_inputs">
+<a class="viewcode-back" href="../../tests.html#tests.test_cache.solver_inputs">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">solver_inputs</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Minimal inputs matching what the cache hashes.&quot;&quot;&quot;</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+    <span class="n">profiles</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span>  <span class="c1"># u, v</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span>  <span class="c1"># Kx, Ky, Kz</span>
+    <span class="p">)</span>
+    <span class="n">domain</span> <span class="o">=</span> <span class="p">(</span><span class="mf">200.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">)</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+    <span class="n">meas_pt</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">halo</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">precision</span> <span class="o">=</span> <span class="s2">&quot;single&quot;</span>
+    <span class="k">return</span> <span class="n">z</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">halo</span><span class="p">,</span> <span class="n">precision</span></div>
+
+
+
+<div class="viewcode-block" id="test_cache_miss">
+<a class="viewcode-back" href="../../tests.html#tests.test_cache.test_cache_miss">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cache_miss</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">solver_inputs</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">*</span><span class="n">solver_inputs</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="test_cache_put_and_hit">
+<a class="viewcode-back" href="../../tests.html#tests.test_cache.test_cache_put_and_hit">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cache_put_and_hit</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">solver_inputs</span><span class="p">):</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
+    <span class="n">conc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">flx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">cache</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="o">*</span><span class="n">solver_inputs</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">*</span><span class="n">solver_inputs</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">cached_grid</span><span class="p">,</span> <span class="n">cached_conc</span><span class="p">,</span> <span class="n">cached_flx</span> <span class="o">=</span> <span class="n">result</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">cached_conc</span><span class="p">,</span> <span class="n">conc</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">cached_flx</span><span class="p">,</span> <span class="n">flx</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_cache_different_inputs_miss">
+<a class="viewcode-back" href="../../tests.html#tests.test_cache.test_cache_different_inputs_miss">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cache_different_inputs_miss</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">solver_inputs</span><span class="p">):</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
+    <span class="n">conc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">flx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">cache</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="o">*</span><span class="n">solver_inputs</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span><span class="p">)</span>
+
+    <span class="c1"># Change meas_pt</span>
+    <span class="n">z</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">halo</span><span class="p">,</span> <span class="n">precision</span> <span class="o">=</span> <span class="n">solver_inputs</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">domain</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span> <span class="n">halo</span><span class="p">,</span> <span class="n">precision</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="test_cache_clear">
+<a class="viewcode-back" href="../../tests.html#tests.test_cache.test_cache_clear">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cache_clear</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">solver_inputs</span><span class="p">):</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
+    <span class="n">cache</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="o">*</span><span class="n">solver_inputs</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
+
+    <span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">*</span><span class="n">solver_inputs</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="test_cache_integration">
+<a class="viewcode-back" href="../../tests.html#tests.test_cache.test_cache_integration">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_cache_integration</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test caching through the full solver with footprint=True.&quot;&quot;&quot;</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">parse_config_dict</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;nx&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+                <span class="s2">&quot;ny&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+                <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="mf">200.0</span><span class="p">,</span>
+                <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="mf">200.0</span><span class="p">,</span>
+                <span class="s2">&quot;nz&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+                <span class="s2">&quot;modes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span>
+                <span class="s2">&quot;ref_lat&quot;</span><span class="p">:</span> <span class="mf">50.95</span><span class="p">,</span>
+                <span class="s2">&quot;ref_lon&quot;</span><span class="p">:</span> <span class="mf">11.586</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;towers&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">50.9505</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">11.5865</span><span class="p">,</span> <span class="s2">&quot;z_m&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">},</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;met&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ustar&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">:</span> <span class="o">-</span><span class="mf">100.0</span><span class="p">,</span> <span class="s2">&quot;wind_speed&quot;</span><span class="p">:</span> <span class="mf">5.0</span><span class="p">,</span> <span class="s2">&quot;wind_dir&quot;</span><span class="p">:</span> <span class="mf">270.0</span><span class="p">},</span>
+            <span class="s2">&quot;solver&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;closure&quot;</span><span class="p">:</span> <span class="s2">&quot;MOST&quot;</span><span class="p">,</span> <span class="s2">&quot;footprint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">GreensFunctionCache</span><span class="p">(</span><span class="n">cache_dir</span><span class="o">=</span><span class="n">tmpdir</span><span class="p">)</span>
+
+        <span class="c1"># First run: cache miss</span>
+        <span class="n">r1</span> <span class="o">=</span> <span class="n">run_bldfm_single</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
+
+        <span class="c1"># Second run: cache hit (same inputs)</span>
+        <span class="n">r2</span> <span class="o">=</span> <span class="n">run_bldfm_single</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">)</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">r1</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">r2</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">])</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_array_equal</span><span class="p">(</span><span class="n">r1</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">],</span> <span class="n">r2</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">])</span></div>
+
+</pre></div>
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

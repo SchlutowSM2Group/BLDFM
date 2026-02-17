@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bldfm.config_parser &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=56c4699f" />
+    <script src="../../_static/documentation_options.js?v=8313637b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Quick reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bldfm.config_parser</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">YAML configuration parser and dataclass schema for BLDFM.</span>
+
+<span class="sd">Defines the configuration hierarchy:</span>
+<span class="sd">    BLDFMConfig</span>
+<span class="sd">    ├── DomainConfig</span>
+<span class="sd">    ├── List[TowerConfig]</span>
+<span class="sd">    ├── MetConfig</span>
+<span class="sd">    ├── SolverConfig</span>
+<span class="sd">    ├── OutputConfig</span>
+<span class="sd">    └── ParallelConfig</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+
+<span class="c1"># --- Coordinate utilities ---</span>
+
+<span class="c1"># Earth radius in meters (WGS-84 mean)</span>
+<span class="n">_EARTH_RADIUS</span> <span class="o">=</span> <span class="mf">6_371_000.0</span>
+
+
+<div class="viewcode-block" id="latlon_to_xy">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.latlon_to_xy">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">latlon_to_xy</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">ref_lat</span><span class="p">,</span> <span class="n">ref_lon</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert lat/lon to local x/y (meters) relative to a reference point.</span>
+
+<span class="sd">    Uses an equirectangular (flat-Earth) approximation, which is accurate</span>
+<span class="sd">    to &lt;0.1% for domains up to ~100 km at mid-latitudes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lat, lon : float</span>
+<span class="sd">        Point coordinates in decimal degrees.</span>
+<span class="sd">    ref_lat, ref_lon : float</span>
+<span class="sd">        Reference origin coordinates in decimal degrees.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    x, y : float</span>
+<span class="sd">        Easting and northing in meters relative to (ref_lat, ref_lon).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">lat_r</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+    <span class="n">lon_r</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">lon</span><span class="p">)</span>
+    <span class="n">ref_lat_r</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">ref_lat</span><span class="p">)</span>
+    <span class="n">ref_lon_r</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">ref_lon</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">_EARTH_RADIUS</span> <span class="o">*</span> <span class="p">(</span><span class="n">lon_r</span> <span class="o">-</span> <span class="n">ref_lon_r</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">ref_lat_r</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">_EARTH_RADIUS</span> <span class="o">*</span> <span class="p">(</span><span class="n">lat_r</span> <span class="o">-</span> <span class="n">ref_lat_r</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span></div>
+
+
+
+<span class="c1"># --- Dataclasses ---</span>
+
+
+<div class="viewcode-block" id="TowerConfig">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.TowerConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TowerConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for a single measurement tower.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">lat</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">lon</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">z_m</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="c1"># Local coordinates (computed from ref origin)</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<div class="viewcode-block" id="TowerConfig.compute_local_xy">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.TowerConfig.compute_local_xy">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_local_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_lat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">ref_lon</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute local x/y from lat/lon and reference origin.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">latlon_to_xy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span> <span class="n">ref_lat</span><span class="p">,</span> <span class="n">ref_lon</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DomainConfig">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.DomainConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DomainConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for the computational domain.&quot;&quot;&quot;</span>
+
+    <span class="n">nx</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">ny</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">xmax</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">ymax</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">nz</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">modes</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+    <span class="n">halo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ref_lat</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ref_lon</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">output_levels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="MetConfig">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.MetConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MetConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Meteorological forcing data (scalar for single-time, list for timeseries).&quot;&quot;&quot;</span>
+
+    <span class="n">ustar</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">mol</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1e9</span>
+    <span class="n">wind_speed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">5.0</span>
+    <span class="n">wind_dir</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">270.0</span>
+    <span class="n">z0</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">timestamps</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_timesteps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of timesteps in the timeseries.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ustar</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ustar</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_speed</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_speed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span>
+
+<div class="viewcode-block" id="MetConfig.get_step">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.MetConfig.get_step">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get met parameters for a single timestep.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict with scalar values for ustar, mol, wind_speed, wind_dir, timestamp.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">_get</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="n">val</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">val</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;ustar&quot;</span><span class="p">:</span> <span class="n">_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ustar</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span>
+            <span class="s2">&quot;mol&quot;</span><span class="p">:</span> <span class="n">_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mol</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span>
+            <span class="s2">&quot;wind_speed&quot;</span><span class="p">:</span> <span class="n">_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_speed</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span>
+            <span class="s2">&quot;wind_dir&quot;</span><span class="p">:</span> <span class="n">_get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wind_dir</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">z0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;z0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="MetConfig.validate">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.MetConfig.validate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Validate that at least one of ustar/z0 is provided, and list lengths match.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ustar</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">z0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;MetConfig requires at least one of &#39;ustar&#39; or &#39;z0&#39;&quot;</span><span class="p">)</span>
+
+        <span class="n">list_fields</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ustar&quot;</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_speed&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_dir&quot;</span><span class="p">):</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">list_fields</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">list_fields</span><span class="p">:</span>
+            <span class="k">return</span>  <span class="c1"># all scalars, fine</span>
+
+        <span class="n">lengths</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">list_fields</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Met timeseries arrays must all have the same length. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Got: </span><span class="si">{</span><span class="n">list_fields</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="n">lengths</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;timestamps length (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timestamps</span><span class="p">)</span><span class="si">}</span><span class="s2">) does not match &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;met array length (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SolverConfig">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.SolverConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SolverConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Solver configuration.&quot;&quot;&quot;</span>
+
+    <span class="n">closure</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;MOST&quot;</span>
+    <span class="n">precision</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;single&quot;</span>
+    <span class="n">footprint</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">surface_flux_shape</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;diamond&quot;</span>
+    <span class="n">analytic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">src_loc</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="OutputConfig">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.OutputConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">OutputConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Output configuration.&quot;&quot;&quot;</span>
+
+    <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;netcdf&quot;</span>
+    <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;./output&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ParallelConfig">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.ParallelConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ParallelConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parallelism configuration.&quot;&quot;&quot;</span>
+
+    <span class="n">num_threads</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="BLDFMConfig">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.BLDFMConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BLDFMConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Top-level BLDFM configuration.&quot;&quot;&quot;</span>
+
+    <span class="n">domain</span><span class="p">:</span> <span class="n">DomainConfig</span>
+    <span class="n">towers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TowerConfig</span><span class="p">]</span>
+    <span class="n">met</span><span class="p">:</span> <span class="n">MetConfig</span>
+    <span class="n">solver</span><span class="p">:</span> <span class="n">SolverConfig</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">SolverConfig</span><span class="p">)</span>
+    <span class="n">output</span><span class="p">:</span> <span class="n">OutputConfig</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">OutputConfig</span><span class="p">)</span>
+    <span class="n">parallel</span><span class="p">:</span> <span class="n">ParallelConfig</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">ParallelConfig</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute local tower coordinates from reference origin.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">ref_lat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">ref_lon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">tower</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">towers</span><span class="p">:</span>
+                <span class="n">tower</span><span class="o">.</span><span class="n">compute_local_xy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">ref_lat</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">ref_lon</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">met</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div>
+
+
+
+<span class="c1"># --- YAML parsing ---</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_tower</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TowerConfig</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">TowerConfig</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+        <span class="n">lat</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">],</span>
+        <span class="n">lon</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">],</span>
+        <span class="n">z_m</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;z_m&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_domain</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DomainConfig</span><span class="p">:</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;modes&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">])</span>
+    <span class="n">output_levels</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;output_levels&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DomainConfig</span><span class="p">(</span>
+        <span class="n">nx</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;nx&quot;</span><span class="p">],</span>
+        <span class="n">ny</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;ny&quot;</span><span class="p">],</span>
+        <span class="n">xmax</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;xmax&quot;</span><span class="p">]),</span>
+        <span class="n">ymax</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;ymax&quot;</span><span class="p">]),</span>
+        <span class="n">nz</span><span class="o">=</span><span class="n">d</span><span class="p">[</span><span class="s2">&quot;nz&quot;</span><span class="p">],</span>
+        <span class="n">modes</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">modes</span><span class="p">),</span>
+        <span class="n">halo</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;halo&quot;</span><span class="p">),</span>
+        <span class="n">ref_lat</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ref_lat&quot;</span><span class="p">),</span>
+        <span class="n">ref_lon</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ref_lon&quot;</span><span class="p">),</span>
+        <span class="n">output_levels</span><span class="o">=</span><span class="n">output_levels</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_met</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetConfig</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">MetConfig</span><span class="p">(</span>
+        <span class="n">ustar</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ustar&quot;</span><span class="p">),</span>
+        <span class="n">mol</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mol&quot;</span><span class="p">,</span> <span class="mf">1e9</span><span class="p">),</span>
+        <span class="n">wind_speed</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wind_speed&quot;</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">),</span>
+        <span class="n">wind_dir</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;wind_dir&quot;</span><span class="p">,</span> <span class="mf">270.0</span><span class="p">),</span>
+        <span class="n">z0</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;z0&quot;</span><span class="p">),</span>
+        <span class="n">timestamps</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;timestamps&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_solver</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SolverConfig</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">SolverConfig</span><span class="p">()</span>
+    <span class="n">src_loc</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;src_loc&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">src_loc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">src_loc</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">src_loc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">SolverConfig</span><span class="p">(</span>
+        <span class="n">closure</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;closure&quot;</span><span class="p">,</span> <span class="s2">&quot;MOST&quot;</span><span class="p">),</span>
+        <span class="n">precision</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;precision&quot;</span><span class="p">,</span> <span class="s2">&quot;single&quot;</span><span class="p">),</span>
+        <span class="n">footprint</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;footprint&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">surface_flux_shape</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;surface_flux_shape&quot;</span><span class="p">,</span> <span class="s2">&quot;diamond&quot;</span><span class="p">),</span>
+        <span class="n">analytic</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;analytic&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="n">src_loc</span><span class="o">=</span><span class="n">src_loc</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_output</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OutputConfig</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">OutputConfig</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">OutputConfig</span><span class="p">(</span>
+        <span class="nb">format</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;netcdf&quot;</span><span class="p">),</span>
+        <span class="n">directory</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;directory&quot;</span><span class="p">,</span> <span class="s2">&quot;./output&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_parallel</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParallelConfig</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">d</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ParallelConfig</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">ParallelConfig</span><span class="p">(</span>
+        <span class="n">num_threads</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;num_threads&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">max_workers</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_workers&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">use_cache</span><span class="o">=</span><span class="n">d</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;use_cache&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="load_config">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.load_config">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_config</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BLDFMConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load a BLDFM configuration from a YAML file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or Path</span>
+<span class="sd">        Path to the YAML configuration file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    BLDFMConfig</span>
+<span class="sd">        Parsed and validated configuration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config file not found: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parse_config_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="parse_config_dict">
+<a class="viewcode-back" href="../../src.html#bldfm.config_parser.parse_config_dict">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_config_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BLDFMConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse a BLDFM configuration from a dictionary.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : dict</span>
+<span class="sd">        Raw configuration dictionary (e.g. from YAML).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    BLDFMConfig</span>
+<span class="sd">        Parsed and validated configuration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;domain&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Config must include &#39;domain&#39; section&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;towers&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Config must include &#39;towers&#39; section&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;met&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Config must include &#39;met&#39; section&quot;</span><span class="p">)</span>
+
+    <span class="n">domain</span> <span class="o">=</span> <span class="n">_parse_domain</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;domain&quot;</span><span class="p">])</span>
+    <span class="n">towers</span> <span class="o">=</span> <span class="p">[</span><span class="n">_parse_tower</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">[</span><span class="s2">&quot;towers&quot;</span><span class="p">]]</span>
+    <span class="n">met</span> <span class="o">=</span> <span class="n">_parse_met</span><span class="p">(</span><span class="n">raw</span><span class="p">[</span><span class="s2">&quot;met&quot;</span><span class="p">])</span>
+    <span class="n">solver</span> <span class="o">=</span> <span class="n">_parse_solver</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;solver&quot;</span><span class="p">))</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">_parse_output</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;output&quot;</span><span class="p">))</span>
+    <span class="n">parallel</span> <span class="o">=</span> <span class="n">_parse_parallel</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;parallel&quot;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">BLDFMConfig</span><span class="p">(</span>
+        <span class="n">domain</span><span class="o">=</span><span class="n">domain</span><span class="p">,</span>
+        <span class="n">towers</span><span class="o">=</span><span class="n">towers</span><span class="p">,</span>
+        <span class="n">met</span><span class="o">=</span><span class="n">met</span><span class="p">,</span>
+        <span class="n">solver</span><span class="o">=</span><span class="n">solver</span><span class="p">,</span>
+        <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+        <span class="n">parallel</span><span class="o">=</span><span class="n">parallel</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

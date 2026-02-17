@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Quick reference &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=56c4699f" />
+    <script src="_static/documentation_options.js?v=8313637b"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Package overview" href="overview.html" />
+    <link rel="prev" title="Full tutorial: verifying all v1.0 features" href="tutorial_full.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#config-driven-workflow-recommended">Config-driven workflow (recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-tower-timeseries">Multi-tower timeseries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parallel-execution">Parallel execution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#synthetic-data-for-testing">Synthetic data for testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#low-level-workflow">Low-level workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#source-area-contours">Source area contours</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reproducing-manuscript-figures">Reproducing manuscript figures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#testing-the-documentation-build">Testing the documentation build</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="tutorial_full.html" title="previous chapter">Full tutorial: verifying all v1.0 features</a></li>
+      <li>Next: <a href="overview.html" title="next chapter">Package overview</a></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="tutorial_full.html" title="Previous document">Full tutorial: verifying all v1.0 features</a>
+        </li>
+        <li>
+          <a href="overview.html" title="Next document">Package overview</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <section id="quick-reference">
+<h1>Quick reference<a class="headerlink" href="#quick-reference" title="Link to this heading">¶</a></h1>
+<p>Concise code snippets for the most common BLDFM workflows.  For step-by-step
+tutorials, see the <a class="reference external" href="tutorial_quickstart.html">Quickstart Tutorial</a> and
+<a class="reference external" href="tutorial_full.html">Full Tutorial</a>.</p>
+<section id="config-driven-workflow-recommended">
+<h2>Config-driven workflow (recommended)<a class="headerlink" href="#config-driven-workflow-recommended" title="Link to this heading">¶</a></h2>
+<p>The simplest way to run BLDFM is via a YAML configuration file.</p>
+<p><strong>1. Create a config file</strong> (<code class="docutils literal notranslate"><span class="pre">my_config.yaml</span></code>):</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">domain</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">nx</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">256</span>
+<span class="w">  </span><span class="nt">ny</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">128</span>
+<span class="w">  </span><span class="nt">xmax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000.0</span>
+<span class="w">  </span><span class="nt">ymax</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500.0</span>
+<span class="w">  </span><span class="nt">nz</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+<span class="w">  </span><span class="nt">modes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">256</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">128</span><span class="p p-Indicator">]</span>
+<span class="w">  </span><span class="nt">ref_lat</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50.95</span>
+<span class="w">  </span><span class="nt">ref_lon</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">11.586</span>
+
+<span class="nt">towers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt"> name</span><span class="p">:</span><span class="w"> </span><span class="nv">tower_A</span><span class="p p-Indicator">,</span><span class="nt"> lat</span><span class="p">:</span><span class="w"> </span><span class="nv">50.9505</span><span class="p p-Indicator">,</span><span class="nt"> lon</span><span class="p">:</span><span class="w"> </span><span class="nv">11.5865</span><span class="p p-Indicator">,</span><span class="nt"> z_m</span><span class="p">:</span><span class="w"> </span><span class="nv">10.0</span><span class="w"> </span><span class="p p-Indicator">}</span>
+
+<span class="nt">met</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ustar</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.4</span>
+<span class="w">  </span><span class="nt">mol</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-100.0</span>
+<span class="w">  </span><span class="nt">wind_speed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span>
+<span class="w">  </span><span class="nt">wind_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">270.0</span>
+
+<span class="nt">solver</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">closure</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MOST</span>
+<span class="w">  </span><span class="nt">footprint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p><strong>2. Run from the command line:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>bldfm<span class="w"> </span>run<span class="w"> </span>my_config.yaml
+$<span class="w"> </span>bldfm<span class="w"> </span>run<span class="w"> </span>my_config.yaml<span class="w"> </span>--dry-run<span class="w">  </span><span class="c1"># validate without running</span>
+</pre></div>
+</div>
+<p><strong>3. Or run from Python:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span><span class="p">,</span> <span class="n">run_bldfm_single</span><span class="p">,</span> <span class="n">plot_footprint_field</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">run_bldfm_single</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plot_footprint_field</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="multi-tower-timeseries">
+<h2>Multi-tower timeseries<a class="headerlink" href="#multi-tower-timeseries" title="Link to this heading">¶</a></h2>
+<p>For multiple towers and time-varying meteorology:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">load_config</span><span class="p">,</span> <span class="n">run_bldfm_multitower</span><span class="p">,</span>
+    <span class="n">save_footprints_to_netcdf</span><span class="p">,</span> <span class="n">plot_footprint_field</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">run_bldfm_multitower</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+<span class="c1"># Save to NetCDF</span>
+<span class="n">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="s2">&quot;output/footprints.nc&quot;</span><span class="p">)</span>
+
+<span class="c1"># Plot first tower, first timestep</span>
+<span class="n">tower_name</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">tower_name</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">plot_footprint_field</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+<section id="parallel-execution">
+<h2>Parallel execution<a class="headerlink" href="#parallel-execution" title="Link to this heading">¶</a></h2>
+<p>For large runs, distribute work across CPU cores:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span><span class="p">,</span> <span class="n">run_bldfm_parallel</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
+
+<span class="c1"># Parallel over towers (each worker handles a full timeseries)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">run_bldfm_parallel</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">parallel_over</span><span class="o">=</span><span class="s2">&quot;towers&quot;</span><span class="p">)</span>
+
+<span class="c1"># Or parallel over both towers and timesteps</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">run_bldfm_parallel</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">parallel_over</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="synthetic-data-for-testing">
+<h2>Synthetic data for testing<a class="headerlink" href="#synthetic-data-for-testing" title="Link to this heading">¶</a></h2>
+<p>Generate reproducible test data without real observations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_synthetic_timeseries</span><span class="p">,</span> <span class="n">generate_towers_grid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.config_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_config_dict</span>
+
+<span class="n">towers</span> <span class="o">=</span> <span class="n">generate_towers_grid</span><span class="p">(</span><span class="n">n_towers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">z_m</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;grid&quot;</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">met</span> <span class="o">=</span> <span class="n">generate_synthetic_timeseries</span><span class="p">(</span><span class="n">n_timesteps</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">parse_config_dict</span><span class="p">({</span>
+    <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;nx&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span> <span class="s2">&quot;ny&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span> <span class="s2">&quot;nz&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+        <span class="s2">&quot;ref_lat&quot;</span><span class="p">:</span> <span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lat&quot;</span><span class="p">],</span> <span class="s2">&quot;ref_lon&quot;</span><span class="p">:</span> <span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lon&quot;</span><span class="p">],</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;towers&quot;</span><span class="p">:</span> <span class="n">towers</span><span class="p">,</span>
+    <span class="s2">&quot;met&quot;</span><span class="p">:</span> <span class="n">met</span><span class="p">,</span>
+    <span class="s2">&quot;solver&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;closure&quot;</span><span class="p">:</span> <span class="s2">&quot;MOST&quot;</span><span class="p">,</span> <span class="s2">&quot;footprint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+<span class="p">})</span>
+</pre></div>
+</div>
+</section>
+<section id="low-level-workflow">
+<h2>Low-level workflow<a class="headerlink" href="#low-level-workflow" title="Link to this heading">¶</a></h2>
+<p>For full control, you can call the solver steps directly (as in the <code class="docutils literal notranslate"><span class="pre">runs/low_level/minimal_example.py</span></code> script):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_wind_fields</span><span class="p">,</span> <span class="n">ideal_source</span><span class="p">,</span> <span class="n">steady_state_transport_solver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.pbl_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">vertical_profiles</span>
+
+<span class="c1"># 1. Wind components</span>
+<span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">compute_wind_fields</span><span class="p">(</span><span class="n">wind_speed</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">wind_dir</span><span class="o">=</span><span class="mf">270.0</span><span class="p">)</span>
+
+<span class="c1"># 2. Vertical profiles</span>
+<span class="n">z</span><span class="p">,</span> <span class="n">profiles</span> <span class="o">=</span> <span class="n">vertical_profiles</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">meas_height</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">wind</span><span class="o">=</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">),</span> <span class="n">ustar</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+
+<span class="c1"># 3. Surface flux</span>
+<span class="n">srf_flx</span> <span class="o">=</span> <span class="n">ideal_source</span><span class="p">((</span><span class="mi">256</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> <span class="p">(</span><span class="mf">1000.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">))</span>
+
+<span class="c1"># 4. Solve</span>
+<span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span> <span class="o">=</span> <span class="n">steady_state_transport_solver</span><span class="p">(</span>
+    <span class="n">srf_flx</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">profiles</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mf">1000.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">),</span> <span class="n">levels</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="source-area-contours">
+<h2>Source area contours<a class="headerlink" href="#source-area-contours" title="Link to this heading">¶</a></h2>
+<p>Visualize which spatial regions contribute a given fraction of the measured flux
+using different contour geometries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">get_source_area</span><span class="p">,</span> <span class="n">source_area_circular</span><span class="p">,</span> <span class="n">source_area_sector</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_source_area_contours</span><span class="p">,</span> <span class="n">plot_source_area_gallery</span>
+
+<span class="c1"># After running the solver to get flx, grid, meas_pt, wind:</span>
+
+<span class="c1"># Single contour type</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">source_area_circular</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">)</span>
+<span class="n">rescaled</span> <span class="o">=</span> <span class="n">get_source_area</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+<span class="n">plot_source_area_contours</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">rescaled</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Circular contours&quot;</span><span class="p">)</span>
+
+<span class="c1"># Gallery of all 5 types</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plot_source_area_gallery</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Five base functions are available: <code class="docutils literal notranslate"><span class="pre">source_area_contribution</span></code> (isopleth),
+<code class="docutils literal notranslate"><span class="pre">source_area_circular</span></code> (concentric circles), <code class="docutils literal notranslate"><span class="pre">source_area_upwind</span></code> (distance bands),
+<code class="docutils literal notranslate"><span class="pre">source_area_crosswind</span></code> (ridges), and <code class="docutils literal notranslate"><span class="pre">source_area_sector</span></code> (angular sectors).</p>
+<p>See <code class="docutils literal notranslate"><span class="pre">runs/low_level/source_area_example.py</span></code> for a complete working example.</p>
+</section>
+<section id="reproducing-manuscript-figures">
+<h2>Reproducing manuscript figures<a class="headerlink" href="#reproducing-manuscript-figures" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">runs/manuscript/</span></code> directory contains the scripts that generate the figures
+in the BLDFM paper.  To regenerate all of them at once (from the repo root):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>runs/manuscript/generate_all.py
+</pre></div>
+</div>
+<p>Individual figures can also be generated separately:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>runs/manuscript/interface/comparison_footprint_unstable.py
+$<span class="w"> </span>python<span class="w"> </span>runs/manuscript/interface/comparison_analytic.py
+</pre></div>
+</div>
+<p>Outputs are saved to <code class="docutils literal notranslate"><span class="pre">plots/</span></code>.</p>
+</section>
+<section id="testing-the-documentation-build">
+<h2>Testing the documentation build<a class="headerlink" href="#testing-the-documentation-build" title="Link to this heading">¶</a></h2>
+<p>To build and verify the Sphinx documentation locally:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs
+
+<span class="c1"># Standard build</span>
+make<span class="w"> </span>html
+
+<span class="c1"># CI-style build (treats warnings as errors)</span>
+sphinx-build<span class="w"> </span>-W<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span><span class="nb">source</span><span class="w"> </span>build/html
+
+<span class="c1"># Preview in browser</span>
+python<span class="w"> </span>-m<span class="w"> </span>http.server<span class="w"> </span><span class="m">8000</span><span class="w"> </span>-d<span class="w"> </span>build/html
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">-W</span></code> flag causes any Sphinx warning to fail the build, which is what you want in CI to catch broken cross-references, missing modules, and formatting issues.</p>
+</section>
+</section>
+
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+        <li>
+          &larr;
+          <a href="tutorial_full.html" title="Previous document">Full tutorial: verifying all v1.0 features</a>
+        </li>
+        <li>
+          <a href="overview.html" title="Next document">Package overview</a>
+          &rarr;
+        </li>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/reference.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

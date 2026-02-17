@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bldfm.io &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=56c4699f" />
+    <script src="../../_static/documentation_options.js?v=8313637b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Quick reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bldfm.io</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">NetCDF I/O for BLDFM footprint results.</span>
+
+<span class="sd">Saves and loads multi-tower, multi-timestep footprint fields as CF-1.8</span>
+<span class="sd">compliant xarray Datasets with zlib compression.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;io&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="save_footprints_to_netcdf">
+<a class="viewcode-back" href="../../src.html#bldfm.io.save_footprints_to_netcdf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save multitower results to a CF-compliant NetCDF file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    results : dict</span>
+<span class="sd">        Output of run_bldfm_multitower: {tower_name: [result_dict, ...]}.</span>
+<span class="sd">    config : BLDFMConfig</span>
+<span class="sd">        Configuration used for the run.</span>
+<span class="sd">    filepath : str or Path</span>
+<span class="sd">        Output file path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">filepath</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">tower_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">n_towers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tower_names</span><span class="p">)</span>
+
+    <span class="c1"># Get dimensions from first result</span>
+    <span class="n">first_result</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">tower_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">first_result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
+    <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="n">first_result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">n_time</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">tower_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
+
+    <span class="c1"># Extract coordinate arrays</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">X</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">Y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">Y</span>
+
+    <span class="c1"># Build timestamps</span>
+    <span class="n">timestamps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="n">tower_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]]:</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">]</span>
+        <span class="n">timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ts</span><span class="p">))</span>
+
+    <span class="c1"># Collect data arrays</span>
+    <span class="n">flx_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_time</span><span class="p">,</span> <span class="n">n_towers</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
+    <span class="n">conc_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_time</span><span class="p">,</span> <span class="n">n_towers</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
+    <span class="n">ustar_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_time</span><span class="p">,))</span>
+    <span class="n">mol_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_time</span><span class="p">,))</span>
+    <span class="n">wind_speed_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_time</span><span class="p">,))</span>
+    <span class="n">wind_dir_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_time</span><span class="p">,))</span>
+
+    <span class="k">for</span> <span class="n">ti</span><span class="p">,</span> <span class="n">tower_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tower_names</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="n">tower_name</span><span class="p">]):</span>
+            <span class="n">flx_data</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">ti</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
+            <span class="n">conc_data</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">ti</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">ti</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># met params are the same for all towers</span>
+                <span class="n">ustar_data</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="s2">&quot;ustar&quot;</span><span class="p">]</span>
+                <span class="n">mol_data</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="s2">&quot;mol&quot;</span><span class="p">]</span>
+                <span class="n">wind_speed_data</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="s2">&quot;wind_speed&quot;</span><span class="p">]</span>
+                <span class="n">wind_dir_data</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="s2">&quot;wind_dir&quot;</span><span class="p">]</span>
+
+    <span class="c1"># Tower metadata</span>
+    <span class="n">tower_lats</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">lat</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">]</span>
+    <span class="n">tower_lons</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">lon</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">]</span>
+    <span class="n">tower_z</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">z_m</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">]</span>
+
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;footprint&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;tower&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">],</span>
+                <span class="n">flx_data</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;long_name&quot;</span><span class="p">:</span> <span class="s2">&quot;flux footprint&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;m^-2&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;concentration&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;tower&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">],</span>
+                <span class="n">conc_data</span><span class="p">,</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;long_name&quot;</span><span class="p">:</span> <span class="s2">&quot;concentration field&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;scalar_unit&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;ustar&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span>
+                <span class="n">ustar_data</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;long_name&quot;</span><span class="p">:</span> <span class="s2">&quot;friction velocity&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;m s^-1&quot;</span><span class="p">},</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;mol&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span>
+                <span class="n">mol_data</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;long_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Monin-Obukhov length&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">},</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;wind_speed&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span>
+                <span class="n">wind_speed_data</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;long_name&quot;</span><span class="p">:</span> <span class="s2">&quot;wind speed&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;m s^-1&quot;</span><span class="p">},</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;wind_dir&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span>
+                <span class="n">wind_dir_data</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;long_name&quot;</span><span class="p">:</span> <span class="s2">&quot;wind direction&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;degrees&quot;</span><span class="p">},</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;tower_lat&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;tower&quot;</span><span class="p">],</span>
+                <span class="n">tower_lats</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;long_name&quot;</span><span class="p">:</span> <span class="s2">&quot;tower latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;degrees_north&quot;</span><span class="p">},</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;tower_lon&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;tower&quot;</span><span class="p">],</span>
+                <span class="n">tower_lons</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;long_name&quot;</span><span class="p">:</span> <span class="s2">&quot;tower longitude&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;degrees_east&quot;</span><span class="p">},</span>
+            <span class="p">),</span>
+            <span class="s2">&quot;tower_z&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="p">[</span><span class="s2">&quot;tower&quot;</span><span class="p">],</span>
+                <span class="n">tower_z</span><span class="p">,</span>
+                <span class="p">{</span><span class="s2">&quot;long_name&quot;</span><span class="p">:</span> <span class="s2">&quot;measurement height&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">},</span>
+            <span class="p">),</span>
+        <span class="p">},</span>
+        <span class="n">coords</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;long_name&quot;</span><span class="p">:</span> <span class="s2">&quot;easting&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">}),</span>
+            <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;long_name&quot;</span><span class="p">:</span> <span class="s2">&quot;northing&quot;</span><span class="p">,</span> <span class="s2">&quot;units&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">}),</span>
+            <span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">timestamps</span><span class="p">),</span>
+            <span class="s2">&quot;tower&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;tower&quot;</span><span class="p">,</span> <span class="n">tower_names</span><span class="p">),</span>
+        <span class="p">},</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;Conventions&quot;</span><span class="p">:</span> <span class="s2">&quot;CF-1.8&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;BLDFM footprint output&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="s2">&quot;BLDFM v1.0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;closure&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">closure</span><span class="p">,</span>
+            <span class="s2">&quot;domain_xmax&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">xmax</span><span class="p">,</span>
+            <span class="s2">&quot;domain_ymax&quot;</span><span class="p">:</span> <span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">ymax</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">encoding</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;footprint&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;zlib&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;complevel&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+        <span class="s2">&quot;concentration&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;zlib&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;complevel&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">},</span>
+    <span class="p">}</span>
+
+    <span class="n">ds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Saved footprints to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="load_footprints_from_netcdf">
+<a class="viewcode-back" href="../../src.html#bldfm.io.load_footprints_from_netcdf">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_footprints_from_netcdf</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load footprint results from a NetCDF file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filepath : str or Path</span>
+<span class="sd">        Path to the NetCDF file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xr.Dataset</span>
+<span class="sd">        Dataset with footprint, concentration, and metadata.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;NetCDF file not found: </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+        <span class="s2">&quot;Loaded footprints: </span><span class="si">%d</span><span class="s2"> times x </span><span class="si">%d</span><span class="s2"> towers&quot;</span><span class="p">,</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;tower&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">ds</span></div>
+
+</pre></div>
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

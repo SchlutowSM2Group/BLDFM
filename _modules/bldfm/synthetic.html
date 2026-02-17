@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bldfm.synthetic &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=56c4699f" />
+    <script src="../../_static/documentation_options.js?v=8313637b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Quick reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bldfm.synthetic</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Synthetic data generators for testing and demonstration.</span>
+
+<span class="sd">Provides functions to generate realistic-looking meteorological timeseries</span>
+<span class="sd">and tower grid configurations without requiring real observational data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+
+<div class="viewcode-block" id="generate_synthetic_timeseries">
+<a class="viewcode-back" href="../../src.html#bldfm.synthetic.generate_synthetic_timeseries">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_synthetic_timeseries</span><span class="p">(</span>
+    <span class="n">n_timesteps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">48</span><span class="p">,</span>
+    <span class="n">dt_minutes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
+    <span class="n">start_time</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;2024-01-01T00:00&quot;</span><span class="p">,</span>
+    <span class="n">ustar_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span>
+    <span class="n">mol_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">500.0</span><span class="p">,</span> <span class="mf">500.0</span><span class="p">),</span>
+    <span class="n">wind_speed_range</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">),</span>
+    <span class="n">wind_dir_mean</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">270.0</span><span class="p">,</span>
+    <span class="n">wind_dir_std</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a synthetic meteorological timeseries with diurnal cycle.</span>
+
+<span class="sd">    Produces ustar, Monin-Obukhov length, wind speed, and wind direction</span>
+<span class="sd">    arrays that follow a realistic diurnal pattern (unstable daytime,</span>
+<span class="sd">    stable nighttime) with added noise.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_timesteps : int</span>
+<span class="sd">        Number of time steps to generate.</span>
+<span class="sd">    dt_minutes : int</span>
+<span class="sd">        Time step interval in minutes.</span>
+<span class="sd">    start_time : str</span>
+<span class="sd">        ISO-format start time string.</span>
+<span class="sd">    ustar_range : tuple of float</span>
+<span class="sd">        (min, max) friction velocity [m/s].</span>
+<span class="sd">    mol_range : tuple of float</span>
+<span class="sd">        (min_negative, max_positive) Monin-Obukhov length [m].</span>
+<span class="sd">        Negative = unstable, positive = stable.</span>
+<span class="sd">    wind_speed_range : tuple of float</span>
+<span class="sd">        (min, max) wind speed [m/s].</span>
+<span class="sd">    wind_dir_mean : float</span>
+<span class="sd">        Mean wind direction [degrees].</span>
+<span class="sd">    wind_dir_std : float</span>
+<span class="sd">        Standard deviation of wind direction [degrees].</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">        Random seed for reproducibility.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    dict</span>
+<span class="sd">        Dictionary with keys matching MetConfig schema:</span>
+<span class="sd">        ustar, mol, wind_speed, wind_dir, timestamps (all lists).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="c1"># Time array (hours from start)</span>
+    <span class="n">t_hours</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_timesteps</span><span class="p">)</span> <span class="o">*</span> <span class="n">dt_minutes</span> <span class="o">/</span> <span class="mf">60.0</span>
+
+    <span class="c1"># Diurnal phase: 0 at midnight, pi at noon</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">t_hours</span> <span class="o">%</span> <span class="mf">24.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">24.0</span>
+
+    <span class="c1"># ustar: peaks during daytime (convective mixing)</span>
+    <span class="n">ustar_min</span><span class="p">,</span> <span class="n">ustar_max</span> <span class="o">=</span> <span class="n">ustar_range</span>
+    <span class="n">ustar_mean</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">ustar_min</span> <span class="o">+</span> <span class="n">ustar_max</span><span class="p">)</span>
+    <span class="n">ustar_amp</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">ustar_max</span> <span class="o">-</span> <span class="n">ustar_min</span><span class="p">)</span>
+    <span class="n">ustar</span> <span class="o">=</span> <span class="n">ustar_mean</span> <span class="o">+</span> <span class="n">ustar_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">ustar</span> <span class="o">+=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">ustar_amp</span><span class="p">,</span> <span class="n">n_timesteps</span><span class="p">)</span>
+    <span class="n">ustar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">ustar</span><span class="p">,</span> <span class="n">ustar_min</span><span class="p">,</span> <span class="n">ustar_max</span><span class="p">)</span>
+
+    <span class="c1"># Monin-Obukhov length: negative (unstable) during day, positive (stable) at night</span>
+    <span class="n">mol_neg</span><span class="p">,</span> <span class="n">mol_pos</span> <span class="o">=</span> <span class="n">mol_range</span>
+    <span class="c1"># Daytime: unstable (negative L, small magnitude = strong instability at noon)</span>
+    <span class="c1"># Nighttime: stable (positive L, small magnitude = strong stability at midnight)</span>
+    <span class="n">mol_magnitude</span> <span class="o">=</span> <span class="mf">50.0</span> <span class="o">+</span> <span class="mf">450.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phase</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">mol_sign</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">mol</span> <span class="o">=</span> <span class="n">mol_sign</span> <span class="o">*</span> <span class="n">mol_magnitude</span>
+    <span class="n">mol</span> <span class="o">+=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">,</span> <span class="n">n_timesteps</span><span class="p">)</span>
+    <span class="n">mol</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span> <span class="n">mol_neg</span><span class="p">,</span> <span class="n">mol_pos</span><span class="p">)</span>
+
+    <span class="c1"># Wind speed: slightly higher during daytime</span>
+    <span class="n">ws_min</span><span class="p">,</span> <span class="n">ws_max</span> <span class="o">=</span> <span class="n">wind_speed_range</span>
+    <span class="n">ws_mean</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">ws_min</span> <span class="o">+</span> <span class="n">ws_max</span><span class="p">)</span>
+    <span class="n">ws_amp</span> <span class="o">=</span> <span class="mf">0.3</span> <span class="o">*</span> <span class="p">(</span><span class="n">ws_max</span> <span class="o">-</span> <span class="n">ws_min</span><span class="p">)</span>
+    <span class="n">wind_speed</span> <span class="o">=</span> <span class="n">ws_mean</span> <span class="o">+</span> <span class="n">ws_amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">wind_speed</span> <span class="o">+=</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">n_timesteps</span><span class="p">)</span>
+    <span class="n">wind_speed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">wind_speed</span><span class="p">,</span> <span class="n">ws_min</span><span class="p">,</span> <span class="n">ws_max</span><span class="p">)</span>
+
+    <span class="c1"># Wind direction: random walk around mean</span>
+    <span class="n">wind_dir</span> <span class="o">=</span> <span class="n">wind_dir_mean</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">wind_dir_std</span><span class="p">,</span> <span class="n">n_timesteps</span><span class="p">)</span>
+    <span class="n">wind_dir</span> <span class="o">=</span> <span class="n">wind_dir</span> <span class="o">%</span> <span class="mf">360.0</span>
+
+    <span class="c1"># Generate timestamps</span>
+    <span class="n">timestamps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">start_time</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_timesteps</span><span class="p">):</span>
+        <span class="n">timestamps</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">t0</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="n">i</span> <span class="o">*</span> <span class="n">dt_minutes</span><span class="p">))</span><span class="o">.</span><span class="n">isoformat</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;ustar&quot;</span><span class="p">:</span> <span class="n">ustar</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">&quot;mol&quot;</span><span class="p">:</span> <span class="n">mol</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">&quot;wind_speed&quot;</span><span class="p">:</span> <span class="n">wind_speed</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">&quot;wind_dir&quot;</span><span class="p">:</span> <span class="n">wind_dir</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span>
+        <span class="s2">&quot;timestamps&quot;</span><span class="p">:</span> <span class="n">timestamps</span><span class="p">,</span>
+    <span class="p">}</span></div>
+
+
+
+<div class="viewcode-block" id="generate_towers_grid">
+<a class="viewcode-back" href="../../src.html#bldfm.synthetic.generate_towers_grid">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_towers_grid</span><span class="p">(</span>
+    <span class="n">n_towers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="n">center_lat</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">50.9500</span><span class="p">,</span>
+    <span class="n">center_lon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">11.5860</span><span class="p">,</span>
+    <span class="n">spacing_m</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">500.0</span><span class="p">,</span>
+    <span class="n">z_m</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">layout</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;grid&quot;</span><span class="p">,</span>
+    <span class="n">seed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate tower configurations in various spatial layouts.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_towers : int</span>
+<span class="sd">        Number of towers to generate.</span>
+<span class="sd">    center_lat, center_lon : float</span>
+<span class="sd">        Center point of the tower array [decimal degrees].</span>
+<span class="sd">    spacing_m : float</span>
+<span class="sd">        Approximate spacing between towers [meters].</span>
+<span class="sd">    z_m : float</span>
+<span class="sd">        Measurement height [meters] (same for all towers).</span>
+<span class="sd">    layout : str</span>
+<span class="sd">        Spatial layout: &quot;grid&quot;, &quot;random&quot;, or &quot;transect&quot;.</span>
+<span class="sd">    seed : int, optional</span>
+<span class="sd">        Random seed for reproducibility (used by &quot;random&quot; layout).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of dict</span>
+<span class="sd">        Tower configurations matching TowerConfig schema.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="c1"># Approximate degrees per meter at center latitude</span>
+    <span class="n">deg_per_m_lat</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">111_320.0</span>
+    <span class="n">deg_per_m_lon</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">111_320.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">center_lat</span><span class="p">)))</span>
+
+    <span class="k">if</span> <span class="n">layout</span> <span class="o">==</span> <span class="s2">&quot;grid&quot;</span><span class="p">:</span>
+        <span class="n">side</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_towers</span><span class="p">)))</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">side</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">side</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">offsets</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">n_towers</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">dx</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="o">-</span> <span class="p">(</span><span class="n">side</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">spacing_m</span>
+                <span class="n">dy</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="p">(</span><span class="n">side</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">spacing_m</span>
+                <span class="n">offsets</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">layout</span> <span class="o">==</span> <span class="s2">&quot;transect&quot;</span><span class="p">:</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="p">[((</span><span class="n">i</span> <span class="o">-</span> <span class="p">(</span><span class="n">n_towers</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">spacing_m</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_towers</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="n">layout</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
+        <span class="n">extent</span> <span class="o">=</span> <span class="n">spacing_m</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_towers</span><span class="p">)</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">extent</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">extent</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="n">extent</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">extent</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_towers</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unknown layout: </span><span class="si">{</span><span class="n">layout</span><span class="si">}</span><span class="s2">. Use &#39;grid&#39;, &#39;transect&#39;, or &#39;random&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">towers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">offsets</span><span class="p">):</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">center_lat</span> <span class="o">+</span> <span class="n">dy</span> <span class="o">*</span> <span class="n">deg_per_m_lat</span>
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">center_lon</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">deg_per_m_lon</span>
+        <span class="n">towers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;tower_</span><span class="si">{</span><span class="nb">chr</span><span class="p">(</span><span class="mi">65</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">26</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;tower_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+                <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span>
+                <span class="s2">&quot;z_m&quot;</span><span class="p">:</span> <span class="n">z_m</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">towers</span></div>
+
+</pre></div>
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

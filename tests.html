@@ -5,17 +5,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>The tests subpackage &#8212; BLDFM 0.9.0 documentation</title>
+    <title>The tests subpackage &#8212; BLDFM 1.0.0-dev documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=89e598d8" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=56c4699f" />
-    <script src="_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="_static/documentation_options.js?v=8313637b"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Acknowledgments" href="acknowledgments.html" />
-    <link rel="prev" title="The runs subpackage" href="runs.html" />
+    <link rel="prev" title="Example scripts and workflows" href="runs.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -48,16 +48,20 @@
 
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Quick reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Package overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="src.html">API reference</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="runs.html">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="runs.html">Example scripts and workflows</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#unit-tests">Unit tests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#integration-tests">Integration tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unit-tests-unit">Unit tests (<code class="docutils literal notranslate"><span class="pre">unit</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-tests-integration">Integration tests (<code class="docutils literal notranslate"><span class="pre">integration</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parallel-tests-parallel">Parallel tests (<code class="docutils literal notranslate"><span class="pre">parallel</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plotting-tests-plotting">Plotting tests (<code class="docutils literal notranslate"><span class="pre">plotting</span></code>)</a></li>
 </ul>
 </li>
 </ul>
@@ -71,7 +75,7 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="runs.html" title="previous chapter">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a></li>
+      <li>Previous: <a href="runs.html" title="previous chapter">Example scripts and workflows</a></li>
       <li>Next: <a href="acknowledgments.html" title="next chapter">Acknowledgments</a></li>
   </ul></li>
 </ul>
@@ -104,7 +108,7 @@
     <ul>
         <li>
           &larr;
-          <a href="runs.html" title="Previous document">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a>
+          <a href="runs.html" title="Previous document">Example scripts and workflows</a>
         </li>
         <li>
           <a href="acknowledgments.html" title="Next document">Acknowledgments</a>
@@ -119,13 +123,20 @@
             
   <section id="the-tests-subpackage">
 <span id="tests"></span><h1>The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage<a class="headerlink" href="#the-tests-subpackage" title="Link to this heading">¶</a></h1>
-<p>All tests in this subpackage can be run using the command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># BLDFM root directory</span>
-$<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span>tests
+<p>All tests can be run with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span>tests/
 </pre></div>
 </div>
-<section id="unit-tests">
-<h2>Unit tests<a class="headerlink" href="#unit-tests" title="Link to this heading">¶</a></h2>
+<p>Tests are organised into four categories using pytest marks.  Each category
+runs as a separate CI job:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span>-m<span class="w"> </span>unit<span class="w"> </span>tests/<span class="w">          </span><span class="c1"># fast, no solver</span>
+$<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span>-m<span class="w"> </span>integration<span class="w"> </span>tests/<span class="w">   </span><span class="c1"># solver-dependent</span>
+$<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span>-m<span class="w"> </span>parallel<span class="w"> </span>tests/<span class="w">      </span><span class="c1"># multiprocessing</span>
+$<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span>-m<span class="w"> </span>plotting<span class="w"> </span>tests/<span class="w">      </span><span class="c1"># matplotlib / plotly</span>
+</pre></div>
+</div>
+<section id="unit-tests-unit">
+<h2>Unit tests (<code class="docutils literal notranslate"><span class="pre">unit</span></code>)<a class="headerlink" href="#unit-tests-unit" title="Link to this heading">¶</a></h2>
 <section id="module-tests.test_pbl_model">
 <span id="tests-test-pbl-model-module"></span><h3>tests.test_pbl_model module<a class="headerlink" href="#module-tests.test_pbl_model" title="Link to this heading">¶</a></h3>
 <p>This module contains unit tests for the <code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.vertical_profiles()</span></code> function in the <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code> module. The tests validate the behavior of the function under different closure schemes, including:</p>
@@ -157,45 +168,222 @@ $<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span
 </dd></dl>
 
 </section>
-<section id="module-tests.test_solver">
-<span id="tests-test-solver-module"></span><h3>tests.test_solver module<a class="headerlink" href="#module-tests.test_solver" title="Link to this heading">¶</a></h3>
-<p>This module contains unit tests for the <code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code> function from the <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code> module. It validates the numerical solver against the analytical solution for the steady-state advection-diffusion equation.</p>
-<p>The tests ensure that the numerical solution matches the analytical solution within a specified tolerance and that the outputs have the correct shapes and types.</p>
-<section id="functions">
-<h4>Functions:<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h4>
-<ul class="simple">
-<li><p>test_steady_state_transport_solver: Tests the solver against an analytical solution.</p></li>
-</ul>
-</section>
+<section id="module-tests.test_config">
+<span id="tests-test-config-module"></span><h3>tests.test_config module<a class="headerlink" href="#module-tests.test_config" title="Link to this heading">¶</a></h3>
+<p>Tests for config_parser module.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="tests.test_solver.test_steady_state_transport_solver">
-<span class="sig-prename descclassname"><span class="pre">tests.test_solver.</span></span><span class="sig-name descname"><span class="pre">test_steady_state_transport_solver</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_solver.html#test_steady_state_transport_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_solver.test_steady_state_transport_solver" title="Link to this definition">¶</a></dt>
-<dd><p>Tests the <code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code> function against an analytical solution for the steady-state advection-diffusion equation with a point source at the center of the domain.</p>
-<dl class="simple">
-<dt>The test validates:</dt><dd><ul class="simple">
-<li><p>The shape and type of the solver’s outputs.</p></li>
-<li><p>The numerical accuracy of the solver by comparing its results to the analytical solution within a specified tolerance.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="field-list simple">
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AssertionError" title="(in Python v3.14)"><strong>AssertionError</strong></a> – If any of the output shapes, types, or numerical accuracy checks fail.</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="tests.test_config.test_domain_output_levels">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_domain_output_levels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_domain_output_levels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_domain_output_levels" title="Link to this definition">¶</a></dt>
+<dd><p>Test that output_levels in domain config round-trips correctly.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_domain_output_levels_default">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_domain_output_levels_default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_domain_output_levels_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_domain_output_levels_default" title="Link to this definition">¶</a></dt>
+<dd><p>Test that output_levels defaults to None when not specified.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_latlon_to_xy">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_latlon_to_xy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_latlon_to_xy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_latlon_to_xy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_load_config_file_not_found">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_load_config_file_not_found</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_load_config_file_not_found"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_load_config_file_not_found" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_load_config_from_yaml">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_load_config_from_yaml</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_load_config_from_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_load_config_from_yaml" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_met_config_get_step_scalar">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_met_config_get_step_scalar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_met_config_get_step_scalar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_met_config_get_step_scalar" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_met_config_get_step_timeseries">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_met_config_get_step_timeseries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_met_config_get_step_timeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_met_config_get_step_timeseries" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_met_config_mixed_lengths_raises">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_met_config_mixed_lengths_raises</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_met_config_mixed_lengths_raises"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_met_config_mixed_lengths_raises" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_met_config_scalar">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_met_config_scalar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_met_config_scalar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_met_config_scalar" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_met_config_timeseries">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_met_config_timeseries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_met_config_timeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_met_config_timeseries" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_met_z0">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_met_z0</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_met_z0"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_met_z0" title="Link to this definition">¶</a></dt>
+<dd><p>Test that z0 in met config appears in get_step() result.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_met_z0_default">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_met_z0_default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_met_z0_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_met_z0_default" title="Link to this definition">¶</a></dt>
+<dd><p>Test that z0 is not in get_step() when not set.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_parse_config_missing_domain">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_parse_config_missing_domain</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_parse_config_missing_domain"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_parse_config_missing_domain" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_parse_config_missing_towers">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_parse_config_missing_towers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_parse_config_missing_towers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_parse_config_missing_towers" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_parse_minimal_config">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_parse_minimal_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_parse_minimal_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_parse_minimal_config" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_solver_analytic">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_solver_analytic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_solver_analytic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_solver_analytic" title="Link to this definition">¶</a></dt>
+<dd><p>Test that analytic field in solver config round-trips correctly.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_solver_defaults_new_fields">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_solver_defaults_new_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_solver_defaults_new_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_solver_defaults_new_fields" title="Link to this definition">¶</a></dt>
+<dd><p>Test that new solver fields default correctly when not specified.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_solver_src_loc">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_solver_src_loc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_solver_src_loc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_solver_src_loc" title="Link to this definition">¶</a></dt>
+<dd><p>Test that src_loc in solver config is converted to tuple.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_tower_compute_local_xy">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_tower_compute_local_xy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_tower_compute_local_xy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_tower_compute_local_xy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-tests.test_synthetic">
+<span id="tests-test-synthetic-module"></span><h3>tests.test_synthetic module<a class="headerlink" href="#module-tests.test_synthetic" title="Link to this heading">¶</a></h3>
+<p>Tests for synthetic data generators.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_synthetic.TestSyntheticTimeseries">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_synthetic.</span></span><span class="sig-name descname"><span class="pre">TestSyntheticTimeseries</span></span><a class="reference internal" href="_modules/tests/test_synthetic.html#TestSyntheticTimeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_synthetic.TestSyntheticTimeseries" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_synthetic.TestSyntheticTimeseries.test_compatible_with_met_config">
+<span class="sig-name descname"><span class="pre">test_compatible_with_met_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_synthetic.html#TestSyntheticTimeseries.test_compatible_with_met_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_synthetic.TestSyntheticTimeseries.test_compatible_with_met_config" title="Link to this definition">¶</a></dt>
+<dd><p>Output dict should be valid input to MetConfig.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_synthetic.TestSyntheticTimeseries.test_reproducibility">
+<span class="sig-name descname"><span class="pre">test_reproducibility</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_synthetic.html#TestSyntheticTimeseries.test_reproducibility"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_synthetic.TestSyntheticTimeseries.test_reproducibility" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_synthetic.TestSyntheticTimeseries.test_timestamps_format">
+<span class="sig-name descname"><span class="pre">test_timestamps_format</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_synthetic.html#TestSyntheticTimeseries.test_timestamps_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_synthetic.TestSyntheticTimeseries.test_timestamps_format" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_synthetic.TestSyntheticTimeseries.test_value_ranges">
+<span class="sig-name descname"><span class="pre">test_value_ranges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_synthetic.html#TestSyntheticTimeseries.test_value_ranges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_synthetic.TestSyntheticTimeseries.test_value_ranges" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_synthetic.TestTowersGrid">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_synthetic.</span></span><span class="sig-name descname"><span class="pre">TestTowersGrid</span></span><a class="reference internal" href="_modules/tests/test_synthetic.html#TestTowersGrid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_synthetic.TestTowersGrid" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_synthetic.TestTowersGrid.test_compatible_with_tower_config">
+<span class="sig-name descname"><span class="pre">test_compatible_with_tower_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_synthetic.html#TestTowersGrid.test_compatible_with_tower_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_synthetic.TestTowersGrid.test_compatible_with_tower_config" title="Link to this definition">¶</a></dt>
+<dd><p>Output dicts should be valid input to TowerConfig.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_synthetic.TestTowersGrid.test_invalid_layout_raises">
+<span class="sig-name descname"><span class="pre">test_invalid_layout_raises</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_synthetic.html#TestTowersGrid.test_invalid_layout_raises"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_synthetic.TestTowersGrid.test_invalid_layout_raises" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_synthetic.TestTowersGrid.test_reproducibility">
+<span class="sig-name descname"><span class="pre">test_reproducibility</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_synthetic.html#TestTowersGrid.test_reproducibility"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_synthetic.TestTowersGrid.test_reproducibility" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_synthetic.TestTowersGrid.test_tower_output_structure">
+<span class="sig-name descname"><span class="pre">test_tower_output_structure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_synthetic.html#TestTowersGrid.test_tower_output_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_synthetic.TestTowersGrid.test_tower_output_structure" title="Link to this definition">¶</a></dt>
+<dd><p>Test tower count, dict keys, and name uniqueness.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
+<section id="module-tests.test_cache">
+<span id="tests-test-cache-module"></span><h3>tests.test_cache module<a class="headerlink" href="#module-tests.test_cache" title="Link to this heading">¶</a></h3>
+<p>Tests for Green’s function caching.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_cache.cache">
+<span class="sig-prename descclassname"><span class="pre">tests.test_cache.</span></span><span class="sig-name descname"><span class="pre">cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tmp_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_cache.html#cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_cache.cache" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_cache.solver_inputs">
+<span class="sig-prename descclassname"><span class="pre">tests.test_cache.</span></span><span class="sig-name descname"><span class="pre">solver_inputs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_cache.html#solver_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_cache.solver_inputs" title="Link to this definition">¶</a></dt>
+<dd><p>Minimal inputs matching what the cache hashes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_cache.test_cache_clear">
+<span class="sig-prename descclassname"><span class="pre">tests.test_cache.</span></span><span class="sig-name descname"><span class="pre">test_cache_clear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_cache.html#test_cache_clear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_cache.test_cache_clear" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_cache.test_cache_different_inputs_miss">
+<span class="sig-prename descclassname"><span class="pre">tests.test_cache.</span></span><span class="sig-name descname"><span class="pre">test_cache_different_inputs_miss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_cache.html#test_cache_different_inputs_miss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_cache.test_cache_different_inputs_miss" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_cache.test_cache_integration">
+<span class="sig-prename descclassname"><span class="pre">tests.test_cache.</span></span><span class="sig-name descname"><span class="pre">test_cache_integration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_cache.html#test_cache_integration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_cache.test_cache_integration" title="Link to this definition">¶</a></dt>
+<dd><p>Test caching through the full solver with footprint=True.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_cache.test_cache_miss">
+<span class="sig-prename descclassname"><span class="pre">tests.test_cache.</span></span><span class="sig-name descname"><span class="pre">test_cache_miss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_cache.html#test_cache_miss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_cache.test_cache_miss" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_cache.test_cache_put_and_hit">
+<span class="sig-prename descclassname"><span class="pre">tests.test_cache.</span></span><span class="sig-name descname"><span class="pre">test_cache_put_and_hit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_inputs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_cache.html#test_cache_put_and_hit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_cache.test_cache_put_and_hit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
-<section id="integration-tests">
-<h2>Integration tests<a class="headerlink" href="#integration-tests" title="Link to this heading">¶</a></h2>
+</section>
+<section id="integration-tests-integration">
+<h2>Integration tests (<code class="docutils literal notranslate"><span class="pre">integration</span></code>)<a class="headerlink" href="#integration-tests-integration" title="Link to this heading">¶</a></h2>
 <section id="module-tests.test_integration">
 <span id="tests-test-integration-module"></span><h3>tests.test_integration module<a class="headerlink" href="#module-tests.test_integration" title="Link to this heading">¶</a></h3>
 <p>This module contains an integration test for the interaction between the <cite>pbl_model</cite>, <cite>utils</cite>, and <cite>solver</cite> components.</p>
 <p>The test validates the combined behavior of these components by comparing the numerical and analytical solutions for the steady-state advection-diffusion equation.
 Currently, this test is similar to combining the <cite>pbl_model</cite> and <cite>solver</cite> tests, but it is designed to serve as a foundation for future extensions.</p>
-<section id="id1">
-<h4>Functions:<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
+<section id="functions">
+<h4>Functions:<a class="headerlink" href="#functions" title="Link to this heading">¶</a></h4>
 <ul class="simple">
 <li><p>test_integration: Tests the combined behavior of the <cite>pbl_model</cite>, <cite>utils</cite>, and <cite>solver</cite> components.</p></li>
 </ul>
@@ -219,6 +407,274 @@ Currently, this test is similar to combining the <cite>pbl_model</cite> and <cit
 </dd></dl>
 
 </section>
+<section id="module-tests.test_interface">
+<span id="tests-test-interface-module"></span><h3>tests.test_interface module<a class="headerlink" href="#module-tests.test_interface" title="Link to this heading">¶</a></h3>
+<p>Tests for the high-level interface module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_interface.test_multitower_structure">
+<span class="sig-prename descclassname"><span class="pre">tests.test_interface.</span></span><span class="sig-name descname"><span class="pre">test_multitower_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitower_results_session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeseries_config_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_interface.html#test_multitower_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_interface.test_multitower_structure" title="Link to this definition">¶</a></dt>
+<dd><p>Test multitower output: dict keyed by tower names, all timesteps, different footprints.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_interface.test_single_run_structure">
+<span class="sig-prename descclassname"><span class="pre">tests.test_interface.</span></span><span class="sig-name descname"><span class="pre">test_single_run_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">single_run_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simple_config_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_interface.html#test_single_run_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_interface.test_single_run_structure" title="Link to this definition">¶</a></dt>
+<dd><p>Test output structure, shapes, types, and metadata from a single run.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_interface.test_single_run_with_synthetic_data">
+<span class="sig-prename descclassname"><span class="pre">tests.test_interface.</span></span><span class="sig-name descname"><span class="pre">test_single_run_with_synthetic_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_interface.html#test_single_run_with_synthetic_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_interface.test_single_run_with_synthetic_data" title="Link to this definition">¶</a></dt>
+<dd><p>Integration test: synthetic data -&gt; config -&gt; run.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_interface.test_timeseries_aggregated_footprint">
+<span class="sig-prename descclassname"><span class="pre">tests.test_interface.</span></span><span class="sig-name descname"><span class="pre">test_timeseries_aggregated_footprint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeseries_results_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_interface.html#test_timeseries_aggregated_footprint"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_interface.test_timeseries_aggregated_footprint" title="Link to this definition">¶</a></dt>
+<dd><p>Test aggregated mean footprint with 50% and 70% flux contribution contours.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_interface.test_timeseries_footprints_evolve">
+<span class="sig-prename descclassname"><span class="pre">tests.test_interface.</span></span><span class="sig-name descname"><span class="pre">test_timeseries_footprints_evolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeseries_results_session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeseries_config_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_interface.html#test_timeseries_footprints_evolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_interface.test_timeseries_footprints_evolve" title="Link to this definition">¶</a></dt>
+<dd><p>Test that changing met conditions produce different footprints at each timestep.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_interface.test_timeseries_met_params_vary">
+<span class="sig-prename descclassname"><span class="pre">tests.test_interface.</span></span><span class="sig-name descname"><span class="pre">test_timeseries_met_params_vary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeseries_results_session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeseries_config_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_interface.html#test_timeseries_met_params_vary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_interface.test_timeseries_met_params_vary" title="Link to this definition">¶</a></dt>
+<dd><p>Test that time-varying ustar, mol, wind_dir, wind_speed propagate to each result.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_interface.test_timeseries_structure">
+<span class="sig-prename descclassname"><span class="pre">tests.test_interface.</span></span><span class="sig-name descname"><span class="pre">test_timeseries_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeseries_results_session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeseries_config_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_interface.html#test_timeseries_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_interface.test_timeseries_structure" title="Link to this definition">¶</a></dt>
+<dd><p>Test timeseries output: list structure, keys, unique timestamps, finite values.</p>
+</dd></dl>
+
+</section>
+<section id="module-tests.test_io">
+<span id="tests-test-io-module"></span><h3>tests.test_io module<a class="headerlink" href="#module-tests.test_io" title="Link to this heading">¶</a></h3>
+<p>Tests for NetCDF I/O.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_io.test_load_nonexistent_raises">
+<span class="sig-prename descclassname"><span class="pre">tests.test_io.</span></span><span class="sig-name descname"><span class="pre">test_load_nonexistent_raises</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_io.html#test_load_nonexistent_raises"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_io.test_load_nonexistent_raises" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_io.test_netcdf_global_attrs">
+<span class="sig-prename descclassname"><span class="pre">tests.test_io.</span></span><span class="sig-name descname"><span class="pre">test_netcdf_global_attrs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitower_results_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_io.html#test_netcdf_global_attrs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_io.test_netcdf_global_attrs" title="Link to this definition">¶</a></dt>
+<dd><p>Test that global attributes capture domain and solver config.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_io.test_netcdf_met_values_match">
+<span class="sig-prename descclassname"><span class="pre">tests.test_io.</span></span><span class="sig-name descname"><span class="pre">test_netcdf_met_values_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitower_results_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_io.html#test_netcdf_met_values_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_io.test_netcdf_met_values_match" title="Link to this definition">¶</a></dt>
+<dd><p>Test that saved met values match the original result params exactly.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_io.test_netcdf_metadata">
+<span class="sig-prename descclassname"><span class="pre">tests.test_io.</span></span><span class="sig-name descname"><span class="pre">test_netcdf_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitower_results_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_io.html#test_netcdf_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_io.test_netcdf_metadata" title="Link to this definition">¶</a></dt>
+<dd><p>Test CF attributes, met variables, and tower metadata.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_io.test_netcdf_multitower_select_by_name">
+<span class="sig-prename descclassname"><span class="pre">tests.test_io.</span></span><span class="sig-name descname"><span class="pre">test_netcdf_multitower_select_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitower_results_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_io.html#test_netcdf_multitower_select_by_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_io.test_netcdf_multitower_select_by_name" title="Link to this definition">¶</a></dt>
+<dd><p>Test that individual tower data can be selected by name and matches.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_io.test_netcdf_roundtrip_and_values">
+<span class="sig-prename descclassname"><span class="pre">tests.test_io.</span></span><span class="sig-name descname"><span class="pre">test_netcdf_roundtrip_and_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitower_results_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_io.html#test_netcdf_roundtrip_and_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_io.test_netcdf_roundtrip_and_values" title="Link to this definition">¶</a></dt>
+<dd><p>Test save/load roundtrip and verify values match original.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_io.test_netcdf_single_tower_timeseries">
+<span class="sig-prename descclassname"><span class="pre">tests.test_io.</span></span><span class="sig-name descname"><span class="pre">test_netcdf_single_tower_timeseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeseries_results_session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeseries_config_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_io.html#test_netcdf_single_tower_timeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_io.test_netcdf_single_tower_timeseries" title="Link to this definition">¶</a></dt>
+<dd><p>Test save/load roundtrip for a single tower timeseries.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_io.test_netcdf_timeseries_timestamps">
+<span class="sig-prename descclassname"><span class="pre">tests.test_io.</span></span><span class="sig-name descname"><span class="pre">test_netcdf_timeseries_timestamps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitower_results_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_io.html#test_netcdf_timeseries_timestamps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_io.test_netcdf_timeseries_timestamps" title="Link to this definition">¶</a></dt>
+<dd><p>Test that timestamps are stored correctly and data varies across time.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_io.test_netcdf_tower_metadata_match">
+<span class="sig-prename descclassname"><span class="pre">tests.test_io.</span></span><span class="sig-name descname"><span class="pre">test_netcdf_tower_metadata_match</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitower_results_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_io.html#test_netcdf_tower_metadata_match"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_io.test_netcdf_tower_metadata_match" title="Link to this definition">¶</a></dt>
+<dd><p>Test that tower lat/lon/z and names match config exactly.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="parallel-tests-parallel">
+<h2>Parallel tests (<code class="docutils literal notranslate"><span class="pre">parallel</span></code>)<a class="headerlink" href="#parallel-tests-parallel" title="Link to this heading">¶</a></h2>
+<section id="module-tests.test_parallel">
+<span id="tests-test-parallel-module"></span><h3>tests.test_parallel module<a class="headerlink" href="#module-tests.test_parallel" title="Link to this heading">¶</a></h3>
+<p>Tests for parallel execution.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_parallel.parallel_config">
+<span class="sig-prename descclassname"><span class="pre">tests.test_parallel.</span></span><span class="sig-name descname"><span class="pre">parallel_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_parallel.html#parallel_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_parallel.parallel_config" title="Link to this definition">¶</a></dt>
+<dd><p>Config with 2 towers x 2 timesteps for parallel tests.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_parallel.test_parallel_invalid_strategy">
+<span class="sig-prename descclassname"><span class="pre">tests.test_parallel.</span></span><span class="sig-name descname"><span class="pre">test_parallel_invalid_strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parallel_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_parallel.html#test_parallel_invalid_strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_parallel.test_parallel_invalid_strategy" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_parallel.test_parallel_matches_serial">
+<span class="sig-prename descclassname"><span class="pre">tests.test_parallel.</span></span><span class="sig-name descname"><span class="pre">test_parallel_matches_serial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parallel_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_parallel.html#test_parallel_matches_serial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_parallel.test_parallel_matches_serial" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_parallel.test_parallel_result_structure">
+<span class="sig-prename descclassname"><span class="pre">tests.test_parallel.</span></span><span class="sig-name descname"><span class="pre">test_parallel_result_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parallel_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_parallel.html#test_parallel_result_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_parallel.test_parallel_result_structure" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_parallel.track_pool">
+<span class="sig-prename descclassname"><span class="pre">tests.test_parallel.</span></span><span class="sig-name descname"><span class="pre">track_pool</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_parallel.html#track_pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_parallel.track_pool" title="Link to this definition">¶</a></dt>
+<dd><p>Patch ProcessPoolExecutor to print diagnostics after each test.</p>
+</dd></dl>
+
+</section>
+</section>
+<section id="plotting-tests-plotting">
+<h2>Plotting tests (<code class="docutils literal notranslate"><span class="pre">plotting</span></code>)<a class="headerlink" href="#plotting-tests-plotting" title="Link to this heading">¶</a></h2>
+<section id="module-tests.test_plotting">
+<span id="tests-test-plotting-module"></span><h3>tests.test_plotting module<a class="headerlink" href="#module-tests.test_plotting" title="Link to this heading">¶</a></h3>
+<p>Tests for the plotting module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_get_source_area_basic">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_get_source_area_basic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_get_source_area_basic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_get_source_area_basic" title="Link to this definition">¶</a></dt>
+<dd><p>Test that get_source_area returns correct shape and value range.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_get_source_area_monotone">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_get_source_area_monotone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_get_source_area_monotone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_get_source_area_monotone" title="Link to this definition">¶</a></dt>
+<dd><p>Test that higher g values map to lower rescaled values.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_percentile_contour_properties">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_percentile_contour_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_percentile_contour_properties"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_percentile_contour_properties" title="Link to this definition">¶</a></dt>
+<dd><p>Test that percentile contours return valid floats with monotonic area.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_convergence">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_convergence</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_convergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_convergence" title="Link to this definition">¶</a></dt>
+<dd><p>Test log-log convergence plot with and without fits.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_field_comparison">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_field_comparison</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_field_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_field_comparison" title="Link to this definition">¶</a></dt>
+<dd><p>Test 2x2 field comparison with synthetic data.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_comparison">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_comparison" title="Link to this definition">¶</a></dt>
+<dd><p>Test multi-panel comparison plot.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_field_variants">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_field_variants</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_field_variants"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_field_variants" title="Link to this definition">¶</a></dt>
+<dd><p>Test footprint field plot: basic, with contours, and on custom axes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_interactive">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_interactive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_interactive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_interactive" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_on_map_happy_path">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_on_map_happy_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_on_map_happy_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_on_map_happy_path" title="Link to this definition">¶</a></dt>
+<dd><p>Test map plot with contextily tiles (requires network + contextily).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_on_map_import_error">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_on_map_import_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_on_map_import_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_on_map_import_error" title="Link to this definition">¶</a></dt>
+<dd><p>Should raise ImportError with helpful message if contextily missing.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_on_map_land_cover_import_error">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_on_map_land_cover_import_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_on_map_land_cover_import_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_on_map_land_cover_import_error" title="Link to this definition">¶</a></dt>
+<dd><p>Should raise ImportError with helpful message if owslib missing.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_on_map_land_cover_mock">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_on_map_land_cover_mock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monkeypatch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_on_map_land_cover_mock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_on_map_land_cover_mock" title="Link to this definition">¶</a></dt>
+<dd><p>Test land cover overlay with mocked WMS response.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_timeseries">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_timeseries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_timeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_timeseries" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_source_area_contours">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_source_area_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_source_area_contours"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_source_area_contours" title="Link to this definition">¶</a></dt>
+<dd><p>Test source area contour plotting returns axes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_source_area_contours_custom_ax">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_source_area_contours_custom_ax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_source_area_contours_custom_ax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_source_area_contours_custom_ax" title="Link to this definition">¶</a></dt>
+<dd><p>Test source area contour plotting on provided axes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_source_area_gallery">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_source_area_gallery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_source_area_gallery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_source_area_gallery" title="Link to this definition">¶</a></dt>
+<dd><p>Test gallery plot creates 2x3 grid with 5 visible panels.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_vertical_profiles">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_vertical_profiles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_vertical_profiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_vertical_profiles" title="Link to this definition">¶</a></dt>
+<dd><p>Test vertical profile plot using real PBL profiles.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_vertical_slice">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_vertical_slice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_vertical_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_vertical_slice" title="Link to this definition">¶</a></dt>
+<dd><p>Test 2D slice from a 3D field for all axes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_wind_rose_happy_path">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_wind_rose_happy_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_wind_rose_happy_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_wind_rose_happy_path" title="Link to this definition">¶</a></dt>
+<dd><p>Test wind rose plot with synthetic data (requires windrose).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_wind_rose_import_error">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_wind_rose_import_error</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_wind_rose_import_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_wind_rose_import_error" title="Link to this definition">¶</a></dt>
+<dd><p>Should raise ImportError with helpful message if windrose missing.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_source_area_base_functions_shapes">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_source_area_base_functions_shapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_source_area_base_functions_shapes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_source_area_base_functions_shapes" title="Link to this definition">¶</a></dt>
+<dd><p>Test that all 5 base function constructors return correct shapes.</p>
+</dd></dl>
+
+</section>
 </section>
 </section>
 
@@ -230,7 +686,7 @@ Currently, this test is similar to combining the <cite>pbl_model</cite> and <cit
     <ul>
         <li>
           &larr;
-          <a href="runs.html" title="Previous document">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a>
+          <a href="runs.html" title="Previous document">Example scripts and workflows</a>
         </li>
         <li>
           <a href="acknowledgments.html" title="Next document">Acknowledgments</a>

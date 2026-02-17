@@ -5,17 +5,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Package overview &#8212; BLDFM 0.9.0 documentation</title>
+    <title>Package overview &#8212; BLDFM 1.0.0-dev documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=89e598d8" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=56c4699f" />
-    <script src="_static/documentation_options.js?v=39bb1c6d"></script>
+    <script src="_static/documentation_options.js?v=8313637b"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="The src subpackage" href="src.html" />
-    <link rel="prev" title="Quickstart guide" href="quickstart.html" />
+    <link rel="next" title="The bldfm package" href="src.html" />
+    <link rel="prev" title="Quick reference" href="reference.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -48,10 +48,14 @@
 
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">Quick reference</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Package overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#core-modules-in-the-src-subpackage">Core modules in the <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#additional-subpackages">Additional subpackages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core-modules">Core modules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-and-interface">Configuration and interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-and-i-o">Data and I/O</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plotting">Plotting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-interactions">Module interactions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api-reference">API reference</a></li>
 </ul>
@@ -60,7 +64,7 @@
 <li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
 </ul>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="runs.html">The <code class="docutils literal notranslate"><span class="pre">runs</span></code> subpackage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="runs.html">Example scripts and workflows</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
 </ul>
 <ul>
@@ -73,8 +77,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="quickstart.html" title="previous chapter">Quickstart guide</a></li>
-      <li>Next: <a href="src.html" title="next chapter">The <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage</a></li>
+      <li>Previous: <a href="reference.html" title="previous chapter">Quick reference</a></li>
+      <li>Next: <a href="src.html" title="next chapter">The <code class="docutils literal notranslate"><span class="pre">bldfm</span></code> package</a></li>
   </ul></li>
 </ul>
 </div>
@@ -106,10 +110,10 @@
     <ul>
         <li>
           &larr;
-          <a href="quickstart.html" title="Previous document">Quickstart guide</a>
+          <a href="reference.html" title="Previous document">Quick reference</a>
         </li>
         <li>
-          <a href="src.html" title="Next document">The <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage</a>
+          <a href="src.html" title="Next document">The <code class="docutils literal notranslate"><span class="pre">bldfm</span></code> package</a>
           &rarr;
         </li>
     </ul>
@@ -121,23 +125,17 @@
             
   <section id="package-overview">
 <h1>Package overview<a class="headerlink" href="#package-overview" title="Link to this heading">¶</a></h1>
-<p>This package provides a modular framework for modeling atmospheric dispersion processes, focusing on the planetary boundary layer (PBL) and scalar transport. It includes three core modules in <cite>src</cite> for computing vertical profiles, solving advection-diffusion equations, and providing utility functions for diagnostics and input generation. Example run scripts and a test suite are also included to demonstrate usage and ensure reliability.</p>
-<section id="core-modules-in-the-src-subpackage">
-<h2>Core modules in the <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage<a class="headerlink" href="#core-modules-in-the-src-subpackage" title="Link to this heading">¶</a></h2>
+<p>BLDFM provides a modular framework for modelling atmospheric dispersion and flux footprints in the planetary boundary layer (PBL). It numerically solves the three-dimensional steady-state advection-diffusion equation and computes Green’s function footprints for flux tower networks.</p>
+<section id="core-modules">
+<h2>Core modules<a class="headerlink" href="#core-modules" title="Link to this heading">¶</a></h2>
 <ol class="arabic">
 <li><dl>
-<dt><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code></dt><dd><p>Computes vertical profiles of horizontal wind and eddy diffusivity in the planetary boundary layer using Monin-Obukhov Similarity Theory (MOST).</p>
+<dt><a class="reference internal" href="src.html#module-bldfm.pbl_model" title="bldfm.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.pbl_model</span></code></a></dt><dd><p>Computes vertical profiles of horizontal wind and eddy diffusivity using Monin-Obukhov Similarity Theory (MOST).</p>
 <dl class="simple">
-<dt><strong>Features:</strong></dt><dd><ul class="simple">
-<li><p>Implements surface-layer closure via stability corrections.</p></li>
-<li><p>Supports parameterizations of <code class="docutils literal notranslate"><span class="pre">u_h(z)</span></code>, <code class="docutils literal notranslate"><span class="pre">K_h(z)</span></code>, and <code class="docutils literal notranslate"><span class="pre">K_z(z)</span></code>.</p></li>
-<li><p>Easy to extend with more sophisticated turbulence closures.</p></li>
-</ul>
-</dd>
 <dt><strong>Key functions:</strong></dt><dd><ul class="simple">
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.vertical_profiles()</span></code></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.psi()</span></code></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.pbl_model.phi()</span></code></p></li>
+<li><p><a class="reference internal" href="src.html#bldfm.pbl_model.vertical_profiles" title="bldfm.pbl_model.vertical_profiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">bldfm.pbl_model.vertical_profiles()</span></code></a></p></li>
+<li><p><a class="reference internal" href="src.html#bldfm.pbl_model.psi" title="bldfm.pbl_model.psi"><code class="xref py py-func docutils literal notranslate"><span class="pre">bldfm.pbl_model.psi()</span></code></a></p></li>
+<li><p><a class="reference internal" href="src.html#bldfm.pbl_model.phi" title="bldfm.pbl_model.phi"><code class="xref py py-func docutils literal notranslate"><span class="pre">bldfm.pbl_model.phi()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -145,17 +143,11 @@
 </dl>
 </li>
 <li><dl>
-<dt><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code></dt><dd><p>Solves the steady-state advection-diffusion equation for scalar concentration fields using FFT-based methods and numerical integration schemes.</p>
+<dt><a class="reference internal" href="src.html#module-bldfm.solver" title="bldfm.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.solver</span></code></a></dt><dd><p>Solves the steady-state advection-diffusion equation using FFT-based methods with linear shooting for the vertical boundary value problem.</p>
 <dl class="simple">
-<dt><strong>Features:</strong></dt><dd><ul class="simple">
-<li><p>Supports Fourier-transformed formulation for horizontal advection-diffusion.</p></li>
-<li><p>Uses linear shooting for boundary value problems in the vertical.</p></li>
-<li><p>Implements Green’s function solver for footprint modeling.</p></li>
-</ul>
-</dd>
 <dt><strong>Key functions:</strong></dt><dd><ul class="simple">
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.steady_state_transport_solver()</span></code></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.solver.ivp_solver()</span></code></p></li>
+<li><p><a class="reference internal" href="src.html#bldfm.solver.steady_state_transport_solver" title="bldfm.solver.steady_state_transport_solver"><code class="xref py py-func docutils literal notranslate"><span class="pre">bldfm.solver.steady_state_transport_solver()</span></code></a></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">bldfm.solver.ivp_solver()</span></code></p></li>
 </ul>
 </dd>
 </dl>
@@ -163,19 +155,12 @@
 </dl>
 </li>
 <li><dl>
-<dt><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code></dt><dd><p>Provides utility functions for preprocessing, synthetic input generation, and diagnostics.</p>
+<dt><a class="reference internal" href="src.html#module-bldfm.utils" title="bldfm.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.utils</span></code></a></dt><dd><p>Utility functions for wind field construction, source generation, and diagnostics.</p>
 <dl class="simple">
-<dt><strong>Features:</strong></dt><dd><ul class="simple">
-<li><p>Source field generation (e.g., circular/point sources).</p></li>
-<li><p>Wind field constructors and FFT utilities.</p></li>
-<li><p>Pointwise convolution for footprint validation.</p></li>
-</ul>
-</dd>
 <dt><strong>Key functions:</strong></dt><dd><ul class="simple">
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.compute_wind_fields()</span></code></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.point_source()</span></code></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.ideal_source()</span></code></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">src.utils.point_measurement()</span></code></p></li>
+<li><p><a class="reference internal" href="src.html#bldfm.utils.compute_wind_fields" title="bldfm.utils.compute_wind_fields"><code class="xref py py-func docutils literal notranslate"><span class="pre">bldfm.utils.compute_wind_fields()</span></code></a></p></li>
+<li><p><a class="reference internal" href="src.html#bldfm.utils.ideal_source" title="bldfm.utils.ideal_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">bldfm.utils.ideal_source()</span></code></a></p></li>
+<li><p><a class="reference internal" href="src.html#bldfm.utils.point_measurement" title="bldfm.utils.point_measurement"><code class="xref py py-func docutils literal notranslate"><span class="pre">bldfm.utils.point_measurement()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -184,27 +169,57 @@
 </li>
 </ol>
 </section>
-<section id="additional-subpackages">
-<h2>Additional subpackages<a class="headerlink" href="#additional-subpackages" title="Link to this heading">¶</a></h2>
-<ol class="arabic">
-<li><p><a class="reference internal" href="runs.html#runs"><span class="std std-ref">runs</span></a>
-provides example workflows and pre-configured scripts to demonstrate the usage of the package. These scripts showcase how to combine the core modules (<code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code>, <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code>, and <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code>) for practical applications, such as footprint modeling or dispersion analysis.</p>
-<dl class="simple">
-<dt><strong>Features:</strong></dt><dd><ul class="simple">
-<li><p>Example configurations for common use cases.</p></li>
-<li><p>Demonstrates integration of vertical profiles, transport solvers, and diagnostics.</p></li>
+<section id="configuration-and-interface">
+<h2>Configuration and interface<a class="headerlink" href="#configuration-and-interface" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple" start="4">
+<li><dl class="simple">
+<dt><a class="reference internal" href="src.html#module-bldfm.config_parser" title="bldfm.config_parser"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.config_parser</span></code></a></dt><dd><p>YAML-based configuration with dataclass schema. Defines <code class="docutils literal notranslate"><span class="pre">BLDFMConfig</span></code>, <code class="docutils literal notranslate"><span class="pre">TowerConfig</span></code>, <code class="docutils literal notranslate"><span class="pre">DomainConfig</span></code>, <code class="docutils literal notranslate"><span class="pre">MetConfig</span></code>, and related classes.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="src.html#module-bldfm.interface" title="bldfm.interface"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.interface</span></code></a></dt><dd><p>High-level functions that encapsulate the full workflow:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="src.html#bldfm.interface.run_bldfm_single" title="bldfm.interface.run_bldfm_single"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_bldfm_single()</span></code></a> – single tower, single timestep</p></li>
+<li><p><a class="reference internal" href="src.html#bldfm.interface.run_bldfm_timeseries" title="bldfm.interface.run_bldfm_timeseries"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_bldfm_timeseries()</span></code></a> – single tower, all timesteps</p></li>
+<li><p><a class="reference internal" href="src.html#bldfm.interface.run_bldfm_multitower" title="bldfm.interface.run_bldfm_multitower"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_bldfm_multitower()</span></code></a> – all towers, all timesteps</p></li>
+<li><p><a class="reference internal" href="src.html#bldfm.interface.run_bldfm_parallel" title="bldfm.interface.run_bldfm_parallel"><code class="xref py py-func docutils literal notranslate"><span class="pre">run_bldfm_parallel()</span></code></a> – parallel execution over towers, time, or both</p></li>
 </ul>
 </dd>
 </dl>
 </li>
-<li><p><a class="reference internal" href="tests.html#tests"><span class="std std-ref">tests</span></a>
-contains the test suite for validating the functionality and accuracy of the package. The tests ensure that the core modules (<code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code>, <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code>, and <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code>) work as expected and provide a framework for extending test coverage.</p>
-<dl class="simple">
-<dt><strong>Features:</strong></dt><dd><ul class="simple">
-<li><p>Unit tests for individual functions.</p></li>
-<li><p>Integration tests for workflows combining multiple modules.</p></li>
-<li><p>Easy-to-run test scripts for contributors.</p></li>
-</ul>
+<li><dl class="simple">
+<dt><a class="reference internal" href="src.html#module-bldfm.cli" title="bldfm.cli"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.cli</span></code></a></dt><dd><p>Command-line interface: <code class="docutils literal notranslate"><span class="pre">bldfm</span> <span class="pre">run</span> <span class="pre">config.yaml</span> <span class="pre">[--dry-run]</span></code>.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="data-and-i-o">
+<h2>Data and I/O<a class="headerlink" href="#data-and-i-o" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple" start="7">
+<li><dl class="simple">
+<dt><a class="reference internal" href="src.html#module-bldfm.synthetic" title="bldfm.synthetic"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.synthetic</span></code></a></dt><dd><p>Generates synthetic meteorological timeseries and tower configurations for testing and prototyping.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="src.html#module-bldfm.io" title="bldfm.io"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.io</span></code></a></dt><dd><p>NetCDF export and import of footprint results using xarray with CF-1.8 metadata.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="src.html#module-bldfm.cache" title="bldfm.cache"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.cache</span></code></a></dt><dd><p>Disk-based cache for Green’s function results using SHA-256 keyed <code class="docutils literal notranslate"><span class="pre">.npz</span></code> files.</p>
+</dd>
+</dl>
+</li>
+</ol>
+</section>
+<section id="plotting">
+<h2>Plotting<a class="headerlink" href="#plotting" title="Link to this heading">¶</a></h2>
+<ol class="arabic simple" start="10">
+<li><dl class="simple">
+<dt><a class="reference internal" href="src.html#module-bldfm.plotting" title="bldfm.plotting"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.plotting</span></code></a></dt><dd><p>Visualisation functions for footprint fields, geospatial map overlays, wind roses, and temporal footprint evolution.</p>
 </dd>
 </dl>
 </li>
@@ -213,11 +228,11 @@ contains the test suite for validating the functionality and accuracy of the pac
 <section id="module-interactions">
 <h2>Module interactions<a class="headerlink" href="#module-interactions" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code> provides the vertical profiles required by the <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code> module.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code> handles the core transport computation, optionally using Green’s functions for convolution with surface fluxes.</p></li>
-<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">src.utils</span></code> supports both <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.pbl_model</span></code> and <code class="xref py py-mod docutils literal notranslate"><span class="pre">src.solver</span></code> with reusable tools for test generation and output diagnostics.</p></li>
-<li><p><a class="reference internal" href="runs.html#runs"><span class="std std-ref">runs</span></a> contains examples and user-defined run scripts that utilize the core modules.</p></li>
-<li><p><a class="reference internal" href="tests.html#tests"><span class="std std-ref">tests</span></a> ensures the reliability and correctness of the package.</p></li>
+<li><p><a class="reference internal" href="src.html#module-bldfm.pbl_model" title="bldfm.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.pbl_model</span></code></a> provides the vertical profiles required by <a class="reference internal" href="src.html#module-bldfm.solver" title="bldfm.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.solver</span></code></a>.</p></li>
+<li><p><a class="reference internal" href="src.html#module-bldfm.interface" title="bldfm.interface"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.interface</span></code></a> orchestrates the full pipeline (wind fields, profiles, solver) driven by <a class="reference internal" href="src.html#module-bldfm.config_parser" title="bldfm.config_parser"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.config_parser</span></code></a>.</p></li>
+<li><p><a class="reference internal" href="src.html#module-bldfm.cache" title="bldfm.cache"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.cache</span></code></a> accelerates repeated solves by caching Green’s functions.</p></li>
+<li><p><a class="reference internal" href="src.html#module-bldfm.io" title="bldfm.io"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.io</span></code></a> saves and loads multi-tower, multi-timestep results.</p></li>
+<li><p><a class="reference internal" href="src.html#module-bldfm.plotting" title="bldfm.plotting"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.plotting</span></code></a> visualises solver outputs.</p></li>
 </ul>
 </section>
 <section id="api-reference">
@@ -234,10 +249,10 @@ contains the test suite for validating the functionality and accuracy of the pac
     <ul>
         <li>
           &larr;
-          <a href="quickstart.html" title="Previous document">Quickstart guide</a>
+          <a href="reference.html" title="Previous document">Quick reference</a>
         </li>
         <li>
-          <a href="src.html" title="Next document">The <code class="docutils literal notranslate"><span class="pre">src</span></code> subpackage</a>
+          <a href="src.html" title="Next document">The <code class="docutils literal notranslate"><span class="pre">bldfm</span></code> package</a>
           &rarr;
         </li>
     </ul>

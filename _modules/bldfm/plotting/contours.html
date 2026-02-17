@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bldfm.plotting.contours &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=56c4699f" />
+    <script src="../../../_static/documentation_options.js?v=8313637b"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../../index.html">
+    <img class="logo" src="../../../_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference.html">Quick reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for bldfm.plotting.contours</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Source area contour visualization functions.</span>
+
+<span class="sd">These functions combine the output of ``bldfm.utils.get_source_area()``</span>
+<span class="sd">with matplotlib contour overlays.  The ``get_source_area`` computation</span>
+<span class="sd">itself lives in ``bldfm.utils`` -- this module handles only visualization.</span>
+
+<span class="sd">Source area contours represent the spatial region that contributes a given</span>
+<span class="sd">fraction of the measured flux.  Different &quot;base functions&quot; produce different</span>
+<span class="sd">contour geometries:</span>
+
+<span class="sd">- **Contribution contours** (g = f): standard isopleth contours</span>
+<span class="sd">- **Circular contours** (g = -(r^2)): concentric circles from tower</span>
+<span class="sd">- **Upwind contours** (g = dot(wind_hat, r)): upwind distance bands</span>
+<span class="sd">- **Crosswind contours** (g = -(perp distance)^2): crosswind ridges</span>
+<span class="sd">- **Sector contours** (g = -abs(theta)): angular sectors from upwind axis</span>
+
+<span class="sd">See Also</span>
+<span class="sd">--------</span>
+<span class="sd">bldfm.utils.get_source_area : Rescale a field so contour levels represent</span>
+<span class="sd">    cumulative contribution fractions.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ensure_ax</span><span class="p">,</span> <span class="n">format_colorbar_scientific</span>
+
+
+<div class="viewcode-block" id="plot_source_area_contours">
+<a class="viewcode-back" href="../../../src.html#bldfm.plotting.plot_source_area_contours">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_source_area_contours</span><span class="p">(</span>
+    <span class="n">flx</span><span class="p">,</span>
+    <span class="n">grid</span><span class="p">,</span>
+    <span class="n">source_area_field</span><span class="p">,</span>
+    <span class="n">levels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">contour_colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdYlBu_r&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pcolormesh_kw</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot footprint field with source area contour overlay.</span>
+
+<span class="sd">    The ``source_area_field`` should be the output of</span>
+<span class="sd">    ``get_source_area(flx, g)`` for some base function ``g``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    flx : ndarray (ny, nx)</span>
+<span class="sd">        Original footprint field (plotted as pcolormesh background).</span>
+<span class="sd">    grid : tuple (X, Y, Z) or (X, Y)</span>
+<span class="sd">        Coordinate arrays from the solver.</span>
+<span class="sd">    source_area_field : ndarray (ny, nx)</span>
+<span class="sd">        Rescaled field from ``get_source_area()``, where contour levels</span>
+<span class="sd">        represent cumulative contribution fractions.</span>
+<span class="sd">    levels : list of float, optional</span>
+<span class="sd">        Contribution fraction levels (default [0.25, 0.5, 0.75]).</span>
+<span class="sd">    ax : matplotlib Axes, optional</span>
+<span class="sd">    contour_colors : list of str, optional</span>
+<span class="sd">        Colors for contour lines (default [&#39;white&#39;, &#39;magenta&#39;, &#39;cyan&#39;]).</span>
+<span class="sd">    cmap : str</span>
+<span class="sd">        Colourmap for background pcolormesh.</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">    **pcolormesh_kw</span>
+<span class="sd">        Forwarded to ``ax.pcolormesh``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ax : matplotlib Axes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">levels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">levels</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">contour_colors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">contour_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="s2">&quot;magenta&quot;</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">]</span>
+
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">ensure_ax</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+    <span class="n">pm</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">flx</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">shading</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">pcolormesh_kw</span><span class="p">)</span>
+    <span class="n">cbar</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">pm</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">format_colorbar_scientific</span><span class="p">(</span><span class="n">cbar</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Footprint [m$^{-2}$]&quot;</span><span class="p">)</span>
+
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">source_area_field</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">contour_colors</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.0%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y [m]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ax</span></div>
+
+
+
+<div class="viewcode-block" id="plot_source_area_gallery">
+<a class="viewcode-back" href="../../../src.html#bldfm.plotting.plot_source_area_gallery">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_source_area_gallery</span><span class="p">(</span>
+    <span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdYlBu_r&quot;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Multi-panel plot showing all 5 source area contour types.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    flx : ndarray (ny, nx)</span>
+<span class="sd">        Footprint field.</span>
+<span class="sd">    grid : tuple (X, Y, Z) or (X, Y)</span>
+<span class="sd">        Coordinate arrays from the solver.</span>
+<span class="sd">    meas_pt : tuple (xm, ym)</span>
+<span class="sd">        Measurement point.</span>
+<span class="sd">    wind : tuple (u, v)</span>
+<span class="sd">        Wind components (m/s).</span>
+<span class="sd">    levels : list of float, optional</span>
+<span class="sd">        Contribution fraction levels (default [0.25, 0.5, 0.75]).</span>
+<span class="sd">    cmap : str</span>
+<span class="sd">        Colourmap for background.</span>
+<span class="sd">    figsize : tuple, optional</span>
+<span class="sd">        Figure size (default (18, 10)).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    fig : matplotlib Figure</span>
+<span class="sd">    axes : ndarray of Axes (2, 3)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">get_source_area</span><span class="p">,</span>
+        <span class="n">source_area_contribution</span><span class="p">,</span>
+        <span class="n">source_area_circular</span><span class="p">,</span>
+        <span class="n">source_area_upwind</span><span class="p">,</span>
+        <span class="n">source_area_crosswind</span><span class="p">,</span>
+        <span class="n">source_area_sector</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">grid</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">contour_types</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s2">&quot;Contribution&quot;</span><span class="p">,</span> <span class="n">source_area_contribution</span><span class="p">(</span><span class="n">flx</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;Circular&quot;</span><span class="p">,</span> <span class="n">source_area_circular</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;Upwind&quot;</span><span class="p">,</span> <span class="n">source_area_upwind</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;Crosswind&quot;</span><span class="p">,</span> <span class="n">source_area_crosswind</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">)),</span>
+        <span class="p">(</span><span class="s2">&quot;Sector&quot;</span><span class="p">,</span> <span class="n">source_area_sector</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">)),</span>
+    <span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">figsize</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;constrained&quot;</span><span class="p">)</span>
+    <span class="n">axes_flat</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">contour_types</span><span class="p">):</span>
+        <span class="n">rescaled</span> <span class="o">=</span> <span class="n">get_source_area</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+        <span class="n">plot_source_area_contours</span><span class="p">(</span>
+            <span class="n">flx</span><span class="p">,</span>
+            <span class="n">grid</span><span class="p">,</span>
+            <span class="n">rescaled</span><span class="p">,</span>
+            <span class="n">levels</span><span class="o">=</span><span class="n">levels</span><span class="p">,</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">axes_flat</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> contours&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Hide the unused 6th subplot</span>
+    <span class="n">axes_flat</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span></div>
+
+</pre></div>
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

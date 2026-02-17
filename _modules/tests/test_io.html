@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tests.test_io &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=56c4699f" />
+    <script src="../../_static/documentation_options.js?v=8313637b"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_full.html">Full tutorial: verifying all v1.0 features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Quick reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for tests.test_io</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Tests for NetCDF I/O.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="n">pytestmark</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">integration</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_footprints_to_netcdf</span><span class="p">,</span> <span class="n">load_footprints_from_netcdf</span>
+
+
+<div class="viewcode-block" id="test_netcdf_roundtrip_and_values">
+<a class="viewcode-back" href="../../tests.html#tests.test_io.test_netcdf_roundtrip_and_values">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_netcdf_roundtrip_and_values</span><span class="p">(</span><span class="n">multitower_results_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test save/load roundtrip and verify values match original.&quot;&quot;&quot;</span>
+    <span class="n">results</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">multitower_results_session</span>
+    <span class="n">filepath</span> <span class="o">=</span> <span class="s2">&quot;output/test_multitower_timeseries.nc&quot;</span>
+    <span class="n">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">load_footprints_from_netcdf</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="c1"># Structure</span>
+        <span class="k">assert</span> <span class="s2">&quot;footprint&quot;</span> <span class="ow">in</span> <span class="n">ds</span>
+        <span class="k">assert</span> <span class="s2">&quot;concentration&quot;</span> <span class="ow">in</span> <span class="n">ds</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;tower&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">64</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">64</span>
+
+        <span class="c1"># Values match</span>
+        <span class="n">tower_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">ti</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tower_names</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">original_flx</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
+                <span class="n">loaded_flx</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;footprint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">ti</span><span class="p">]</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">loaded_flx</span><span class="p">,</span> <span class="n">original_flx</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_netcdf_metadata">
+<a class="viewcode-back" href="../../tests.html#tests.test_io.test_netcdf_metadata">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_netcdf_metadata</span><span class="p">(</span><span class="n">multitower_results_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test CF attributes, met variables, and tower metadata.&quot;&quot;&quot;</span>
+    <span class="n">results</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">multitower_results_session</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmpdir</span><span class="si">}</span><span class="s2">/test_output.nc&quot;</span>
+        <span class="n">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">load_footprints_from_netcdf</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="c1"># CF attributes</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;Conventions&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;CF-1.8&quot;</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;closure&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;MOST&quot;</span>
+        <span class="k">assert</span> <span class="s2">&quot;long_name&quot;</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;footprint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
+        <span class="k">assert</span> <span class="s2">&quot;units&quot;</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;footprint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
+
+        <span class="c1"># Met variables</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ustar&quot;</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_speed&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_dir&quot;</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;ustar&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">3</span>
+
+        <span class="c1"># Tower metadata</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;tower_lat&quot;</span><span class="p">,</span> <span class="s2">&quot;tower_lon&quot;</span><span class="p">,</span> <span class="s2">&quot;tower_z&quot;</span><span class="p">):</span>
+            <span class="k">assert</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;tower_lat&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_load_nonexistent_raises">
+<a class="viewcode-back" href="../../tests.html#tests.test_io.test_load_nonexistent_raises">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_load_nonexistent_raises</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">FileNotFoundError</span><span class="p">):</span>
+        <span class="n">load_footprints_from_netcdf</span><span class="p">(</span><span class="s2">&quot;/nonexistent/path.nc&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_netcdf_met_values_match">
+<a class="viewcode-back" href="../../tests.html#tests.test_io.test_netcdf_met_values_match">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_netcdf_met_values_match</span><span class="p">(</span><span class="n">multitower_results_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that saved met values match the original result params exactly.&quot;&quot;&quot;</span>
+    <span class="n">results</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">multitower_results_session</span>
+    <span class="n">first_tower</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmpdir</span><span class="si">}</span><span class="s2">/test_met.nc&quot;</span>
+        <span class="n">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">load_footprints_from_netcdf</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">original_params</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">first_tower</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ustar&quot;</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_speed&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_dir&quot;</span><span class="p">):</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span>
+                    <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">t</span><span class="p">],</span>
+                    <span class="n">original_params</span><span class="p">[</span><span class="n">var</span><span class="p">],</span>
+                    <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
+                    <span class="n">err_msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Mismatch for </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> at timestep </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_netcdf_tower_metadata_match">
+<a class="viewcode-back" href="../../tests.html#tests.test_io.test_netcdf_tower_metadata_match">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_netcdf_tower_metadata_match</span><span class="p">(</span><span class="n">multitower_results_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that tower lat/lon/z and names match config exactly.&quot;&quot;&quot;</span>
+    <span class="n">results</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">multitower_results_session</span>
+
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmpdir</span><span class="si">}</span><span class="s2">/test_towers.nc&quot;</span>
+        <span class="n">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">load_footprints_from_netcdf</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="c1"># Tower names match</span>
+        <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;tower&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">]</span>
+
+        <span class="c1"># Coordinates match</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">tower</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">):</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;tower_lat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tower</span><span class="o">.</span><span class="n">lat</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;tower_lon&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tower</span><span class="o">.</span><span class="n">lon</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;tower_z&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tower</span><span class="o">.</span><span class="n">z_m</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_netcdf_multitower_select_by_name">
+<a class="viewcode-back" href="../../tests.html#tests.test_io.test_netcdf_multitower_select_by_name">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_netcdf_multitower_select_by_name</span><span class="p">(</span><span class="n">multitower_results_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that individual tower data can be selected by name and matches.&quot;&quot;&quot;</span>
+    <span class="n">results</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">multitower_results_session</span>
+
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmpdir</span><span class="si">}</span><span class="s2">/test_select.nc&quot;</span>
+        <span class="n">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">load_footprints_from_netcdf</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">tower_name</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+            <span class="n">tower_ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">tower</span><span class="o">=</span><span class="n">tower_name</span><span class="p">)</span>
+
+            <span class="c1"># Correct dimensions (time, y, x) — tower dim squeezed out</span>
+            <span class="k">assert</span> <span class="n">tower_ds</span><span class="p">[</span><span class="s2">&quot;footprint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">dims</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;x&quot;</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">tower_ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+
+            <span class="c1"># Values match original</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span>
+                    <span class="n">tower_ds</span><span class="p">[</span><span class="s2">&quot;footprint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">t</span><span class="p">],</span>
+                    <span class="n">results</span><span class="p">[</span><span class="n">tower_name</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
+                    <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_netcdf_timeseries_timestamps">
+<a class="viewcode-back" href="../../tests.html#tests.test_io.test_netcdf_timeseries_timestamps">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_netcdf_timeseries_timestamps</span><span class="p">(</span><span class="n">multitower_results_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that timestamps are stored correctly and data varies across time.&quot;&quot;&quot;</span>
+    <span class="n">results</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">multitower_results_session</span>
+    <span class="n">first_tower</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmpdir</span><span class="si">}</span><span class="s2">/test_time.nc&quot;</span>
+        <span class="n">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">load_footprints_from_netcdf</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="c1"># Timestamps match original results</span>
+        <span class="n">expected_ts</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;timestamp&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">[</span><span class="n">first_tower</span><span class="p">]]</span>
+        <span class="n">loaded_ts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">loaded_ts</span> <span class="o">==</span> <span class="n">expected_ts</span>
+
+        <span class="c1"># Met params vary across time (not all identical)</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ustar&quot;</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_speed&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_dir&quot;</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+            <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">values</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> is constant across timesteps&quot;</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_netcdf_single_tower_timeseries">
+<a class="viewcode-back" href="../../tests.html#tests.test_io.test_netcdf_single_tower_timeseries">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_netcdf_single_tower_timeseries</span><span class="p">(</span>
+    <span class="n">timeseries_results_session</span><span class="p">,</span> <span class="n">timeseries_config_session</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test save/load roundtrip for a single tower timeseries.&quot;&quot;&quot;</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">replace</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="n">timeseries_results_session</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">timeseries_config_session</span>
+
+    <span class="c1"># Wrap single-tower timeseries into multitower format</span>
+    <span class="n">tower_name</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;tower_name&quot;</span><span class="p">]</span>
+    <span class="n">multitower</span> <span class="o">=</span> <span class="p">{</span><span class="n">tower_name</span><span class="p">:</span> <span class="n">results</span><span class="p">}</span>
+
+    <span class="c1"># Config must match results: keep only the tower present in results</span>
+    <span class="n">matching_tower</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span> <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">tower_name</span><span class="p">]</span>
+    <span class="n">single_tower_config</span> <span class="o">=</span> <span class="n">replace</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">towers</span><span class="o">=</span><span class="n">matching_tower</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmpdir</span><span class="si">}</span><span class="s2">/test_single_tower.nc&quot;</span>
+        <span class="n">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">multitower</span><span class="p">,</span> <span class="n">single_tower_config</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">load_footprints_from_netcdf</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;tower&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
+        <span class="k">assert</span> <span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;tower&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="n">tower_name</span><span class="p">]</span>
+
+        <span class="c1"># Values roundtrip</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span>
+                <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;footprint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="n">results</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
+                <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="test_netcdf_global_attrs">
+<a class="viewcode-back" href="../../tests.html#tests.test_io.test_netcdf_global_attrs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_netcdf_global_attrs</span><span class="p">(</span><span class="n">multitower_results_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that global attributes capture domain and solver config.&quot;&quot;&quot;</span>
+    <span class="n">results</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">multitower_results_session</span>
+
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">tmpdir</span><span class="p">:</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tmpdir</span><span class="si">}</span><span class="s2">/test_attrs.nc&quot;</span>
+        <span class="n">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">load_footprints_from_netcdf</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;BLDFM footprint output&quot;</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;BLDFM v1.0&quot;</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;domain_xmax&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">xmax</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;domain_ymax&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">ymax</span>
+
+        <span class="c1"># Coordinate arrays span the domain</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="s2">&quot;units&quot;</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
+        <span class="k">assert</span> <span class="s2">&quot;units&quot;</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+</pre></div>
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
