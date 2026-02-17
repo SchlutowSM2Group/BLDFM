@@ -1,0 +1,50 @@
+# BLDFM Multi-Tower Example Configuration
+# ========================================
+# Unstable footprint with two towers -- parameters from the manuscript
+# comparison scripts.  Demonstrates multi-tower setup with geospatial
+# coordinates and spectral halo padding.
+# Run with: bldfm run examples/configs/multitower.yaml
+
+domain:
+  nx: 128                # number of grid points in x (cross-wind)
+  ny: 384                # number of grid points in y (along-wind)
+  xmax: 50.0             # domain extent in x [m]
+  ymax: 150.0            # domain extent in y [m]
+  nz: 64                 # number of vertical levels
+  modes: [512, 512]      # Fourier modes [kx, ky]; higher = more accurate but slower
+  halo: 400.0            # zero-padding halo width [m] to reduce spectral leakage
+  ref_lat: 50.9500       # reference origin latitude [decimal degrees]
+  ref_lon: 11.5860       # reference origin longitude [decimal degrees]
+
+towers:
+  - name: tower_A
+    lat: 50.95018        # tower latitude [decimal degrees]
+    lon: 11.58636        # tower longitude [decimal degrees]
+    z_m: 10.0            # measurement height [m]
+  - name: tower_B
+    lat: 50.95031
+    lon: 11.58636
+    z_m: 10.0
+
+# Meteorological forcing. Use scalars for a single run, or lists of equal
+# length for a timeseries (e.g. ustar: [0.5, 0.6, 0.7]).
+met:
+  ustar: 1.064           # friction velocity [m/s]
+  mol: -10.0             # Monin-Obukhov length [m] (negative=unstable, ~1e9=neutral, positive=stable)
+  wind_speed: 5.0        # horizontal wind speed [m/s]
+  wind_dir: 180.0        # wind direction [degrees]; 0=N, 90=E, 180=S, 270=W
+
+solver:
+  closure: MOST           # PBL closure: "MOST" | "MOSTM" | "CONSTANT" | "OAAHOC"
+  footprint: true         # compute footprint (true) or concentration field (false)
+  # precision: single     # floating-point precision: "single" | "double"
+  # surface_flux_shape: diamond  # synthetic source shape: "diamond" | "circle"
+
+output:
+  format: netcdf          # output format: "netcdf" | "csv"
+  directory: ./output     # output directory path
+
+parallel:
+  num_threads: 1          # BLAS/numba threads per worker
+  max_workers: 1          # parallel workers for multi-tower/timeseries (>1 uses ProcessPoolExecutor)
+  use_cache: false        # cache solver results to skip duplicate met conditions
