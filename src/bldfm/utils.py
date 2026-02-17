@@ -173,3 +173,157 @@ def parallelize(func):
         return _compiled[use_parallel](*args, **kwargs)
 
     return wrapper
+
+
+def get_source_area(f, g):
+    """Rescale g so contour levels represent cumulative contribution of f.
+
+    For the transformed field, the contour at level R encloses the region
+    where sum(f) = R.
+
+    Parameters
+    ----------
+    f : ndarray
+        Function values (e.g., flux footprint).
+    g : ndarray
+        Function defining level sets (often same as f).
+
+    Returns
+    -------
+    g_rescaled : ndarray
+        Transformed field where contour values equal cumulative contribution.
+    """
+    f_flat = f.ravel()
+    g_flat = g.ravel()
+
+    # sort by g descending
+    order = np.argsort(g_flat)[::-1]
+    f_sorted = f_flat[order]
+
+    # cumulative sum as we lower threshold
+    M_cum = np.cumsum(f_sorted)
+
+    # shift so each point gets sum of f over {g > g[point]}
+    M_shifted = np.zeros_like(M_cum)
+    M_shifted[1:] = M_cum[:-1]
+
+    # map back to original positions
+    g_rescaled = np.empty_like(g_flat)
+    g_rescaled[order] = M_shifted
+
+    return g_rescaled.reshape(g.shape)
+
+
+def source_area_contribution(flx):
+    """Base function for contribution (isopleth) contours: g = flx.
+
+    Parameters
+    ----------
+    flx : ndarray (ny, nx)
+        Footprint field.
+
+    Returns
+    -------
+    g : ndarray (ny, nx)
+    """
+    return flx.copy()
+
+
+def source_area_circular(X, Y, meas_pt):
+    """Base function for circular contours centered at measurement point.
+
+    g = -(r^2), so contours are concentric circles.
+
+    Parameters
+    ----------
+    X, Y : ndarray (ny, nx)
+        Coordinate grids.
+    meas_pt : tuple (xm, ym)
+        Measurement (tower) location.
+
+    Returns
+    -------
+    g : ndarray (ny, nx)
+    """
+    xm, ym = meas_pt
+    return -((X - xm) ** 2 + (Y - ym) ** 2)
+
+
+def source_area_upwind(X, Y, meas_pt, wind):
+    """Base function for upwind distance-band contours.
+
+    g = dot(wind_hat, r), where r is displacement from tower.
+    Contours are lines perpendicular to the wind direction.
+
+    Parameters
+    ----------
+    X, Y : ndarray (ny, nx)
+        Coordinate grids.
+    meas_pt : tuple (xm, ym)
+        Measurement (tower) location.
+    wind : tuple (u, v)
+        Wind components (m/s).
+
+    Returns
+    -------
+    g : ndarray (ny, nx)
+    """
+    xm, ym = meas_pt
+    u, v = wind
+    speed = np.sqrt(u ** 2 + v ** 2)
+    u_hat, v_hat = u / speed, v / speed
+    return u_hat * (X - xm) + v_hat * (Y - ym)
+
+
+def source_area_crosswind(X, Y, meas_pt, wind):
+    """Base function for crosswind ridge contours.
+
+    g = -(perpendicular distance from wind axis)^2.
+    Contours are symmetric ridges parallel to the wind direction.
+
+    Parameters
+    ----------
+    X, Y : ndarray (ny, nx)
+        Coordinate grids.
+    meas_pt : tuple (xm, ym)
+        Measurement (tower) location.
+    wind : tuple (u, v)
+        Wind components (m/s).
+
+    Returns
+    -------
+    g : ndarray (ny, nx)
+    """
+    xm, ym = meas_pt
+    u, v = wind
+    speed = np.sqrt(u ** 2 + v ** 2)
+    u_hat, v_hat = u / speed, v / speed
+    return -(-v_hat * (X - xm) + u_hat * (Y - ym)) ** 2
+
+
+def source_area_sector(X, Y, meas_pt, wind):
+    """Base function for angular sector contours from upwind axis.
+
+    g = -abs(theta), where theta is angular deviation from upwind direction.
+    Contours form pie-slice sectors centered on the upwind direction.
+
+    Parameters
+    ----------
+    X, Y : ndarray (ny, nx)
+        Coordinate grids.
+    meas_pt : tuple (xm, ym)
+        Measurement (tower) location.
+    wind : tuple (u, v)
+        Wind components (m/s).
+
+    Returns
+    -------
+    g : ndarray (ny, nx)
+    """
+    xm, ym = meas_pt
+    u, v = wind
+    theta = np.arctan2(Y - ym, X - xm)
+    theta_upwind = np.arctan2(-v, -u)
+    theta_rel = theta - theta_upwind
+    theta_rel = np.arctan2(np.sin(theta_rel), np.cos(theta_rel))
+    return -np.abs(theta_rel)

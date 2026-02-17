@@ -275,3 +275,105 @@ def test_plot_vertical_slice():
     # Invalid axis raises ValueError
     with pytest.raises(ValueError, match="slice_axis"):
         plot_vertical_slice(field, grid, slice_axis="w", slice_index=0)
+
+
+# --- get_source_area ---
+
+def test_get_source_area_basic():
+    """Test that get_source_area returns correct shape and value range."""
+    from bldfm.utils import get_source_area
+
+    rng = np.random.default_rng(42)
+    f = rng.random((32, 64))
+    f = f / f.sum()  # normalize to unit sum
+
+    rescaled = get_source_area(f, f)
+    assert rescaled.shape == f.shape
+    assert rescaled.min() >= 0.0
+    assert rescaled.max() < 1.0
+
+
+def test_get_source_area_monotone():
+    """Test that higher g values map to lower rescaled values."""
+    from bldfm.utils import get_source_area
+
+    f = np.array([[0.1, 0.2], [0.3, 0.4]])
+    rescaled = get_source_area(f, f)
+
+    # Highest-f cell (0.4) should get rescaled=0 (nothing above it)
+    assert rescaled[1, 1] == 0.0
+    # Second-highest (0.3) should get cumsum of just the top cell
+    assert np.isclose(rescaled[1, 0], 0.4)
+
+
+def test_source_area_base_functions_shapes(footprint_result_session):
+    """Test that all 5 base function constructors return correct shapes."""
+    from bldfm.utils import (
+        source_area_contribution,
+        source_area_circular,
+        source_area_upwind,
+        source_area_crosswind,
+        source_area_sector,
+    )
+
+    result, _ = footprint_result_session
+    flx = result["flx"]
+    X, Y, Z = result["grid"]
+    meas_pt = result["tower_xy"]
+    wind = (0.0, -5.0)
+
+    for name, g in [
+        ("contribution", source_area_contribution(flx)),
+        ("circular", source_area_circular(X, Y, meas_pt)),
+        ("upwind", source_area_upwind(X, Y, meas_pt, wind)),
+        ("crosswind", source_area_crosswind(X, Y, meas_pt, wind)),
+        ("sector", source_area_sector(X, Y, meas_pt, wind)),
+    ]:
+        assert g.shape == flx.shape, f"{name} shape mismatch"
+
+
+# --- plot_source_area_contours ---
+
+def test_plot_source_area_contours(footprint_result_session):
+    """Test source area contour plotting returns axes."""
+    from bldfm.utils import get_source_area
+    from bldfm.plotting import plot_source_area_contours
+
+    result, _ = footprint_result_session
+    rescaled = get_source_area(result["flx"], result["flx"])
+    ax = plot_source_area_contours(result["flx"], result["grid"], rescaled,
+                                   title="Test contours")
+    assert ax is not None
+    plt.close("all")
+
+
+def test_plot_source_area_contours_custom_ax(footprint_result_session):
+    """Test source area contour plotting on provided axes."""
+    from bldfm.utils import get_source_area
+    from bldfm.plotting import plot_source_area_contours
+
+    result, _ = footprint_result_session
+    fig, ax = plt.subplots()
+    rescaled = get_source_area(result["flx"], result["flx"])
+    returned_ax = plot_source_area_contours(result["flx"], result["grid"],
+                                            rescaled, ax=ax)
+    assert returned_ax is ax
+    plt.close("all")
+
+
+# --- plot_source_area_gallery ---
+
+def test_plot_source_area_gallery(footprint_result_session):
+    """Test gallery plot creates 2x3 grid with 5 visible panels."""
+    from bldfm.plotting import plot_source_area_gallery
+
+    result, _ = footprint_result_session
+    fig, axes = plot_source_area_gallery(
+        result["flx"], result["grid"],
+        meas_pt=result["tower_xy"],
+        wind=(0.0, -5.0),
+    )
+    assert fig is not None
+    assert axes.shape == (2, 3)
+    assert not axes[1, 2].get_visible()
+    plt.close("all")

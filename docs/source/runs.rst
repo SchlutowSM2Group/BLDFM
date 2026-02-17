@@ -3,44 +3,25 @@
 Example scripts and workflows
 =============================
 
-BLDFM provides three tiers of example scripts:
+BLDFM provides two tiers of example scripts:
 
-- **``examples/``** — Config-driven, high-level interface (start here)
-- **``examples/low_level/``** — Direct API calls for power users
+- **``runs/low_level/``** — Direct API calls for power users
 - **``runs/manuscript/``** — Paper reproduction scripts (both interface and low-level)
 
 
-High-level examples (``examples/``)
--------------------------------------
-
-These scripts use YAML configs and the ``run_bldfm_single`` / ``run_bldfm_multitower``
-interface.  Each example has a corresponding YAML config in ``examples/configs/``.
-
-.. code-block:: bash
-
-    $ python examples/minimal_example.py
-    $ python examples/footprint_example.py
-    $ python examples/parallel_example.py
-    $ python examples/multitower_example.py
-    $ python examples/3d_plume.py
-    $ python examples/minimal_example_3d.py
-
-    # Or use the CLI
-    $ bldfm run examples/configs/multitower.yaml --plot
-
-
-Low-level examples (``examples/low_level/``)
-----------------------------------------------
+Low-level examples (``runs/low_level/``)
+-----------------------------------------
 
 These scripts call ``vertical_profiles``, ``ideal_source``, and
 ``steady_state_transport_solver`` directly, giving full control over every parameter.
 
 .. code-block:: bash
 
-    $ python examples/low_level/minimal_example.py
-    $ python examples/low_level/footprint_example.py
-    $ python examples/low_level/plot_profiles.py
-    $ python examples/low_level/point_measurement_example.py
+    $ python runs/low_level/minimal_example.py
+    $ python runs/low_level/footprint_example.py
+    $ python runs/low_level/plot_profiles.py
+    $ python runs/low_level/point_measurement_example.py
+    $ python runs/low_level/source_area_example.py
 
 
 Manuscript figures (``runs/manuscript/``)

@@ -120,7 +120,7 @@ Generate reproducible test data without real observations:
 Low-level workflow
 ------------------
 
-For full control, you can call the solver steps directly (as in the ``examples/low_level/minimal_example.py`` script):
+For full control, you can call the solver steps directly (as in the ``runs/low_level/minimal_example.py`` script):
 
 .. code-block:: python
 
@@ -140,6 +140,35 @@ For full control, you can call the solver steps directly (as in the ``examples/l
     grid, conc, flx = steady_state_transport_solver(
         srf_flx, z, profiles, domain=(1000.0, 500.0), levels=32,
     )
+
+Source area contours
+--------------------
+
+Visualize which spatial regions contribute a given fraction of the measured flux
+using different contour geometries:
+
+.. code-block:: python
+
+    from bldfm import (
+        get_source_area, source_area_circular, source_area_sector,
+    )
+    from bldfm.plotting import plot_source_area_contours, plot_source_area_gallery
+
+    # After running the solver to get flx, grid, meas_pt, wind:
+
+    # Single contour type
+    g = source_area_circular(X, Y, meas_pt)
+    rescaled = get_source_area(flx, g)
+    plot_source_area_contours(flx, grid, rescaled, title="Circular contours")
+
+    # Gallery of all 5 types
+    fig, axes = plot_source_area_gallery(flx, grid, meas_pt, wind)
+
+Five base functions are available: ``source_area_contribution`` (isopleth),
+``source_area_circular`` (concentric circles), ``source_area_upwind`` (distance bands),
+``source_area_crosswind`` (ridges), and ``source_area_sector`` (angular sectors).
+
+See ``runs/low_level/source_area_example.py`` for a complete working example.
 
 Reproducing manuscript figures
 ------------------------------
