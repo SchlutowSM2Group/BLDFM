@@ -17,9 +17,10 @@ fig, axs = plt.subplots(1, 2)
 
 for mol, color in zip(mols, colors):
 
-    z, (u, v, K) = vertical_profiles(
+    z, (u, v, Kx, Ky, Kz) = vertical_profiles(
         n=8, meas_height=meas_height, wind=(5.0, 0.0), z0=0.1, closure="MOST", mol=mol
     )
+    K = Kz
 
     axs[0].plot(u, z, "+", label="L = " + str(mol) + " m", color=color)
     axs[1].plot(K, z, "+", color=color)
