@@ -112,22 +112,24 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">._common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ensure_ax</span><span class="p">,</span> <span class="n">optional_import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._common</span><span class="w"> </span><span class="kn">import</span> <span class="n">ensure_ax</span><span class="p">,</span> <span class="n">optional_import</span><span class="p">,</span> <span class="n">_maybe_slice_level</span>
 
 
 <div class="viewcode-block" id="extract_percentile_contour">
 <a class="viewcode-back" href="../../../src.html#bldfm.plotting.extract_percentile_contour">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">extract_percentile_contour</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">pct</span><span class="o">=</span><span class="mf">0.8</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_percentile_contour</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">pct</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the contour level that encloses *pct* of the cumulative footprint.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    flx : ndarray (ny, nx)</span>
-<span class="sd">        2-D footprint field (non-negative).</span>
+<span class="sd">    flx : ndarray (ny, nx) or (nz, ny, nx)</span>
+<span class="sd">        2-D footprint field (non-negative). If 3D, sliced at *level*.</span>
 <span class="sd">    grid : tuple (X, Y, Z)</span>
 <span class="sd">        Coordinate arrays from the solver.</span>
 <span class="sd">    pct : float</span>
 <span class="sd">        Fraction of the total footprint to enclose (0-1).</span>
+<span class="sd">    level : int</span>
+<span class="sd">        Z-index to use when *flx* is 3D. Default 0 (surface).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -136,6 +138,7 @@
 <span class="sd">    area : float</span>
 <span class="sd">        Approximate area [m^2] enclosed by that contour.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">flx</span><span class="p">,</span> <span class="n">grid</span> <span class="o">=</span> <span class="n">_maybe_slice_level</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
     <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">grid</span>
     <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="n">Y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -159,14 +162,21 @@
 <div class="viewcode-block" id="plot_footprint_field">
 <a class="viewcode-back" href="../../../src.html#bldfm.plotting.plot_footprint_field">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_footprint_field</span><span class="p">(</span>
-    <span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">contour_pcts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdYlBu_r&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">pcolormesh_kw</span>
+    <span class="n">flx</span><span class="p">,</span>
+    <span class="n">grid</span><span class="p">,</span>
+    <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">contour_pcts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdYlBu_r&quot;</span><span class="p">,</span>
+    <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">pcolormesh_kw</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot a 2-D footprint field with optional percentile contours.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    flx : ndarray (ny, nx)</span>
-<span class="sd">        Footprint (or concentration) field.</span>
+<span class="sd">    flx : ndarray (ny, nx) or (nz, ny, nx)</span>
+<span class="sd">        Footprint (or concentration) field. If 3D, sliced at *level*.</span>
 <span class="sd">    grid : tuple (X, Y, Z)</span>
 <span class="sd">        Coordinate arrays from the solver.</span>
 <span class="sd">    ax : matplotlib Axes, optional</span>
@@ -175,6 +185,8 @@
 <span class="sd">    cmap : str</span>
 <span class="sd">        Colourmap name.</span>
 <span class="sd">    title : str, optional</span>
+<span class="sd">    level : int</span>
+<span class="sd">        Z-index to use when *flx* is 3D. Default 0 (surface).</span>
 <span class="sd">    **pcolormesh_kw</span>
 <span class="sd">        Forwarded to ``ax.pcolormesh``.</span>
 
@@ -182,6 +194,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    ax : matplotlib Axes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">flx</span><span class="p">,</span> <span class="n">grid</span> <span class="o">=</span> <span class="n">_maybe_slice_level</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
     <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">grid</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">ensure_ax</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
 
@@ -232,6 +245,7 @@
     <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
     <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;RdYlBu_r&quot;</span><span class="p">,</span>
     <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Overlay footprint contours and tower marker(s) on map tiles.</span>
 
@@ -239,8 +253,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    flx : ndarray (ny, nx)</span>
-<span class="sd">        Footprint field.</span>
+<span class="sd">    flx : ndarray (ny, nx) or (nz, ny, nx)</span>
+<span class="sd">        Footprint field. If 3D, sliced at *level*.</span>
 <span class="sd">    grid : tuple (X, Y, Z)</span>
 <span class="sd">        Coordinate arrays (local metres).</span>
 <span class="sd">    config : BLDFMConfig</span>
@@ -264,6 +278,8 @@
 <span class="sd">    cmap : str</span>
 <span class="sd">        Colourmap for the footprint fill.</span>
 <span class="sd">    title : str, optional</span>
+<span class="sd">    level : int</span>
+<span class="sd">        Z-index to use when *flx* is 3D. Default 0 (surface).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -276,6 +292,7 @@
     <span class="k">if</span> <span class="n">ref_lat</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ref_lon</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;config.domain must have ref_lat and ref_lon for map plots&quot;</span><span class="p">)</span>
 
+    <span class="n">flx</span><span class="p">,</span> <span class="n">grid</span> <span class="o">=</span> <span class="n">_maybe_slice_level</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
     <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">grid</span>
     <span class="n">lats</span><span class="p">,</span> <span class="n">lons</span> <span class="o">=</span> <span class="n">_geo</span><span class="o">.</span><span class="n">xy_to_latlon</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">ref_lat</span><span class="p">,</span> <span class="n">ref_lon</span><span class="p">)</span>
 

@@ -109,20 +109,20 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">._common</span><span class="w"> </span><span class="kn">import</span> <span class="n">optional_import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._common</span><span class="w"> </span><span class="kn">import</span> <span class="n">optional_import</span><span class="p">,</span> <span class="n">_maybe_slice_level</span>
 
 
 <div class="viewcode-block" id="plot_footprint_interactive">
 <a class="viewcode-back" href="../../../src.html#bldfm.plotting.plot_footprint_interactive">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_footprint_interactive</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_footprint_interactive</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an interactive Plotly heatmap of the footprint.</span>
 
 <span class="sd">    Requires the optional ``plotly`` package.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    flx : ndarray (ny, nx)</span>
-<span class="sd">        Footprint field.</span>
+<span class="sd">    flx : ndarray (ny, nx) or (nz, ny, nx)</span>
+<span class="sd">        Footprint field. If 3D, sliced at *level*.</span>
 <span class="sd">    grid : tuple (X, Y, Z)</span>
 <span class="sd">        Coordinate arrays.</span>
 <span class="sd">    title : str, optional</span>
@@ -130,6 +130,8 @@
 <span class="sd">        (xmin, xmax) axis range.  Useful for excluding halo padding.</span>
 <span class="sd">    ylim : tuple of float, optional</span>
 <span class="sd">        (ymin, ymax) axis range.</span>
+<span class="sd">    level : int</span>
+<span class="sd">        Z-index to use when *flx* is 3D. Default 0 (surface).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -137,6 +139,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">go</span> <span class="o">=</span> <span class="n">optional_import</span><span class="p">(</span><span class="s2">&quot;plotly.graph_objects&quot;</span><span class="p">,</span> <span class="s2">&quot;plotly&quot;</span><span class="p">)</span>
 
+    <span class="n">flx</span><span class="p">,</span> <span class="n">grid</span> <span class="o">=</span> <span class="n">_maybe_slice_level</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
     <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">grid</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span> <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">X</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">Y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="n">Y</span>

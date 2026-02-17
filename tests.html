@@ -146,6 +146,12 @@ $<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span
 </ul>
 <p>The tests use parameterized inputs to check the function’s output shapes, values, and physical consistency across various scenarios.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="tests.test_pbl_model.test_both_z0_and_ustar_raises">
+<span class="sig-prename descclassname"><span class="pre">tests.test_pbl_model.</span></span><span class="sig-name descname"><span class="pre">test_both_z0_and_ustar_raises</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_pbl_model.html#test_both_z0_and_ustar_raises"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_pbl_model.test_both_z0_and_ustar_raises" title="Link to this definition">¶</a></dt>
+<dd><p>Test that providing both z0 and ustar raises ValueError.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="tests.test_pbl_model.test_constant_closure">
 <span class="sig-prename descclassname"><span class="pre">tests.test_pbl_model.</span></span><span class="sig-name descname"><span class="pre">test_constant_closure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ustar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prsc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_pbl_model.html#test_constant_closure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_pbl_model.test_constant_closure" title="Link to this definition">¶</a></dt>
 <dd><p>Test the CONSTANT closure for scalar inputs.</p>
@@ -154,6 +160,12 @@ $<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AssertionError" title="(in Python v3.14)"><strong>AssertionError</strong></a> – If the output shapes do not match the expected dimensions or if the profiles are not constant.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_pbl_model.test_invalid_closure_raises">
+<span class="sig-prename descclassname"><span class="pre">tests.test_pbl_model.</span></span><span class="sig-name descname"><span class="pre">test_invalid_closure_raises</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_pbl_model.html#test_invalid_closure_raises"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_pbl_model.test_invalid_closure_raises" title="Link to this definition">¶</a></dt>
+<dd><p>Test that an invalid closure type raises ValueError.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -167,10 +179,52 @@ $<span class="w"> </span>pytest<span class="w"> </span>-v<span class="w"> </span
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_pbl_model.test_mostm_closure">
+<span class="sig-prename descclassname"><span class="pre">tests.test_pbl_model.</span></span><span class="sig-name descname"><span class="pre">test_mostm_closure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_pbl_model.html#test_mostm_closure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_pbl_model.test_mostm_closure" title="Link to this definition">¶</a></dt>
+<dd><p>Test the MOSTM (modified MOST) closure has anisotropic diffusion.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_pbl_model.test_oaahoc_closure">
+<span class="sig-prename descclassname"><span class="pre">tests.test_pbl_model.</span></span><span class="sig-name descname"><span class="pre">test_oaahoc_closure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_pbl_model.html#test_oaahoc_closure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_pbl_model.test_oaahoc_closure" title="Link to this definition">¶</a></dt>
+<dd><p>Test the OAAHOC (one-and-a-half order) closure with explicit TKE.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_pbl_model.test_oaahoc_closure_default_tke">
+<span class="sig-prename descclassname"><span class="pre">tests.test_pbl_model.</span></span><span class="sig-name descname"><span class="pre">test_oaahoc_closure_default_tke</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_pbl_model.html#test_oaahoc_closure_default_tke"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_pbl_model.test_oaahoc_closure_default_tke" title="Link to this definition">¶</a></dt>
+<dd><p>Test that OAAHOC defaults TKE to 1.0 when not provided.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_pbl_model.test_stretch_and_domain_height">
+<span class="sig-prename descclassname"><span class="pre">tests.test_pbl_model.</span></span><span class="sig-name descname"><span class="pre">test_stretch_and_domain_height</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_pbl_model.html#test_stretch_and_domain_height"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_pbl_model.test_stretch_and_domain_height" title="Link to this definition">¶</a></dt>
+<dd><p>Test custom stretch and domain_height parameters.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_pbl_model.test_z0_only_path">
+<span class="sig-prename descclassname"><span class="pre">tests.test_pbl_model.</span></span><span class="sig-name descname"><span class="pre">test_z0_only_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_pbl_model.html#test_z0_only_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_pbl_model.test_z0_only_path" title="Link to this definition">¶</a></dt>
+<dd><p>Test that providing z0 without ustar derives ustar from z0.</p>
+</dd></dl>
+
 </section>
 <section id="module-tests.test_config">
 <span id="tests-test-config-module"></span><h3>tests.test_config module<a class="headerlink" href="#module-tests.test_config" title="Link to this heading">¶</a></h3>
 <p>Tests for config_parser module.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_domain_full_output">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_domain_full_output</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_domain_full_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_domain_full_output" title="Link to this definition">¶</a></dt>
+<dd><p>Test that full_output in domain config round-trips correctly.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_config.test_domain_full_output_default">
+<span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_domain_full_output_default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_domain_full_output_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_domain_full_output_default" title="Link to this definition">¶</a></dt>
+<dd><p>Test that full_output defaults to False when not specified.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="tests.test_config.test_domain_output_levels">
 <span class="sig-prename descclassname"><span class="pre">tests.test_config.</span></span><span class="sig-name descname"><span class="pre">test_domain_output_levels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_config.html#test_domain_output_levels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_config.test_domain_output_levels" title="Link to this definition">¶</a></dt>
@@ -389,6 +443,15 @@ Currently, this test is similar to combining the <cite>pbl_model</cite> and <cit
 </ul>
 </section>
 <dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_convergence_trend">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_convergence_trend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_convergence_trend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_convergence_trend" title="Link to this definition">¶</a></dt>
+<dd><p>Verify that numerical error decreases monotonically with resolution.</p>
+<p>Runs the solver at 3 resolution levels against the analytic solution
+(CONSTANT closure) and asserts that relative MSE decreases at each
+refinement step.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="tests.test_integration.test_integration">
 <span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_integration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_integration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_integration" title="Link to this definition">¶</a></dt>
 <dd><p>Tests the combined behavior of the <cite>pbl_model</cite>, <cite>utils</cite>, and <cite>solver</cite> components.</p>
@@ -404,6 +467,42 @@ Currently, this test is similar to combining the <cite>pbl_model</cite> and <cit
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AssertionError" title="(in Python v3.14)"><strong>AssertionError</strong></a> – If the numerical and analytical solutions differ beyond the specified tolerance.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_solver_double_precision">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_solver_double_precision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_solver_double_precision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_solver_double_precision" title="Link to this definition">¶</a></dt>
+<dd><p>Verify double precision path produces float64 output.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_solver_halo_overflow">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_solver_halo_overflow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_solver_halo_overflow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_solver_halo_overflow" title="Link to this definition">¶</a></dt>
+<dd><p>Verify solver handles modes exceeding grid+halo gracefully.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_solver_invalid_precision_raises">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_solver_invalid_precision_raises</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_solver_invalid_precision_raises"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_solver_invalid_precision_raises" title="Link to this definition">¶</a></dt>
+<dd><p>Verify invalid precision raises ValueError.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_solver_non_footprint_shift">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_solver_non_footprint_shift</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_solver_non_footprint_shift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_solver_non_footprint_shift" title="Link to this definition">¶</a></dt>
+<dd><p>Verify non-footprint mode with non-zero meas_pt (shift path).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_solver_odd_modes_raises">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_solver_odd_modes_raises</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_solver_odd_modes_raises"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_solver_odd_modes_raises" title="Link to this definition">¶</a></dt>
+<dd><p>Verify odd modes raise ValueError.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_solver_single_precision">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_solver_single_precision</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_solver_single_precision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_solver_single_precision" title="Link to this definition">¶</a></dt>
+<dd><p>Verify single precision path produces float32 output.</p>
 </dd></dl>
 
 </section>
@@ -460,6 +559,12 @@ Currently, this test is similar to combining the <cite>pbl_model</cite> and <cit
 <dt class="sig sig-object py" id="tests.test_io.test_load_nonexistent_raises">
 <span class="sig-prename descclassname"><span class="pre">tests.test_io.</span></span><span class="sig-name descname"><span class="pre">test_load_nonexistent_raises</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_io.html#test_load_nonexistent_raises"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_io.test_load_nonexistent_raises" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_io.test_netcdf_3d_roundtrip">
+<span class="sig-prename descclassname"><span class="pre">tests.test_io.</span></span><span class="sig-name descname"><span class="pre">test_netcdf_3d_roundtrip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_io.html#test_netcdf_3d_roundtrip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_io.test_netcdf_3d_roundtrip" title="Link to this definition">¶</a></dt>
+<dd><p>Test save/load roundtrip with 3D output fields (z dimension).</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="tests.test_io.test_netcdf_global_attrs">
@@ -551,6 +656,12 @@ Currently, this test is similar to combining the <cite>pbl_model</cite> and <cit
 <span id="tests-test-plotting-module"></span><h3>tests.test_plotting module<a class="headerlink" href="#module-tests.test_plotting" title="Link to this heading">¶</a></h3>
 <p>Tests for the plotting module.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_extract_percentile_contour_3d_input">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_extract_percentile_contour_3d_input</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_extract_percentile_contour_3d_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_extract_percentile_contour_3d_input" title="Link to this definition">¶</a></dt>
+<dd><p>extract_percentile_contour auto-slices 3D input.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="tests.test_plotting.test_get_source_area_basic">
 <span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_get_source_area_basic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_get_source_area_basic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_get_source_area_basic" title="Link to this definition">¶</a></dt>
 <dd><p>Test that get_source_area returns correct shape and value range.</p>
@@ -560,6 +671,18 @@ Currently, this test is similar to combining the <cite>pbl_model</cite> and <cit
 <dt class="sig sig-object py" id="tests.test_plotting.test_get_source_area_monotone">
 <span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_get_source_area_monotone</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_get_source_area_monotone"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_get_source_area_monotone" title="Link to this definition">¶</a></dt>
 <dd><p>Test that higher g values map to lower rescaled values.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_maybe_slice_level_2d_passthrough">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_maybe_slice_level_2d_passthrough</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_maybe_slice_level_2d_passthrough"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_maybe_slice_level_2d_passthrough" title="Link to this definition">¶</a></dt>
+<dd><p>2D field and grid pass through unchanged.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_maybe_slice_level_3d_slicing">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_maybe_slice_level_3d_slicing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_maybe_slice_level_3d_slicing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_maybe_slice_level_3d_slicing" title="Link to this definition">¶</a></dt>
+<dd><p>3D field is sliced correctly at the given level.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -584,6 +707,12 @@ Currently, this test is similar to combining the <cite>pbl_model</cite> and <cit
 <dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_comparison">
 <span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_comparison" title="Link to this definition">¶</a></dt>
 <dd><p>Test multi-panel comparison plot.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_field_3d_input">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_field_3d_input</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_field_3d_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_field_3d_input" title="Link to this definition">¶</a></dt>
+<dd><p>plot_footprint_field auto-slices 3D input at requested level.</p>
 </dd></dl>
 
 <dl class="py function">

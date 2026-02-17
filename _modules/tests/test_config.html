@@ -505,6 +505,55 @@
     <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">analytic</span> <span class="ow">is</span> <span class="kc">False</span>
     <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">solver</span><span class="o">.</span><span class="n">src_loc</span> <span class="ow">is</span> <span class="kc">None</span></div>
 
+
+
+<div class="viewcode-block" id="test_domain_full_output">
+<a class="viewcode-back" href="../../tests.html#tests.test_config.test_domain_full_output">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_domain_full_output</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that full_output in domain config round-trips correctly.&quot;&quot;&quot;</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;nx&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+            <span class="s2">&quot;ny&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span>
+            <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
+            <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
+            <span class="s2">&quot;nz&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+            <span class="s2">&quot;ref_lat&quot;</span><span class="p">:</span> <span class="mf">50.95</span><span class="p">,</span>
+            <span class="s2">&quot;ref_lon&quot;</span><span class="p">:</span> <span class="mf">11.586</span><span class="p">,</span>
+            <span class="s2">&quot;full_output&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;towers&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">50.9505</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">11.5865</span><span class="p">,</span> <span class="s2">&quot;z_m&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">},</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;met&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ustar&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">},</span>
+    <span class="p">}</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">parse_config_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">full_output</span> <span class="ow">is</span> <span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="test_domain_full_output_default">
+<a class="viewcode-back" href="../../tests.html#tests.test_config.test_domain_full_output_default">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_domain_full_output_default</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that full_output defaults to False when not specified.&quot;&quot;&quot;</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;nx&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+            <span class="s2">&quot;ny&quot;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span>
+            <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="mf">1000.0</span><span class="p">,</span>
+            <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="mf">500.0</span><span class="p">,</span>
+            <span class="s2">&quot;nz&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>
+            <span class="s2">&quot;ref_lat&quot;</span><span class="p">:</span> <span class="mf">50.95</span><span class="p">,</span>
+            <span class="s2">&quot;ref_lon&quot;</span><span class="p">:</span> <span class="mf">11.586</span><span class="p">,</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;towers&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">50.9505</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">11.5865</span><span class="p">,</span> <span class="s2">&quot;z_m&quot;</span><span class="p">:</span> <span class="mf">10.0</span><span class="p">},</span>
+        <span class="p">],</span>
+        <span class="s2">&quot;met&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;ustar&quot;</span><span class="p">:</span> <span class="mf">0.4</span><span class="p">},</span>
+    <span class="p">}</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">parse_config_dict</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">full_output</span> <span class="ow">is</span> <span class="kc">False</span></div>
+
 </pre></div>
 
           </div>
