@@ -85,8 +85,11 @@ def test_plot_footprint_timeseries():
     results = run_bldfm_timeseries(config, config.towers[0])
     grid = results[0]["grid"]
 
-    ax = plot_footprint_timeseries(results, grid, pcts=[0.5, 0.8])
+    ax = plot_footprint_timeseries(results, grid, pcts=[0.5, 0.8],
+                                   title="Footprint timeseries (test)")
     assert ax is not None
+    ax.figure.savefig("plots/test_footprint_timeseries.png", dpi=150,
+                      bbox_inches="tight")
     plt.close("all")
 
 
@@ -104,6 +107,30 @@ def test_plot_footprint_on_map_import_error(footprint_result_session):
             plot_footprint_on_map(result["flx"], result["grid"], config)
 
 
+def test_plot_footprint_on_map_happy_path(footprint_result_session):
+    """Test map plot with contextily tiles (requires network + contextily)."""
+    from bldfm.plotting import plot_footprint_on_map
+    try:
+        import contextily
+    except ImportError:
+        pytest.skip("contextily not installed")
+
+    result, config = footprint_result_session
+    try:
+        ax = plot_footprint_on_map(result["flx"], result["grid"], config,
+                                    contour_pcts=[0.5, 0.8],
+                                    title="Map plot (test)")
+    except Exception as exc:
+        # Network errors should not fail the test suite
+        if "URLError" in type(exc).__name__ or "ConnectionError" in type(exc).__name__:
+            pytest.skip(f"Network unavailable: {exc}")
+        raise
+    assert ax is not None
+    ax.figure.savefig("plots/test_footprint_on_map.png", dpi=150,
+                      bbox_inches="tight")
+    plt.close("all")
+
+
 # --- plot_wind_rose (skip if windrose not installed) ---
 
 def test_plot_wind_rose_import_error():
@@ -115,6 +142,25 @@ def test_plot_wind_rose_import_error():
     except ImportError:
         with pytest.raises(ImportError, match="windrose"):
             plot_wind_rose([1, 2, 3], [90, 180, 270])
+
+
+def test_plot_wind_rose_happy_path():
+    """Test wind rose plot with synthetic data (requires windrose)."""
+    from bldfm.plotting import plot_wind_rose
+    try:
+        import windrose
+    except ImportError:
+        pytest.skip("windrose not installed")
+
+    rng = np.random.default_rng(42)
+    ws = rng.uniform(1, 8, size=100)
+    wd = rng.uniform(0, 360, size=100)
+
+    ax = plot_wind_rose(ws, wd, title="Wind rose (test)")
+    assert ax is not None
+    ax.figure.savefig("plots/test_wind_rose.png", dpi=150,
+                      bbox_inches="tight")
+    plt.close("all")
 
 
 # --- plot_footprint_interactive ---
