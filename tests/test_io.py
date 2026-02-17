@@ -212,3 +212,85 @@ def test_netcdf_global_attrs(multitower_results_session):
         assert "units" in ds["x"].attrs
         assert "units" in ds["y"].attrs
         ds.close()
+
+
+def test_netcdf_3d_roundtrip():
+    """Test save/load roundtrip with 3D output fields (z dimension)."""
+    from bldfm.config_parser import parse_config_dict
+
+    nz_out, ny, nx = 4, 16, 32
+    n_time, n_towers = 2, 1
+
+    # Build mock 3D results
+    rng = np.random.default_rng(42)
+    Z, Y, X = np.meshgrid(
+        np.arange(nz_out, dtype=float),
+        np.linspace(0, 100, ny),
+        np.linspace(0, 200, nx),
+        indexing="ij",
+    )
+    grid = (X, Y, Z)
+
+    results = {
+        "tower_A": [
+            {
+                "grid": grid,
+                "flx": rng.random((nz_out, ny, nx)),
+                "conc": rng.random((nz_out, ny, nx)),
+                "tower_name": "tower_A",
+                "tower_xy": (0.0, 0.0),
+                "timestamp": f"t{t}",
+                "params": {
+                    "ustar": 0.4,
+                    "mol": -100.0,
+                    "wind_speed": 5.0,
+                    "wind_dir": 270.0,
+                },
+            }
+            for t in range(n_time)
+        ]
+    }
+
+    config = parse_config_dict(
+        {
+            "domain": {
+                "nx": nx,
+                "ny": ny,
+                "xmax": 200.0,
+                "ymax": 100.0,
+                "nz": 8,
+                "ref_lat": 0.0,
+                "ref_lon": 0.0,
+            },
+            "towers": [{"name": "tower_A", "lat": 0.0, "lon": 0.0, "z_m": 10.0}],
+            "met": {"ustar": 0.4},
+        }
+    )
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        filepath = f"{tmpdir}/test_3d.nc"
+        save_footprints_to_netcdf(results, config, filepath)
+        ds = load_footprints_from_netcdf(filepath)
+
+        # z dimension exists
+        assert "z" in ds.sizes
+        assert ds.sizes["z"] == nz_out
+        assert ds.sizes["time"] == n_time
+        assert ds.sizes["tower"] == n_towers
+
+        # Values roundtrip
+        for t in range(n_time):
+            np.testing.assert_allclose(
+                ds["footprint"].values[t, 0],
+                results["tower_A"][t]["flx"],
+                rtol=1e-6,
+            )
+            np.testing.assert_allclose(
+                ds["concentration"].values[t, 0],
+                results["tower_A"][t]["conc"],
+                rtol=1e-6,
+            )
+
+        # z coordinate values are correct
+        np.testing.assert_allclose(ds["z"].values, Z[:, 0, 0], rtol=1e-6)
+        ds.close()

@@ -472,4 +472,81 @@ def test_plot_source_area_gallery(footprint_result_session):
     assert fig is not None
     assert axes.shape == (2, 3)
     assert not axes[1, 2].get_visible()
+    fig.savefig("plots/test_source_area_gallery.png", dpi=150, bbox_inches="tight")
     plt.close("all")
+
+
+# --- _maybe_slice_level ---
+
+
+def test_maybe_slice_level_2d_passthrough():
+    """2D field and grid pass through unchanged."""
+    from bldfm.plotting._common import _maybe_slice_level
+
+    field = np.random.rand(32, 64)
+    X, Y = np.meshgrid(np.arange(64), np.arange(32))
+    Z = np.zeros_like(X)
+    grid = (X, Y, Z)
+    out_field, out_grid = _maybe_slice_level(field, grid, level=0)
+    assert out_field is field
+    assert out_grid is grid
+
+
+def test_maybe_slice_level_3d_slicing():
+    """3D field is sliced correctly at the given level."""
+    from bldfm.plotting._common import _maybe_slice_level
+
+    nz, ny, nx = 4, 8, 16
+    field = np.random.rand(nz, ny, nx)
+    Z, Y, X = np.meshgrid(np.arange(nz), np.arange(ny), np.arange(nx), indexing="ij")
+    grid = (X, Y, Z)
+
+    for lvl in range(nz):
+        out_field, out_grid = _maybe_slice_level(field, grid, level=lvl)
+        assert out_field.shape == (ny, nx)
+        np.testing.assert_array_equal(out_field, field[lvl])
+        assert out_grid[0].shape == (ny, nx)
+
+
+# --- 3D input handling in plotting functions ---
+
+
+def test_plot_footprint_field_3d_input():
+    """plot_footprint_field auto-slices 3D input at requested level."""
+    nz, ny, nx = 3, 16, 32
+    flx = np.abs(np.random.rand(nz, ny, nx))
+    Z, Y, X = np.meshgrid(
+        np.arange(nz),
+        np.linspace(0, 100, ny),
+        np.linspace(0, 200, nx),
+        indexing="ij",
+    )
+    grid = (X, Y, Z)
+
+    ax = plot_footprint_field(flx, grid, level=1)
+    assert ax is not None
+    plt.close("all")
+
+
+def test_extract_percentile_contour_3d_input():
+    """extract_percentile_contour auto-slices 3D input."""
+    nz, ny, nx = 3, 16, 32
+    flx = np.abs(np.random.rand(nz, ny, nx))
+    Z, Y, X = np.meshgrid(
+        np.arange(nz),
+        np.linspace(0, 100, ny),
+        np.linspace(0, 200, nx),
+        indexing="ij",
+    )
+    grid = (X, Y, Z)
+
+    level_val, area = extract_percentile_contour(flx, grid, pct=0.8, level=0)
+    assert isinstance(level_val, float)
+    assert area > 0
+
+    # Result should match slicing manually
+    level_manual, area_manual = extract_percentile_contour(
+        flx[0], (X[0], Y[0], Z[0]), pct=0.8
+    )
+    assert level_val == level_manual
+    assert area == area_manual
