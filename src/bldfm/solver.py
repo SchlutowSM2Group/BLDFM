@@ -1,5 +1,5 @@
 import numpy as np
-import gc
+
 
 from numpy.fft import fftshift, ifftshift, fftfreq
 from .fft_manager import fft2, ifft2, get_fft_manager
@@ -26,6 +26,7 @@ def steady_state_transport_solver(
     analytic=False,
     halo=None,
     precision="single",
+    cache=None,
 ):
     """
     Solves the steady-state advection-diffusion equation for a concentration
@@ -72,6 +73,12 @@ def steady_state_transport_solver(
         2D or 3D field of kinematic flux at levels or footprint.
     """
 
+    # Check cache for footprint mode
+    if cache is not None and footprint:
+        cached = cache.get(z, profiles, domain, modes, meas_pt, halo, precision)
+        if cached is not None:
+            return cached
+
     q0 = srf_flx
     p000 = srf_bg_conc
     u, v, Kx, Ky, Kz = profiles
@@ -81,7 +88,7 @@ def steady_state_transport_solver(
 
     # Check if modes are even
     if (nlx % 2 > 0) or (nly % 2 > 0):
-        raise Exception("modes must consist of even numbers.")
+        raise ValueError("modes must consist of even numbers.")
 
     # number of grid cells
     ny, nx = q0.shape
@@ -178,7 +185,7 @@ def steady_state_transport_solver(
         tfftq = np.zeros((nlvls, nly, nlx), dtype=np.complex128)
 
     else:
-        raise Exception("precision must be single (default) or double.")
+        raise ValueError("precision must be single (default) or double.")
 
     tfftp[0, 0, 0] = p000
     tfftq[:, 0, 0] = tfftq0[0, 0]  # conservation by design
@@ -288,8 +295,13 @@ def steady_state_transport_solver(
 
     Z, Y, X = np.meshgrid(z[levels], y, x, indexing="ij")
     grid = (np.squeeze(X), np.squeeze(Y), np.squeeze(Z))
+    result = (grid, np.squeeze(conc), np.squeeze(flx))
 
-    return grid, np.squeeze(conc), np.squeeze(flx)
+    # Store to cache for footprint mode
+    if cache is not None and footprint:
+        cache.put(z, profiles, domain, modes, meas_pt, halo, precision, *result)
+
+    return result
 
 
 @parallelize
