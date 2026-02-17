@@ -120,7 +120,7 @@ Generate reproducible test data without real observations:
 Low-level workflow
 ------------------
 
-For full control, you can call the solver steps directly (as in the ``runs/low_level/minimal_example.py`` script):
+For full control, you can call the solver steps directly (as in the ``examples/low_level/minimal_example.py`` script):
 
 .. code-block:: python
 
@@ -149,14 +149,14 @@ in the BLDFM paper.  To regenerate all of them at once (from the repo root):
 
 .. code-block:: bash
 
-    $ python -m runs.manuscript.generate_all
+    $ python runs/manuscript/generate_all.py
 
 Individual figures can also be generated separately:
 
 .. code-block:: bash
 
-    $ python -m runs.manuscript.comparison_footprint_unstable
-    $ python -m runs.manuscript.comparison_analytic
+    $ python runs/manuscript/interface/comparison_footprint_unstable.py
+    $ python runs/manuscript/interface/comparison_analytic.py
 
 Outputs are saved to ``plots/``.
 

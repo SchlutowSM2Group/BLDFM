@@ -1,7 +1,7 @@
 # BLDFM 3D Plume Example Configuration
 # =====================================
 # Point-source 3D plume dispersion with output on multiple vertical levels.
-# Equivalent to: runs/3d_plume.py
+# Equivalent to: examples/low_level/3d_plume.py
 # Run with: bldfm run examples/configs/3d_plume.yaml
 
 domain:

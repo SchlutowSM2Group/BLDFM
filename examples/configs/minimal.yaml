@@ -1,7 +1,7 @@
 # BLDFM Minimal Example Configuration
 # =====================================
 # Neutral boundary layer with basic dispersion (concentration field).
-# Equivalent to: runs/minimal_example.py
+# Equivalent to: examples/low_level/minimal_example.py
 # Run with: bldfm run examples/configs/minimal.yaml
 
 domain:

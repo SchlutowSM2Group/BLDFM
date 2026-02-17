@@ -67,11 +67,11 @@ $ pip install -e .
 
 ### Running Example Scripts
 
-BLDFM examples are organised in two tiers:
+BLDFM examples are organised in three tiers:
 
 - **`examples/`** — Config-driven, high-level interface (start here)
-- **`runs/low_level/`** — Direct API calls, for power users
-- **`runs/manuscript/`** — Paper reproduction scripts
+- **`examples/low_level/`** — Direct API calls, for power users
+- **`runs/manuscript/`** — Paper reproduction scripts (interface and low-level)
 
 ```bash
 # Config-driven examples (recommended)
@@ -82,10 +82,10 @@ $ python examples/footprint_example.py
 $ bldfm run examples/configs/multitower.yaml --plot
 
 # Low-level API examples
-$ python -m runs.low_level.minimal_example
+$ python examples/low_level/minimal_example.py
 
 # Manuscript figure reproduction
-$ python -m runs.manuscript.generate_all
+$ python runs/manuscript/generate_all.py
 ```
 
 Refer to the documentation for details on available APIs and how to create custom experiments.

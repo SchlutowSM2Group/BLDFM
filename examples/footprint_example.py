@@ -6,7 +6,7 @@ Computes a flux footprint and visualises it with percentile contours.
 Usage:
     python examples/footprint_example.py
 
-For the equivalent low-level API version, see runs/low_level/footprint_example.py.
+For the equivalent low-level API version, see examples/low_level/footprint_example.py.
 """
 
 from pathlib import Path

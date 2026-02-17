@@ -1,7 +1,7 @@
 # BLDFM Minimal 3D Example Configuration
 # =======================================
 # Basic 3D output on all vertical levels with diamond source.
-# Equivalent to: runs/minimal_example_3d.py
+# Equivalent to: examples/low_level/minimal_example_3d.py
 # Run with: bldfm run examples/configs/minimal_3d.yaml
 
 domain:

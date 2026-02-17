@@ -7,7 +7,7 @@ saves plots to the plots/ directory.
 Usage:
     python examples/minimal_example.py
 
-For the equivalent low-level API version, see runs/low_level/minimal_example.py.
+For the equivalent low-level API version, see examples/low_level/minimal_example.py.
 """
 
 from pathlib import Path

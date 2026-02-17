@@ -1,7 +1,7 @@
 # BLDFM Parallel Example Configuration
 # =====================================
 # High-resolution dispersion run using multiple threads.
-# Equivalent to: runs/parallel_example.py
+# Equivalent to: examples/low_level/parallel_example.py
 # Run with: bldfm run examples/configs/parallel.yaml
 
 domain:
