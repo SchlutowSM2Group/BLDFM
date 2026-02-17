@@ -34,6 +34,7 @@ plotting = [
     "contextily",
     "windrose",
     "plotly",
+    "owslib",
 ]
 
 [project.scripts]

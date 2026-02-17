@@ -15,6 +15,27 @@ logger = get_logger("plotting")
 
 
 # ---------------------------------------------------------------------------
+# ESA WorldCover 2021 configuration
+# ---------------------------------------------------------------------------
+
+_WORLDCOVER_WMS_URL = "https://services.terrascope.be/wms/v2"
+_WORLDCOVER_LAYER = "WORLDCOVER_2021_MAP"
+_WORLDCOVER_CLASSES = {
+    10: ("#006400", "Tree cover"),
+    20: ("#ffbb22", "Shrubland"),
+    30: ("#ffff4c", "Grassland"),
+    40: ("#f096ff", "Cropland"),
+    50: ("#fa0000", "Built-up"),
+    60: ("#b4b4b4", "Bare / sparse vegetation"),
+    70: ("#f0f0f0", "Snow and ice"),
+    80: ("#0064c8", "Permanent water bodies"),
+    90: ("#0096a0", "Herbaceous wetland"),
+    95: ("#00cf75", "Mangroves"),
+    100: ("#fae6a0", "Moss and lichen"),
+}
+
+
+# ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
@@ -27,6 +48,84 @@ def _xy_to_latlon(x, y, ref_lat, ref_lon):
     lats = ref_lat + np.degrees(y / R)
     lons = ref_lon + np.degrees(x / (R * np.cos(np.radians(ref_lat))))
     return lats, lons
+
+
+def _latlon_to_webmercator(lon, lat):
+    """Convert EPSG:4326 (lon, lat) to EPSG:3857 (x, y) Web Mercator."""
+    x = lon * 20037508.34 / 180.0
+    y = np.log(np.tan((90.0 + lat) * np.pi / 360.0)) / np.pi * 20037508.34
+    return float(x), float(y)
+
+
+def _fetch_land_cover(bbox_latlon, size=(512, 512), timeout=10):
+    """Fetch ESA WorldCover 2021 raster for a lat/lon bounding box.
+
+    Parameters
+    ----------
+    bbox_latlon : tuple (lon_min, lat_min, lon_max, lat_max)
+        Bounding box in EPSG:4326.
+    size : tuple (width, height)
+        Pixel dimensions of the returned image.
+    timeout : int
+        WMS request timeout in seconds.
+
+    Returns
+    -------
+    img : ndarray
+        RGBA image array.
+    extent : tuple (lon_min, lon_max, lat_min, lat_max)
+        Extent suitable for ``ax.imshow()`` in lon/lat space.
+    """
+    try:
+        from owslib.wms import WebMapService
+    except ImportError:
+        raise ImportError(
+            "owslib is required for land cover overlays. "
+            "Install it with: pip install owslib"
+        )
+    import io
+
+    # Terrascope WMS only supports EPSG:3857 — convert bbox
+    lon_min, lat_min, lon_max, lat_max = bbox_latlon
+    x_min, y_min = _latlon_to_webmercator(lon_min, lat_min)
+    x_max, y_max = _latlon_to_webmercator(lon_max, lat_max)
+
+    wms = WebMapService(_WORLDCOVER_WMS_URL, version="1.1.1", timeout=timeout)
+    response = wms.getmap(
+        layers=[_WORLDCOVER_LAYER],
+        srs="EPSG:3857",
+        bbox=(x_min, y_min, x_max, y_max),
+        size=size,
+        format="image/png",
+        transparent=True,
+    )
+    img = plt.imread(io.BytesIO(response.read()))
+    # Return extent in lat/lon for plotting in geographic coordinates
+    extent = (lon_min, lon_max, lat_min, lat_max)
+    return img, extent
+
+
+def _land_cover_legend(ax, classes=None):
+    """Add a categorical legend for ESA WorldCover classes.
+
+    Parameters
+    ----------
+    ax : matplotlib Axes
+    classes : list of int, optional
+        Subset of class values to show.  If None, shows all 11.
+    """
+    from matplotlib.patches import Patch
+
+    if classes is None:
+        classes = sorted(_WORLDCOVER_CLASSES.keys())
+
+    patches = [
+        Patch(facecolor=_WORLDCOVER_CLASSES[c][0],
+              label=_WORLDCOVER_CLASSES[c][1])
+        for c in classes if c in _WORLDCOVER_CLASSES
+    ]
+    ax.legend(handles=patches, loc="lower left", fontsize=7,
+              framealpha=0.8, title="Land cover", title_fontsize=8)
 
 
 def extract_percentile_contour(flx, grid, pct=0.8):
@@ -101,15 +200,19 @@ def plot_footprint_field(flx, grid, ax=None, contour_pcts=None,
         _, ax = plt.subplots()
 
     pm = ax.pcolormesh(X, Y, flx, cmap=cmap, shading="auto", **pcolormesh_kw)
-    plt.colorbar(pm, ax=ax, label="Footprint [m$^{-2}$]")
+    ax.figure.colorbar(pm, ax=ax, label="Footprint [m$^{-2}$]")
 
     if contour_pcts is not None:
         levels = []
+        pct_labels = {}
         for p in sorted(contour_pcts):
             lvl, _ = extract_percentile_contour(flx, grid, p)
             levels.append(lvl)
-        ax.contour(X, Y, flx, levels=sorted(levels), colors="k",
-                   linewidths=0.8, linestyles="--")
+            pct_labels[lvl] = f"{int(p * 100)}%"
+        cs = ax.contour(X, Y, flx, levels=sorted(levels), colors="k",
+                        linewidths=0.8, linestyles="--")
+        ax.clabel(cs, fmt=lambda x: pct_labels.get(x, f"{x:.2e}"),
+                  fontsize=8, inline=True)
 
     ax.set_xlabel("x [m]")
     ax.set_ylabel("y [m]")
@@ -121,10 +224,11 @@ def plot_footprint_field(flx, grid, ax=None, contour_pcts=None,
 
 def plot_footprint_on_map(flx, grid, config, tower=None, ax=None,
                           contour_pcts=None, tile_source=None,
+                          land_cover=False, land_cover_size=(512, 512),
                           alpha=0.5, cmap="RdYlBu_r", title=None):
     """Overlay footprint contours and tower marker(s) on map tiles.
 
-    Requires the optional ``contextily`` package.
+    Requires ``contextily`` (default) or ``owslib`` (when *land_cover=True*).
 
     Parameters
     ----------
@@ -140,7 +244,14 @@ def plot_footprint_on_map(flx, grid, config, tower=None, ax=None,
     contour_pcts : list of float, optional
         Percentile contours to draw (default [0.5, 0.8]).
     tile_source : contextily tile source, optional
-        Defaults to OpenStreetMap.
+        Defaults to OpenStreetMap.  Ignored when *land_cover=True* unless
+        explicitly provided (in which case both layers are rendered).
+    land_cover : bool
+        If True, use ESA WorldCover 2021 as the basemap instead of OSM
+        tiles.  Requires the optional ``owslib`` package.
+    land_cover_size : tuple of int
+        Pixel dimensions (width, height) for the WMS request (default
+        (512, 512)).  Increase for higher resolution.
     alpha : float
         Transparency for footprint fill.
     cmap : str
@@ -151,14 +262,6 @@ def plot_footprint_on_map(flx, grid, config, tower=None, ax=None,
     -------
     ax : matplotlib Axes
     """
-    try:
-        import contextily as ctx
-    except ImportError:
-        raise ImportError(
-            "contextily is required for map plots. "
-            "Install it with: pip install contextily"
-        )
-
     ref_lat = config.domain.ref_lat
     ref_lon = config.domain.ref_lon
     if ref_lat is None or ref_lon is None:
@@ -174,34 +277,70 @@ def plot_footprint_on_map(flx, grid, config, tower=None, ax=None,
     if contour_pcts is None:
         contour_pcts = [0.5, 0.8]
 
+    # --- Plot data first (sets axes extent for contextily) ---
+
     # Filled contour of the footprint
     levels_fill = []
+    pct_labels = {}
     for p in sorted(contour_pcts):
         lvl, _ = extract_percentile_contour(flx, grid, p)
         levels_fill.append(lvl)
+        pct_labels[lvl] = f"{int(p * 100)}%"
     levels_fill = sorted(levels_fill)
 
-    ax.contourf(lons, lats, flx, levels=20, cmap=cmap, alpha=alpha)
-    ax.contour(lons, lats, flx, levels=levels_fill, colors="k",
-               linewidths=1.0, linestyles="--")
+    ax.contourf(lons, lats, flx, levels=20, cmap=cmap, alpha=alpha, zorder=2)
+    cs = ax.contour(lons, lats, flx, levels=levels_fill, colors="k",
+                    linewidths=1.0, linestyles="--", zorder=3)
+    ax.clabel(cs, fmt=lambda x: pct_labels.get(x, f"{x:.2e}"),
+              fontsize=8, inline=True)
 
     # Tower markers
     towers_to_plot = [tower] if tower is not None else config.towers
     for t in towers_to_plot:
         ax.plot(t.lon, t.lat, "k^", markersize=10, markeredgecolor="white",
-                markeredgewidth=1.5)
+                markeredgewidth=1.5, zorder=4)
         ax.annotate(t.name, (t.lon, t.lat), textcoords="offset points",
                     xytext=(8, 8), fontsize=9, fontweight="bold",
-                    color="black",
+                    color="black", zorder=4,
                     bbox=dict(boxstyle="round,pad=0.2", fc="white", alpha=0.7))
 
-    # Add basemap tiles
-    if tile_source is None:
-        tile_source = ctx.providers.OpenStreetMap.Mapnik
-    ctx.add_basemap(ax, crs="EPSG:4326", source=tile_source)
+    # --- Basemap layer (added after data so axes extent is correct) ---
+    lon_min, lon_max = float(lons.min()), float(lons.max())
+    lat_min, lat_max = float(lats.min()), float(lats.max())
+
+    if land_cover:
+        bbox = (lon_min, lat_min, lon_max, lat_max)
+        lc_img, lc_extent = _fetch_land_cover(bbox, size=land_cover_size)
+        ax.imshow(lc_img, extent=lc_extent, origin="upper",
+                  aspect="auto", zorder=0)
+        _land_cover_legend(ax)
+
+        # If user also explicitly passed tile_source, add that too
+        if tile_source is not None:
+            try:
+                import contextily as ctx
+            except ImportError:
+                raise ImportError(
+                    "contextily is required when combining land_cover with "
+                    "tile_source. Install it with: pip install contextily"
+                )
+            ctx.add_basemap(ax, crs="EPSG:4326", source=tile_source,
+                            zorder=1)
+    else:
+        try:
+            import contextily as ctx
+        except ImportError:
+            raise ImportError(
+                "contextily is required for map plots. "
+                "Install it with: pip install contextily"
+            )
+        if tile_source is None:
+            tile_source = ctx.providers.OpenStreetMap.Mapnik
+        ctx.add_basemap(ax, crs="EPSG:4326", source=tile_source, zorder=1)
 
     ax.set_xlabel("Longitude")
     ax.set_ylabel("Latitude")
+    ax.ticklabel_format(useOffset=False, style="plain")
     if title:
         ax.set_title(title)
     return ax
@@ -293,11 +432,11 @@ def plot_footprint_timeseries(results, grid, pcts=None, ax=None, title=None):
     ax.legend()
     if title:
         ax.set_title(title)
-    plt.tight_layout()
+    ax.figure.tight_layout()
     return ax
 
 
-def plot_footprint_interactive(flx, grid, title=None):
+def plot_footprint_interactive(flx, grid, title=None, xlim=None, ylim=None):
     """Create an interactive Plotly heatmap of the footprint.
 
     Requires the optional ``plotly`` package.
@@ -309,6 +448,10 @@ def plot_footprint_interactive(flx, grid, title=None):
     grid : tuple (X, Y, Z)
         Coordinate arrays.
     title : str, optional
+    xlim : tuple of float, optional
+        (xmin, xmax) axis range.  Useful for excluding halo padding.
+    ylim : tuple of float, optional
+        (ymin, ymax) axis range.
 
     Returns
     -------
@@ -326,6 +469,14 @@ def plot_footprint_interactive(flx, grid, title=None):
     x = X[0, :] if X.ndim == 2 else X
     y = Y[:, 0] if Y.ndim == 2 else Y
 
+    # Crop data to physical domain (removes halo padding)
+    if xlim is not None:
+        xmask = (x >= xlim[0]) & (x <= xlim[1])
+        x, flx = x[xmask], flx[:, xmask]
+    if ylim is not None:
+        ymask = (y >= ylim[0]) & (y <= ylim[1])
+        y, flx = y[ymask], flx[ymask, :]
+
     fig = go.Figure(data=go.Heatmap(
         z=flx,
         x=x,
@@ -333,11 +484,20 @@ def plot_footprint_interactive(flx, grid, title=None):
         colorscale="RdYlBu_r",
         colorbar=dict(title="Footprint [m⁻²]"),
     ))
+    # Size figure to match data aspect ratio
+    x_range = float(x.max() - x.min()) or 1.0
+    y_range = float(y.max() - y.min()) or 1.0
+    base_width = 650
+    margin_px = 150  # title, labels, colorbar
+    fig_height = int(base_width * (y_range / x_range) + margin_px)
+
     fig.update_layout(
         xaxis_title="x [m]",
         yaxis_title="y [m]",
         title=title or "BLDFM Footprint",
-        yaxis=dict(scaleanchor="x", scaleratio=1),
+        yaxis=dict(scaleanchor="x", scaleratio=1, constrain="domain"),
+        width=base_width + margin_px,
+        height=fig_height,
     )
     return fig
 
@@ -729,7 +889,7 @@ def plot_vertical_slice(field, grid, slice_axis, slice_index, ax=None,
     else:
         raise ValueError(f"slice_axis must be 'x', 'y', or 'z', got {slice_axis}")
 
-    plt.colorbar(pm, ax=ax)
+    ax.figure.colorbar(pm, ax=ax)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     if title:
