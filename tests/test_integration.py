@@ -9,6 +9,10 @@ Functions:
 - test_integration: Tests the combined behavior of the `pbl_model`, `utils`, and `solver` components.
 """
 
+import pytest
+
+pytestmark = pytest.mark.integration
+
 import numpy as np
 from bldfm.pbl_model import vertical_profiles
 from bldfm.utils import ideal_source
