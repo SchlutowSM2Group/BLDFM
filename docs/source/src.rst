@@ -97,10 +97,66 @@ bldfm.cache module
 Plotting
 --------
 
-bldfm.plotting module
-^^^^^^^^^^^^^^^^^^^^^
+bldfm.plotting package
+^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: bldfm.plotting
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.plotting.footprint module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: bldfm.plotting.footprint
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.plotting.comparison module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: bldfm.plotting.comparison
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.plotting.diagnostics module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: bldfm.plotting.diagnostics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.plotting.timeseries module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: bldfm.plotting.timeseries
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.plotting.interactive module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: bldfm.plotting.interactive
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.plotting.meteorology module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: bldfm.plotting.meteorology
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+bldfm.plotting.contours module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: bldfm.plotting.contours
    :members:
    :undoc-members:
    :show-inheritance:

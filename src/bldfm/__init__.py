@@ -6,6 +6,12 @@ from .utils import (
     ideal_source,
     setup_logging,
     get_logger,
+    get_source_area,
+    source_area_contribution,
+    source_area_circular,
+    source_area_upwind,
+    source_area_crosswind,
+    source_area_sector,
 )
 
 _initialized = False
@@ -45,6 +51,8 @@ from .plotting import (
     plot_convergence,
     plot_vertical_profiles,
     plot_vertical_slice,
+    plot_source_area_contours,
+    plot_source_area_gallery,
 )
 
 __all__ = [
@@ -54,6 +62,12 @@ __all__ = [
     "ideal_source",
     "setup_logging",
     "get_logger",
+    "get_source_area",
+    "source_area_contribution",
+    "source_area_circular",
+    "source_area_upwind",
+    "source_area_crosswind",
+    "source_area_sector",
     "load_config",
     "parse_config_dict",
     "BLDFMConfig",
@@ -77,4 +91,6 @@ __all__ = [
     "plot_convergence",
     "plot_vertical_profiles",
     "plot_vertical_slice",
+    "plot_source_area_contours",
+    "plot_source_area_gallery",
 ]
