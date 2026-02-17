@@ -15,9 +15,8 @@
 import os
 import sys
 
+sys.path.insert(0, os.path.abspath("../../src"))
 sys.path.insert(0, os.path.abspath("../../"))
-
-print(sys.path)
 
 
 # -- Project information -----------------------------------------------------
@@ -27,9 +26,9 @@ copyright = "2025, Mark Schlutow, Ray Chew, Mathias Göckede"
 author = "Mark Schlutow, Ray Chew, Mathias Göckede"
 
 # The short X.Y version
-version = "0.9"
+version = "1.0"
 # The full version, including alpha/beta/rc tags
-release = "0.9.0"
+release = "1.0.0-dev"
 
 
 # -- General configuration ---------------------------------------------------
@@ -43,7 +42,6 @@ release = "0.9.0"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.todo",
     "sphinx.ext.coverage",

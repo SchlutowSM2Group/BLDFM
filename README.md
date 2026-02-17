@@ -37,6 +37,12 @@ Refer to the documentation for details on available APIs and how to create custo
 - **Numerical Solver**: Solves the steady-state advection-diffusion equation using Fourier transforms and the linear shooting method.
 - **Fast and Robust**: Utilizes the Fast Fourier Transform and Exponential Integrator Method for computational efficiency.
 - **Atmospheric Stability**: Computes vertical profiles of mean wind and eddy diffusivity using Monin-Obukhov Similarity Theory.
+- **Config-driven Workflows**: YAML configuration files and a CLI (`bldfm run config.yaml`) for reproducible simulations.
+- **Multi-tower & Timeseries**: Run footprints for multiple towers across time-varying meteorology.
+- **Parallel Execution**: Distribute tower and timestep solves across CPU cores.
+- **NetCDF I/O**: Save and load multi-tower results in CF-1.8 compliant NetCDF format.
+- **Plotting Library**: Footprint fields, contour comparisons, convergence plots, vertical profiles and slices, map overlays, and interactive Plotly plots.
+- **Caching**: Disk-based caching of Green's function results to avoid redundant solves.
 - **Validation**: Tested against analytical solutions with relative differences of less than 0.1‰ under typical conditions.
 - **Comparison**: Demonstrates general agreement with the Kormann and Meixner footprint model, highlighting differences in turbulent mixing.
 
@@ -60,18 +66,26 @@ $ pip install -e .
 ```
 
 ### Running Example Scripts
-The example scripts are located in the `runs` subdirectory. After installation, you can run them as follows:
-```bash
-# BLDFM root directory
-$ python -m runs.example_script_name
-```
-Replace `example_script_name` with the desired script, such as `comparison_footprint`.
 
-### Execution without installation
-To execute a specific example without first installing BLDFM, clone the repository and run the script. For example:
+BLDFM examples are organised in three tiers:
+
+- **`examples/`** — Config-driven, high-level interface (start here)
+- **`examples/low_level/`** — Direct API calls, for power users
+- **`runs/manuscript/`** — Paper reproduction scripts (interface and low-level)
+
 ```bash
-# BLDFM root directory
-$ python -m runs.comparison_footprint
+# Config-driven examples (recommended)
+$ python examples/minimal_example.py
+$ python examples/footprint_example.py
+
+# Or use the CLI with a YAML config
+$ bldfm run examples/configs/multitower.yaml --plot
+
+# Low-level API examples
+$ python examples/low_level/minimal_example.py
+
+# Manuscript figure reproduction
+$ python runs/manuscript/generate_all.py
 ```
 
 Refer to the documentation for details on available APIs and how to create custom experiments.
@@ -84,15 +98,22 @@ $ pip install '.[dev]'
 ```
 
 ### Parallelization
-For large domains and number of Fourier modes, a considerable acceleration can be achieved by running BLDFM in parallel mode.
-The number of parallel threads can be set with the global variable `config.NUM_THREADS`. 
+
+Thread-level parallelism (BLAS/numba) and process-level parallelism (multi-tower/timeseries) are configured via YAML:
+
+```yaml
+parallel:
+  num_threads: 4    # BLAS/numba threads per worker
+  max_workers: 2    # parallel workers for multi-tower/timeseries
+  use_cache: true   # cache solver results to skip duplicate met conditions
+```
+
+Or set threads programmatically:
 
 ```python
 from bldfm import config
-config.NUM_THREADS = 2
+config.NUM_THREADS = 4
 ```
-
-`config.NUM_THREADS = 1` is default and equivalent to serial mode. 
 
 ## License
 This project is licensed under the GNU License. See the [LICENSE file](https://github.com/SchlutowSM2Group/BLDFM/blob/main/LICENSE) for details.
