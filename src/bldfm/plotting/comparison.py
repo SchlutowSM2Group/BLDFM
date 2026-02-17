@@ -89,7 +89,9 @@ def plot_footprint_comparison(
     return fig, axes
 
 
-def plot_field_comparison(fields, domain, src_pt=None, cmap="turbo", figsize=None, level=0):
+def plot_field_comparison(
+    fields, domain, src_pt=None, cmap="turbo", figsize=None, level=0
+):
     """2x2 panel comparison: conc, flux, and relative differences.
 
     Top-left: concentration, top-right: flux.
