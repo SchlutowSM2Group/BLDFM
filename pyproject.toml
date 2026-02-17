@@ -41,6 +41,7 @@ plotting = [
 bldfm = "bldfm.cli:main"
 
 [tool.pytest.ini_options]
+testpaths = ["tests"]
 markers = [
     "unit: Fast tests that do not run the solver",
     "integration: Tests that run the solver (single, timeseries, multitower, I/O)",

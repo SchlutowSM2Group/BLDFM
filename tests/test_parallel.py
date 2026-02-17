@@ -1,5 +1,9 @@
 """Tests for parallel execution."""
 
+import os
+from concurrent.futures import ProcessPoolExecutor
+from unittest.mock import patch
+
 import numpy as np
 import pytest
 
@@ -8,6 +12,40 @@ pytestmark = pytest.mark.parallel
 from bldfm.config_parser import parse_config_dict
 from bldfm.interface import run_bldfm_multitower, run_bldfm_parallel
 from bldfm.synthetic import generate_synthetic_timeseries, generate_towers_grid
+
+
+class _TrackedPool(ProcessPoolExecutor):
+    """Wrapper that records pool usage for diagnostics."""
+
+    instances = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._max_workers_requested = kwargs.get("max_workers", args[0] if args else None)
+        self._map_calls = []
+        _TrackedPool.instances.append(self)
+
+    def map(self, fn, *iterables, **kwargs):
+        items = [list(it) for it in iterables]
+        n_tasks = len(items[0]) if items else 0
+        self._map_calls.append({"fn": fn.__name__, "n_tasks": n_tasks})
+        return super().map(fn, *[iter(i) for i in items], **kwargs)
+
+
+@pytest.fixture(autouse=True)
+def track_pool():
+    """Patch ProcessPoolExecutor to print diagnostics after each test."""
+    _TrackedPool.instances.clear()
+    with patch("bldfm.interface.ProcessPoolExecutor", _TrackedPool):
+        yield
+    if _TrackedPool.instances:
+        for i, pool in enumerate(_TrackedPool.instances):
+            for call in pool._map_calls:
+                print(
+                    f"  Pool #{i + 1}: max_workers={pool._max_workers_requested}, "
+                    f"fn={call['fn']}, tasks={call['n_tasks']}, "
+                    f"pid={os.getpid()}"
+                )
 
 
 @pytest.fixture
