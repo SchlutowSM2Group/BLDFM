@@ -1,9 +1,9 @@
-Full tutorial: verifying all v1.0 features
-==========================================
+Full tutorial
+=============
 
-This tutorial walks through every feature added in the v1.0 expansion,
-organised by implementation phase.  Each section includes verification checks
-so you can confirm the feature works correctly.
+This tutorial covers every major BLDFM capability, organized by what you want
+to accomplish.  It assumes you have completed the :doc:`tutorial_quickstart`
+and have BLDFM installed.
 
 .. contents:: Sections
    :local:
@@ -17,8 +17,7 @@ Prerequisites
     $ pip install -e ".[dev,plotting]"
 
 All code below assumes you are in the repository root and have an active Python
-session (script or interactive shell).  Small grid sizes are used throughout
-for fast execution.
+session.  Small grid sizes are used throughout for fast execution.
 
 .. code-block:: python
 
@@ -26,368 +25,199 @@ for fast execution.
     bldfm.initialize()
 
 
-Phase 0: Housekeeping
----------------------
+Configuration
+-------------
 
-Explicit initialisation
-^^^^^^^^^^^^^^^^^^^^^^^
+BLDFM configurations define the computational domain, tower positions,
+meteorological forcing, and solver settings.  You can load configs from YAML
+files or build them programmatically in Python.
 
-Import-time side effects were removed in Phase 0.  You must call
-``initialize()`` explicitly before running simulations.
+Loading a YAML config
+^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: python
-
-    import bldfm
-
-    # Before initialisation
-    print(f"Before: bldfm._initialized = {bldfm._initialized}")
-
-    bldfm.initialize()
-
-    print(f"After: bldfm._initialized = {bldfm._initialized}")
-
-    # Verify
-    import os
-    assert bldfm._initialized is True
-    assert os.path.isdir("logs")
-    assert os.path.isdir("plots")
-    print("Phase 0 — initialize(): OK")
-
-Calling ``initialize()`` a second time is a no-op.
-
-Vertical profiles return tuple
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``vertical_profiles`` now returns a **5-tuple** ``(u, v, Kx, Ky, Kz)`` as the
-profiles component.
+BLDFM ships with several example configs in ``examples/configs/``.
+``load_config()`` returns a ``BLDFMConfig`` dataclass:
 
 .. code-block:: python
 
-    from bldfm.pbl_model import vertical_profiles
+    config = bldfm.load_config("examples/configs/footprint.yaml")
 
-    z, profiles = vertical_profiles(n=8, meas_height=10.0, wind=(5.0, 0.0), ustar=0.4)
-    u, v, Kx, Ky, Kz = profiles
-
-    print(f"z shape: {z.shape}")
-    print(f"u shape: {u.shape}")
-    print(f"u at measurement height: {u[-1]:.3f}")
-
-    assert len(profiles) == 5, "Expected 5-tuple: (u, v, Kx, Ky, Kz)"
-    print("Phase 0 — vertical_profiles 5-tuple: OK")
-
-plot_profiles.py compatibility
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The ``examples/low_level/plot_profiles.py`` script was updated to unpack the new tuple:
-
-.. code-block:: bash
-
-    $ python examples/low_level/plot_profiles.py
-
-This should create ``plots/most_profiles.png`` without errors.
-
-
-Phase 1: Config system, synthetic data, interface
--------------------------------------------------
-
-Config parser — load from YAML
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: python
-
-    from bldfm.config_parser import load_config, BLDFMConfig
-
-    config = load_config("examples/configs/multitower.yaml")
-
-    print(f"Type: {type(config).__name__}")
-    print(f"Domain: nx={config.domain.nx}, ny={config.domain.ny}, nz={config.domain.nz}")
-    print(f"Domain ref: ({config.domain.ref_lat}, {config.domain.ref_lon})")
+    print(f"Domain: {config.domain.nx}x{config.domain.ny}, nz={config.domain.nz}")
+    print(f"Tower: {config.towers[0].name}, z_m={config.towers[0].z_m}")
     print(f"Solver: closure={config.solver.closure}, footprint={config.solver.footprint}")
-    print(f"Output: format={config.output.format}, dir={config.output.directory}")
-    print(f"Parallel: workers={config.parallel.max_workers}, cache={config.parallel.use_cache}")
 
-    assert isinstance(config, BLDFMConfig)
-    assert config.domain.nx == 128
-    assert config.solver.footprint is True
-    assert config.met.n_timesteps == 3
-    print("Phase 1 — load_config: OK")
+Building a config in Python
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Config parser — parse_config_dict
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-You can also build a config from a plain Python dictionary:
+For programmatic workflows -- parameter sweeps, scripted experiments -- use
+``parse_config_dict()`` with a plain Python dictionary that mirrors the YAML
+structure.  When ``ref_lat``/``ref_lon`` are set, each tower's local ``(x, y)``
+coordinates are computed automatically from its ``(lat, lon)`` via an
+equirectangular projection:
 
 .. code-block:: python
 
-    from bldfm.config_parser import parse_config_dict
+    from bldfm import parse_config_dict
 
-    config2 = parse_config_dict({
+    config = parse_config_dict({
         "domain": {
             "nx": 128, "ny": 64, "xmax": 500.0, "ymax": 250.0, "nz": 16,
             "ref_lat": 50.95, "ref_lon": 11.586,
         },
-        "towers": [{"name": "test_tower", "lat": 50.9505, "lon": 11.5865, "z_m": 10.0}],
+        "towers": [{"name": "tower_A", "lat": 50.9505, "lon": 11.5865, "z_m": 10.0}],
         "met": {"ustar": 0.4, "mol": -100.0, "wind_speed": 5.0, "wind_dir": 270.0},
         "solver": {"closure": "MOST", "footprint": True},
     })
 
-    print(f"Tower local coords: x={config2.towers[0].x:.1f}, y={config2.towers[0].y:.1f}")
-    assert config2.towers[0].x != 0.0 or config2.towers[0].y != 0.0
-    print("Phase 1 — parse_config_dict + local coords: OK")
+    print(f"Tower local coords: x={config.towers[0].x:.1f} m, y={config.towers[0].y:.1f} m")
 
-Tower lat/lon to local x/y
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Config schema reference
+^^^^^^^^^^^^^^^^^^^^^^^
 
-When ``ref_lat`` and ``ref_lon`` are set, each tower's local ``(x, y)``
-coordinates are computed automatically from its ``(lat, lon)``:
+A ``BLDFMConfig`` contains six sub-configs:
 
-.. code-block:: python
+**DomainConfig** -- computational grid geometry.
 
-    for t in config.towers:
-        print(f"  {t.name}: lat={t.lat}, lon={t.lon} -> x={t.x:.1f} m, y={t.y:.1f} m")
+- ``nx``, ``ny``: grid points in x (cross-wind) and y (along-wind)
+- ``nz``: number of vertical levels
+- ``xmax``, ``ymax``: domain extent in metres
+- ``modes``: Fourier modes ``[kx, ky]``; higher values improve accuracy
+- ``halo``: zero-padding width (metres) to reduce spectral leakage
+- ``ref_lat``, ``ref_lon``: reference origin for lat/lon to local coordinate conversion
 
-MetConfig timeseries
-^^^^^^^^^^^^^^^^^^^^
+**TowerConfig** -- measurement tower location.
 
-The ``MetConfig`` class supports both scalar and list-valued fields.  List
-values represent a timeseries:
+- ``name``, ``lat``, ``lon``, ``z_m``: tower identity, coordinates, and height
+- ``x``, ``y``: local coordinates (auto-computed from ``ref_lat``/``ref_lon``)
 
-.. code-block:: python
+**MetConfig** -- meteorological forcing.  Use scalars for a single timestep
+or lists of equal length for a timeseries.
 
-    print(f"n_timesteps: {config.met.n_timesteps}")
-    step0 = config.met.get_step(0)
-    print(f"Step 0: {step0}")
+- ``ustar``: friction velocity (m/s).  Provide *either* ``ustar`` or ``z0``,
+  not both.  When ``z0`` (roughness length) is given, the model derives
+  ``ustar`` internally via the PBL closure.
+- ``mol``: Monin-Obukhov length (m).  Negative = unstable (daytime convection),
+  positive = stable (nighttime), very large (~1e9) = neutral.
+- ``wind_speed``, ``wind_dir``: horizontal wind speed (m/s) and direction
+  (degrees; 0 = N, 90 = E, 180 = S, 270 = W).
+- ``timestamps``: optional list of timestamp labels for each timestep.
 
-    assert config.met.n_timesteps == 3
-    print("Phase 1 — MetConfig: OK")
+**SolverConfig** -- numerical solver settings.
 
-CLI — dry-run
-^^^^^^^^^^^^^
+- ``closure``: PBL closure scheme -- ``MOST``, ``MOSTM``, ``CONSTANT``, or ``OAAHOC``.
+- ``footprint``: ``true`` computes a flux footprint (Green's function at
+  measurement height); ``false`` computes a concentration field from a
+  surface source.
+- ``precision``: ``single`` or ``double`` floating-point arithmetic.
+- ``analytic``: if ``true``, uses the Kormann-Meixner analytical footprint
+  model for comparison.
 
-.. code-block:: bash
+**OutputConfig** -- output format and directory.
 
-    $ bldfm run examples/configs/multitower.yaml --dry-run
+**ParallelConfig** -- parallelism settings.
 
-This should print the config summary (domain, towers with local x/y, number of
-timesteps) and exit without running the solver.
+- ``num_threads``: BLAS/numba threads per worker.
+- ``max_workers``: number of parallel worker processes.
+- ``use_cache``: enable disk-based solver result caching.
 
-Synthetic data — timeseries
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: python
+Running simulations
+-------------------
 
-    from bldfm.synthetic import generate_synthetic_timeseries
+BLDFM provides four functions at progressive levels of complexity, from
+a single solve to fully parallel multi-tower timeseries.
 
-    met = generate_synthetic_timeseries(n_timesteps=24, seed=42)
+Single solve
+^^^^^^^^^^^^
 
-    print(f"Keys: {list(met.keys())}")
-    print(f"Timestamps: {len(met['timestamps'])}")
-    print(f"ustar range: [{min(met['ustar']):.3f}, {max(met['ustar']):.3f}]")
-    print(f"MOL range: [{min(met['mol']):.1f}, {max(met['mol']):.1f}]")
-
-    assert len(met["ustar"]) == 24
-    assert len(met["timestamps"]) == 24
-    print("Phase 1 — generate_synthetic_timeseries: OK")
-
-Synthetic data — tower layouts
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Three spatial layouts are available: ``"grid"``, ``"transect"``, ``"random"``.
-
-.. code-block:: python
-
-    from bldfm.synthetic import generate_towers_grid
-
-    for layout in ["grid", "transect", "random"]:
-        towers = generate_towers_grid(n_towers=4, z_m=10.0, layout=layout, seed=42)
-        print(f"\n{layout} layout:")
-        for t in towers:
-            print(f"  {t['name']}: ({t['lat']:.6f}, {t['lon']:.6f})")
-
-    assert len(towers) == 4
-    print("Phase 1 — generate_towers_grid: OK")
-
-High-level interface — run_bldfm_single
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``run_bldfm_single`` encapsulates the 3-step manual workflow (wind fields,
-vertical profiles, solver) into one config-driven call:
+``run_bldfm_single()`` is the fundamental building block.  It takes a config
+and a tower, runs one timestep, and returns a result dictionary:
 
 .. code-block:: python
 
     from bldfm import run_bldfm_single
-    from bldfm.config_parser import parse_config_dict
 
-    config_small = parse_config_dict({
-        "domain": {
-            "nx": 128, "ny": 64, "xmax": 500.0, "ymax": 250.0, "nz": 16,
-            "modes": [128, 64], "ref_lat": 50.95, "ref_lon": 11.586,
-        },
-        "towers": [{"name": "tower_A", "lat": 50.9505, "lon": 11.5865, "z_m": 10.0}],
-        "met": {"ustar": 0.4, "mol": -100.0, "wind_speed": 5.0, "wind_dir": 270.0},
-        "solver": {"closure": "MOST", "footprint": True},
-    })
+    result = run_bldfm_single(config, config.towers[0])
 
-    result = run_bldfm_single(config_small, config_small.towers[0])
+    print(f"Keys: {sorted(result.keys())}")
+    print(f"Footprint shape: {result['flx'].shape}")  # (ny, nx)
+    print(f"Met used: wind_speed={result['params']['wind_speed']}")
 
-    print(f"Result keys: {sorted(result.keys())}")
-    print(f"flx shape: {result['flx'].shape}")
-    print(f"conc shape: {result['conc'].shape}")
-    print(f"Tower: {result['tower_name']}")
+The result dict contains:
 
-    expected_keys = {"conc", "flx", "grid", "params", "timestamp", "tower_name"}
-    assert set(result.keys()) == expected_keys
-    assert result["flx"].shape == (64, 128)
-    print("Phase 1 — run_bldfm_single: OK")
+- ``grid``: tuple of ``(X, Y, Z)`` coordinate arrays
+- ``flx``: 2D flux footprint field, shape ``(ny, nx)``
+- ``conc``: 2D concentration field
+- ``tower_name``, ``tower_xy``: tower identity and local coordinates
+- ``timestamp``: timestep label or index
+- ``params``: dict of meteorological parameters used for this solve
 
+Timeseries
+^^^^^^^^^^
 
-Phase 2: Timeseries and multi-tower
-------------------------------------
-
-run_bldfm_timeseries
-^^^^^^^^^^^^^^^^^^^^
-
-Runs the solver for all timesteps in the met config for a single tower:
+For time-varying meteorology, provide lists in the met config.
+``run_bldfm_timeseries()`` loops over all timesteps for a single tower and
+returns a list of result dicts.  Use ``generate_synthetic_timeseries()`` to
+create reproducible test data:
 
 .. code-block:: python
 
-    from bldfm import run_bldfm_timeseries
-    from bldfm.synthetic import generate_synthetic_timeseries, generate_towers_grid
-    from bldfm.config_parser import parse_config_dict
+    from bldfm import run_bldfm_timeseries, generate_synthetic_timeseries
 
-    met_ts = generate_synthetic_timeseries(n_timesteps=3, seed=42)
+    met = generate_synthetic_timeseries(n_timesteps=3, seed=42)
     config_ts = parse_config_dict({
         "domain": {
             "nx": 128, "ny": 64, "xmax": 500.0, "ymax": 250.0, "nz": 16,
-            "modes": [128, 64], "ref_lat": 50.95, "ref_lon": 11.586,
+            "ref_lat": 50.95, "ref_lon": 11.586,
         },
         "towers": [{"name": "tower_A", "lat": 50.9505, "lon": 11.5865, "z_m": 10.0}],
-        "met": met_ts,
+        "met": met,
         "solver": {"closure": "MOST", "footprint": True},
     })
 
-    ts_results = run_bldfm_timeseries(config_ts, config_ts.towers[0])
+    results = run_bldfm_timeseries(config_ts, config_ts.towers[0])
+    print(f"Timesteps computed: {len(results)}")
+    for r in results:
+        print(f"  t={r['timestamp']}: max flux = {r['flx'].max():.6f}")
 
-    print(f"Number of results: {len(ts_results)}")
-    for i, r in enumerate(ts_results):
-        print(f"  t={r['timestamp']}: flx max={r['flx'].max():.6f}")
+Multi-tower
+^^^^^^^^^^^
 
-    assert len(ts_results) == 3
-    print("Phase 2 — run_bldfm_timeseries: OK")
-
-run_bldfm_multitower
-^^^^^^^^^^^^^^^^^^^^
-
-Runs the solver for all towers and all timesteps:
+``run_bldfm_multitower()`` runs all towers across all timesteps, returning a
+dict of ``{tower_name: [result, ...]}``.  Use ``generate_towers_grid()`` to
+create synthetic tower layouts (``"grid"``, ``"transect"``, or ``"random"``):
 
 .. code-block:: python
 
-    from bldfm import run_bldfm_multitower
+    from bldfm import run_bldfm_multitower, generate_towers_grid
 
-    towers_mt = generate_towers_grid(n_towers=2, z_m=10.0, layout="transect", seed=42)
+    towers = generate_towers_grid(n_towers=2, z_m=10.0, layout="transect", seed=42)
     config_mt = parse_config_dict({
         "domain": {
             "nx": 128, "ny": 64, "xmax": 500.0, "ymax": 250.0, "nz": 16,
-            "modes": [128, 64],
-            "ref_lat": towers_mt[0]["lat"], "ref_lon": towers_mt[0]["lon"],
+            "ref_lat": towers[0]["lat"], "ref_lon": towers[0]["lon"],
         },
-        "towers": towers_mt,
-        "met": generate_synthetic_timeseries(n_timesteps=2, seed=42),
+        "towers": towers,
+        "met": met,
         "solver": {"closure": "MOST", "footprint": True},
     })
 
-    mt_results = run_bldfm_multitower(config_mt)
-
-    print(f"Tower names: {list(mt_results.keys())}")
-    for name, res_list in mt_results.items():
-        print(f"  {name}: {len(res_list)} timesteps")
-
-    assert len(mt_results) == 2
-    for name in mt_results:
-        assert len(mt_results[name]) == 2
-    print("Phase 2 — run_bldfm_multitower: OK")
-
-Multitower example script
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: bash
-
-    $ python examples/multitower_example.py
-
-This should create ``plots/multitower_footprints.png``.
-
-
-Phase 3: Caching, NetCDF I/O, parallel execution
--------------------------------------------------
-
-Green's function cache
-^^^^^^^^^^^^^^^^^^^^^^
-
-The ``GreensFunctionCache`` stores solver outputs as SHA-256 keyed ``.npz``
-files to avoid redundant solves:
-
-.. code-block:: python
-
-    from bldfm import GreensFunctionCache, run_bldfm_single
-    import numpy as np
-    import shutil
-
-    cache_dir = ".bldfm_cache_tutorial"
-    cache = GreensFunctionCache(cache_dir=cache_dir)
-    print(f"Cache directory: {cache.cache_dir}")
-
-    # First run (cache miss)
-    result1 = run_bldfm_single(config_small, config_small.towers[0], cache=cache)
-    print("First run complete (cache miss)")
-
-    # Second run (cache hit — should be faster)
-    result2 = run_bldfm_single(config_small, config_small.towers[0], cache=cache)
-    print("Second run complete (cache hit)")
-
-    print(f"Results identical: {np.allclose(result1['flx'], result2['flx'])}")
-
-    cache_files = list(cache.cache_dir.glob("*.npz"))
-    print(f"Cache files: {len(cache_files)}")
-    assert len(cache_files) >= 1
-
-    # Clean up
-    cache.clear()
-    shutil.rmtree(cache_dir)
-    print("Phase 3 — GreensFunctionCache: OK")
-
-NetCDF I/O
-^^^^^^^^^^
-
-Save multi-tower results to CF-1.8 compliant NetCDF and load them back:
-
-.. code-block:: python
-
-    from bldfm import save_footprints_to_netcdf, load_footprints_from_netcdf
-
-    save_footprints_to_netcdf(mt_results, config_mt, "output/tutorial_footprints.nc")
-    print("Saved to output/tutorial_footprints.nc")
-
-    ds = load_footprints_from_netcdf("output/tutorial_footprints.nc")
-
-    print(f"\nDimensions: {dict(ds.sizes)}")
-    print(f"Variables: {list(ds.data_vars)}")
-    print(f"Global attrs: {dict(ds.attrs)}")
-    print(f"\nFootprint shape: {ds['footprint'].shape}")
-    print(f"Tower names: {list(ds['tower'].values)}")
-    print(f"CF Convention: {ds.attrs['Conventions']}")
-
-    assert ds.attrs["Conventions"] == "CF-1.8"
-    assert "footprint" in ds.data_vars
-    assert ds.sizes["tower"] == 2
-    assert ds.sizes["time"] == 2
-    ds.close()
-    print("Phase 3 — NetCDF I/O: OK")
+    all_results = run_bldfm_multitower(config_mt)
+    for name, res_list in all_results.items():
+        print(f"{name}: {len(res_list)} timesteps")
 
 Parallel execution
 ^^^^^^^^^^^^^^^^^^
 
-Distribute work across CPU cores using ``ProcessPoolExecutor``.  Three
-strategies are available: ``"towers"``, ``"time"``, and ``"both"``.
+For large runs, ``run_bldfm_parallel()`` distributes work across CPU cores
+using ``ProcessPoolExecutor``.  Three strategies are available:
+
+- ``"towers"``: each worker handles one tower's full timeseries
+- ``"time"``: distribute timesteps across workers (per tower)
+- ``"both"``: flatten all tower x timestep pairs across workers
+
+Each subprocess automatically sets ``NUMBA_NUM_THREADS=1`` to avoid CPU
+oversubscription.  The return format is identical to ``run_bldfm_multitower()``:
 
 .. code-block:: python
 
@@ -395,283 +225,307 @@ strategies are available: ``"towers"``, ``"time"``, and ``"both"``.
 
     par_results = run_bldfm_parallel(config_mt, max_workers=2, parallel_over="towers")
 
-    print(f"Parallel (towers) — towers: {list(par_results.keys())}")
-    for name, res_list in par_results.items():
-        print(f"  {name}: {len(res_list)} timesteps")
 
-    assert set(par_results.keys()) == set(mt_results.keys())
-    print("Phase 3 — run_bldfm_parallel: OK")
+Working with results
+--------------------
 
-The same interface supports ``parallel_over="time"`` (distribute timesteps) and
-``parallel_over="both"`` (flatten all tower × timestep pairs).  Each subprocess
-disables numba parallelism (``NUM_THREADS=1``) to avoid CPU oversubscription.
+Solver results are plain Python dictionaries containing NumPy arrays.  This
+section covers common post-processing tasks.
 
+Percentile contours
+^^^^^^^^^^^^^^^^^^^
 
-Phase 4: Plotting
------------------
-
-All code below uses ``matplotlib.use("Agg")``.  Remove that line if you want
-interactive display.
-
-.. code-block:: python
-
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-
-plot_footprint_field with contours
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: python
-
-    from bldfm import plot_footprint_field
-
-    fig, ax = plt.subplots()
-    ax = plot_footprint_field(
-        result1["flx"], result1["grid"],
-        ax=ax,
-        contour_pcts=[0.5, 0.8],
-        title="Footprint with 50% and 80% contours",
-    )
-    plt.savefig("plots/tutorial_contours.png", dpi=150, bbox_inches="tight")
-    plt.close()
-    print("Saved plots/tutorial_contours.png")
-
-You should see a pcolormesh with two dashed contour lines.
-
-extract_percentile_contour
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Compute the contour level and enclosed area for a given percentile:
+``extract_percentile_contour()`` computes the contour level that encloses a
+given fraction of the cumulative footprint, along with the corresponding
+area in square metres.  This is useful for quantifying the spatial extent of
+the source area (e.g., "the 80 % source area covers 5000 m\ :sup:`2`\ "):
 
 .. code-block:: python
 
     from bldfm import extract_percentile_contour
 
-    level_50, area_50 = extract_percentile_contour(result1["flx"], result1["grid"], pct=0.5)
-    level_80, area_80 = extract_percentile_contour(result1["flx"], result1["grid"], pct=0.8)
+    level_50, area_50 = extract_percentile_contour(result["flx"], result["grid"], pct=0.5)
+    level_80, area_80 = extract_percentile_contour(result["flx"], result["grid"], pct=0.8)
 
     print(f"50% contour: level={level_50:.6f}, area={area_50:.0f} m^2")
     print(f"80% contour: level={level_80:.6f}, area={area_80:.0f} m^2")
 
-    assert area_80 > area_50, "80% area should be larger than 50%"
-    assert level_50 > level_80, "50% level should be higher (more restrictive)"
-    print("Phase 4 — extract_percentile_contour: OK")
+The 80 % area will always be larger than the 50 % area (it encloses more of
+the footprint), while the 50 % contour level will be higher (it represents a
+more concentrated core).
 
-plot_footprint_on_map (optional: contextily)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Source area analysis
+^^^^^^^^^^^^^^^^^^^^
 
-Overlays footprint contours and tower markers on map tiles:
+BLDFM provides five base functions for characterizing which spatial regions
+contribute to the measured flux.  Each constructs a weighting surface ``g``
+that, combined with the footprint via ``get_source_area(flx, g)``, produces
+contours of a specific geometric type:
+
+- ``source_area_contribution``: isopleth contours (standard footprint levels)
+- ``source_area_circular``: concentric circles centred on the tower
+- ``source_area_upwind``: upwind distance bands
+- ``source_area_crosswind``: crosswind ridge contours
+- ``source_area_sector``: angular sectors from the upwind axis
+
+.. code-block:: python
+
+    from bldfm import get_source_area, source_area_circular
+
+    X, Y, Z = result["grid"]
+    meas_pt = (config.towers[0].x, config.towers[0].y)
+
+    g = source_area_circular(X, Y, meas_pt)
+    rescaled = get_source_area(result["flx"], g)
+
+See ``runs/low_level/source_area_example.py`` for a complete working example
+with all five contour types.
+
+
+I/O and caching
+---------------
+
+NetCDF export and import
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Save multi-tower results to CF-1.8 compliant NetCDF files and load them back
+as an ``xr.Dataset``.  The file includes footprint and concentration fields,
+meteorological metadata, tower coordinates, and global attributes:
+
+.. code-block:: python
+
+    from bldfm import save_footprints_to_netcdf, load_footprints_from_netcdf
+
+    save_footprints_to_netcdf(all_results, config_mt, "output/footprints.nc")
+
+    ds = load_footprints_from_netcdf("output/footprints.nc")
+    print(f"Dimensions: {dict(ds.sizes)}")
+    print(f"Variables: {list(ds.data_vars)}")
+    print(f"CF Convention: {ds.attrs['Conventions']}")
+    ds.close()
+
+Green's function caching
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In footprint mode, the solver output (Green's function) depends only on
+vertical profiles and domain geometry -- not on the surface flux.  The
+``GreensFunctionCache`` stores results as SHA-256-keyed ``.npz`` files so
+that identical configurations skip the solver entirely:
+
+.. code-block:: python
+
+    from bldfm import GreensFunctionCache, run_bldfm_single
+
+    cache = GreensFunctionCache(cache_dir=".bldfm_cache")
+
+    result1 = run_bldfm_single(config, config.towers[0], cache=cache)  # cache miss
+    result2 = run_bldfm_single(config, config.towers[0], cache=cache)  # cache hit (fast)
+
+    cache.clear()  # clean up
+
+Caching can also be enabled globally via ``parallel.use_cache: true`` in the
+YAML config.
+
+
+Visualization
+-------------
+
+BLDFM includes plotting functions for footprint fields, geospatial overlays,
+wind roses, time series, source area contours, diagnostics, and interactive
+HTML plots.  Core plots require only matplotlib; optional dependencies are
+imported lazily and produce helpful messages when missing.
+
+.. code-block:: python
+
+    import matplotlib
+    matplotlib.use("Agg")          # remove for interactive display
+    import matplotlib.pyplot as plt
+
+Footprint field
+^^^^^^^^^^^^^^^
+
+``plot_footprint_field()`` renders a 2D pcolormesh with optional percentile
+contour overlays.  It works for both footprint and concentration fields:
+
+.. code-block:: python
+
+    from bldfm import plot_footprint_field
+
+    ax = plot_footprint_field(
+        result["flx"], result["grid"],
+        contour_pcts=[0.5, 0.8],
+        title="Footprint with 50% and 80% contours",
+    )
+    plt.savefig("plots/tutorial_contours.png", dpi=150, bbox_inches="tight")
+    plt.close()
+
+Map overlay (requires contextily)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``plot_footprint_on_map()`` overlays footprint contours and tower markers on
+web map tiles.  Set ``land_cover=True`` to use ESA WorldCover 2021 instead of
+street maps (requires owslib):
 
 .. code-block:: python
 
     try:
         from bldfm import plot_footprint_on_map
 
-        fig, ax = plt.subplots(figsize=(10, 8))
         ax = plot_footprint_on_map(
-            result1["flx"], result1["grid"], config_small,
-            tower=config_small.towers[0],
+            result["flx"], result["grid"], config,
+            tower=config.towers[0],
             contour_pcts=[0.5, 0.8],
-            title="Footprint on map",
         )
         plt.savefig("plots/tutorial_map.png", dpi=150, bbox_inches="tight")
         plt.close()
-        print("Saved plots/tutorial_map.png")
-    except ImportError as e:
-        print(f"Skipping map plot (install contextily): {e}")
+    except ImportError:
+        print("Install contextily for map overlays: pip install contextily")
 
-plot_footprint_on_map with land cover (optional: owslib)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Wind rose (requires windrose)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Overlays footprint on ESA WorldCover 2021 land cover classes instead of
-street map tiles.  Useful for interpreting what surface types (forest,
-cropland, water, etc.) fall within the footprint source area:
-
-.. code-block:: python
-
-    try:
-        from bldfm import plot_footprint_on_map
-
-        fig, ax = plt.subplots(figsize=(10, 8))
-        ax = plot_footprint_on_map(
-            result1["flx"], result1["grid"], config_small,
-            tower=config_small.towers[0],
-            contour_pcts=[0.5, 0.8],
-            land_cover=True,
-            title="Footprint on land cover",
-        )
-        plt.savefig("plots/tutorial_landcover.png", dpi=150, bbox_inches="tight")
-        plt.close()
-        print("Saved plots/tutorial_landcover.png")
-    except ImportError as e:
-        print(f"Skipping land cover plot (install owslib): {e}")
-
-plot_wind_rose (optional: windrose)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``plot_wind_rose()`` creates a polar wind rose from wind speed and direction
+arrays:
 
 .. code-block:: python
 
     try:
         from bldfm import plot_wind_rose
 
-        fig = plt.figure()
         ax = plot_wind_rose(
-            met_ts["wind_speed"], met_ts["wind_dir"],
+            met["wind_speed"], met["wind_dir"],
             title="Synthetic wind rose",
         )
         plt.savefig("plots/tutorial_windrose.png", dpi=150, bbox_inches="tight")
         plt.close()
-        print("Saved plots/tutorial_windrose.png")
-    except ImportError as e:
-        print(f"Skipping wind rose (install windrose): {e}")
+    except ImportError:
+        print("Install windrose: pip install windrose")
 
-plot_footprint_timeseries
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Footprint timeseries
+^^^^^^^^^^^^^^^^^^^^^
 
-Track how the footprint extent evolves across timesteps:
+``plot_footprint_timeseries()`` tracks how footprint extent (area at given
+percentiles) changes across timesteps:
 
 .. code-block:: python
 
     from bldfm import plot_footprint_timeseries
 
-    fig, ax = plt.subplots()
     ax = plot_footprint_timeseries(
-        ts_results, ts_results[0]["grid"],
+        results, results[0]["grid"],
         pcts=[0.5, 0.8],
         title="Footprint area evolution",
     )
     plt.savefig("plots/tutorial_timeseries.png", dpi=150, bbox_inches="tight")
     plt.close()
-    print("Saved plots/tutorial_timeseries.png")
-    print("Phase 4 — plot_footprint_timeseries: OK")
 
-plot_footprint_interactive (optional: plotly)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Source area contour plots
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``plot_source_area_gallery()`` produces a multi-panel figure showing all five
+source area base function types side by side:
+
+.. code-block:: python
+
+    from bldfm.plotting import plot_source_area_gallery
+    from bldfm import compute_wind_fields
+
+    meas_pt = (config.towers[0].x, config.towers[0].y)
+    wind = compute_wind_fields(5.0, 270.0)
+
+    fig, axes = plot_source_area_gallery(result["flx"], result["grid"], meas_pt, wind)
+    fig.savefig("plots/tutorial_source_gallery.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+Interactive plot (requires plotly)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``plot_footprint_interactive()`` creates a Plotly figure that can be saved as
+HTML for exploration in a browser:
 
 .. code-block:: python
 
     try:
         from bldfm import plot_footprint_interactive
 
-        fig = plot_footprint_interactive(
-            result1["flx"], result1["grid"],
-            title="Interactive footprint",
-        )
+        fig = plot_footprint_interactive(result["flx"], result["grid"])
         fig.write_html("plots/tutorial_interactive.html")
-        print("Saved plots/tutorial_interactive.html — open in browser")
-    except ImportError as e:
-        print(f"Skipping interactive plot (install plotly): {e}")
+    except ImportError:
+        print("Install plotly: pip install plotly")
+
+Diagnostic plots
+^^^^^^^^^^^^^^^^
+
+Three functions are available for inspecting solver behaviour and vertical
+structure: ``plot_convergence()``, ``plot_vertical_profiles()``, and
+``plot_vertical_slice()``.  See the `API Reference <src.html>`_ for full
+signatures and usage.
 
 
-Phase 5: Documentation and tests
----------------------------------
+Low-level API
+-------------
 
-Sphinx build
-^^^^^^^^^^^^
+For full control over every step of the simulation, you can call the solver
+pipeline directly.  The high-level ``run_bldfm_single()`` wraps three steps:
+
+1. ``compute_wind_fields(speed, direction)`` -- decompose wind into ``(u, v)``
+   components.
+2. ``vertical_profiles(nz, z_m, wind, ustar)`` -- compute vertical profiles of
+   wind and eddy diffusivity.  Returns ``(z, profiles)`` where ``profiles`` is
+   a 5-tuple ``(u, v, Kx, Ky, Kz)``.
+3. ``steady_state_transport_solver(srf_flx, z, profiles, domain, levels, ...)``
+   -- solve the advection-diffusion equation.
+
+.. code-block:: python
+
+    from bldfm import compute_wind_fields, ideal_source, steady_state_transport_solver
+    from bldfm.pbl_model import vertical_profiles
+
+    # Step 1: wind components
+    u, v = compute_wind_fields(wind_speed=5.0, wind_dir=270.0)
+
+    # Step 2: vertical profiles
+    z, profiles = vertical_profiles(n=32, meas_height=10.0, wind=(u, v), ustar=0.4)
+    u_prof, v_prof, Kx, Ky, Kz = profiles
+
+    # Step 3: surface flux (or use np.zeros for footprint mode)
+    srf_flx = ideal_source((256, 128), (1000.0, 500.0))
+
+    # Step 4: solve
+    grid, conc, flx = steady_state_transport_solver(
+        srf_flx, z, profiles, domain=(1000.0, 500.0), levels=32,
+    )
+
+See the ``examples/low_level/`` directory for complete scripts:
+``minimal_example.py``, ``footprint_example.py``, ``plot_profiles.py``,
+``source_area_example.py``, and more.
+
+
+Command-line interface
+----------------------
+
+The ``bldfm`` CLI wraps the full workflow and calls ``initialize()``
+automatically:
 
 .. code-block:: bash
 
-    $ cd docs
-    $ sphinx-build -W -b html source build/html
+    # Validate a config without running the solver
+    $ bldfm run examples/configs/footprint.yaml --dry-run
 
-The ``-W`` flag treats warnings as errors.  The build should complete with zero
-warnings.  To preview:
+    # Run all towers and timesteps
+    $ bldfm run examples/configs/multitower.yaml
 
-.. code-block:: bash
-
-    $ python -m http.server 8000 -d build/html
-    # Open http://localhost:8000
-
-Full test suite
-^^^^^^^^^^^^^^^
-
-.. code-block:: bash
-
-    $ python -m pytest tests/ -v
-
-All tests should pass.
+    # Run and save footprint plots to plots/
+    $ bldfm run examples/configs/multitower.yaml --plot
 
 
-Summary checklist
+Further resources
 -----------------
 
-.. list-table::
-   :header-rows: 1
-   :widths: 10 35 55
-
-   * - Phase
-     - Feature
-     - Verification
-   * - 0
-     - ``initialize()`` explicit
-     - ``_initialized`` flips to ``True``; ``logs/``, ``plots/`` created
-   * - 0
-     - ``vertical_profiles`` 5-tuple
-     - ``len(profiles) == 5``
-   * - 0
-     - ``plot_profiles.py`` compatibility
-     - Script runs; ``most_profiles.png`` created
-   * - 1
-     - ``load_config()``
-     - Returns ``BLDFMConfig``; fields match YAML
-   * - 1
-     - ``parse_config_dict()``
-     - Dict → config; tower local coords computed
-   * - 1
-     - Tower lat/lon → local x/y
-     - Non-zero ``x``, ``y`` values
-   * - 1
-     - ``MetConfig`` timeseries
-     - ``n_timesteps``, ``get_step()`` return scalar dicts
-   * - 1
-     - CLI ``--dry-run``
-     - Prints summary, no solver execution
-   * - 1
-     - ``generate_synthetic_timeseries()``
-     - Correct length; ustar/MOL in expected ranges
-   * - 1
-     - ``generate_towers_grid()``
-     - grid / transect / random produce distinct layouts
-   * - 1
-     - ``run_bldfm_single()``
-     - Returns dict with 6 keys; ``flx.shape == (ny, nx)``
-   * - 2
-     - ``run_bldfm_timeseries()``
-     - ``len(results) == n_timesteps``
-   * - 2
-     - ``run_bldfm_multitower()``
-     - Dict of ``tower_name → [results]``
-   * - 3
-     - ``GreensFunctionCache``
-     - ``.npz`` files created; cache hit matches miss
-   * - 3
-     - ``save/load_footprints_to_netcdf()``
-     - CF-1.8; round-trip dimensions match
-   * - 3
-     - ``run_bldfm_parallel()``
-     - Same structure as sequential; 3 strategies work
-   * - 4
-     - ``plot_footprint_field()``
-     - Pcolormesh + dashed contour lines
-   * - 4
-     - ``extract_percentile_contour()``
-     - ``area_80 > area_50``; ``level_50 > level_80``
-   * - 4
-     - ``plot_footprint_on_map()``
-     - Map tiles + contours (if contextily installed)
-   * - 4
-     - ``plot_wind_rose()``
-     - Polar wind rose (if windrose installed)
-   * - 4
-     - ``plot_footprint_timeseries()``
-     - Line plot of area vs. timestep
-   * - 4
-     - ``plot_footprint_interactive()``
-     - Plotly HTML (if plotly installed)
-   * - 5
-     - Sphinx build ``-W``
-     - Zero warnings
-   * - 5
-     - ``pytest tests/ -v``
-     - All tests pass
+- `Quick Reference <reference.html>`_: concise code snippets for common
+  workflows.
+- `Example Scripts <runs.html>`_: ``examples/low_level/`` (direct API) and
+  ``runs/manuscript/`` (paper reproduction).
+- `API Reference <src.html>`_: full function signatures and docstrings.
+- Manuscript figures: ``python runs/manuscript/generate_all.py`` regenerates
+  all paper figures.
