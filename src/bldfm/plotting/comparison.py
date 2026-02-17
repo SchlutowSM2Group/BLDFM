@@ -3,7 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ._common import format_colorbar_scientific
+from ._common import format_colorbar_scientific, _maybe_slice_level
 
 
 def plot_footprint_comparison(
@@ -17,15 +17,16 @@ def plot_footprint_comparison(
     cmap="turbo",
     figsize=None,
     title=None,
+    level=0,
 ):
     """Multi-panel contour plot comparing footprint models side-by-side.
 
     Parameters
     ----------
     fields : list of ndarray
-        List of 2-D footprint fields to compare.
+        List of 2-D (or 3-D) footprint fields to compare. If 3D, sliced at *level*.
     grids : list of tuple
-        List of (X, Y) coordinate arrays (one per field). Grids may differ.
+        List of (X, Y) or (X, Y, Z) coordinate arrays (one per field).
     labels : list of str
         Subplot titles.
     meas_pt : tuple (x, y), optional
@@ -42,6 +43,8 @@ def plot_footprint_comparison(
         Figure size (width, height).
     title : str, optional
         Overall figure title.
+    level : int
+        Z-index to use when fields are 3D. Default 0 (surface).
 
     Returns
     -------
@@ -64,7 +67,8 @@ def plot_footprint_comparison(
     levels = np.linspace(vmin, vmax, n_levels, endpoint=False)
 
     for i, (flx, grid, label, ax) in enumerate(zip(fields, grids, labels, axes)):
-        X, Y = grid
+        flx, grid = _maybe_slice_level(flx, grid, level)
+        X, Y = grid[:2]
         plot = ax.contour(
             X, Y, flx, levels, cmap=cmap, vmin=vmin, vmax=vmax, linewidths=4.0
         )
@@ -85,7 +89,7 @@ def plot_footprint_comparison(
     return fig, axes
 
 
-def plot_field_comparison(fields, domain, src_pt=None, cmap="turbo", figsize=None):
+def plot_field_comparison(fields, domain, src_pt=None, cmap="turbo", figsize=None, level=0):
     """2x2 panel comparison: conc, flux, and relative differences.
 
     Top-left: concentration, top-right: flux.
@@ -95,7 +99,7 @@ def plot_field_comparison(fields, domain, src_pt=None, cmap="turbo", figsize=Non
     ----------
     fields : dict
         Must contain keys: "conc", "flx", "conc_ref", "flx_ref".
-        All values are 2-D arrays.
+        Values may be 2-D or 3-D arrays. If 3D, sliced at *level*.
     domain : tuple (xmax, ymax)
         Domain extents for imshow.
     src_pt : tuple (x, y), optional
@@ -104,6 +108,8 @@ def plot_field_comparison(fields, domain, src_pt=None, cmap="turbo", figsize=Non
         Colormap name (default "turbo").
     figsize : tuple, optional
         Figure size (width, height). Default (10, 6).
+    level : int
+        Z-index to use when fields are 3D. Default 0 (surface).
 
     Returns
     -------
@@ -117,6 +123,15 @@ def plot_field_comparison(fields, domain, src_pt=None, cmap="turbo", figsize=Non
     flx = fields["flx"]
     conc_ref = fields["conc_ref"]
     flx_ref = fields["flx_ref"]
+
+    if conc.ndim == 3:
+        conc = conc[level]
+    if flx.ndim == 3:
+        flx = flx[level]
+    if conc_ref.ndim == 3:
+        conc_ref = conc_ref[level]
+    if flx_ref.ndim == 3:
+        flx_ref = flx_ref[level]
 
     diff_conc = (conc - conc_ref) / np.max(conc_ref)
     diff_flx = (flx - flx_ref) / np.max(flx_ref)

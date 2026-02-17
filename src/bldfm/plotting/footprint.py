@@ -5,20 +5,22 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ._common import ensure_ax, optional_import
+from ._common import ensure_ax, optional_import, _maybe_slice_level
 
 
-def extract_percentile_contour(flx, grid, pct=0.8):
+def extract_percentile_contour(flx, grid, pct=0.8, level=0):
     """Find the contour level that encloses *pct* of the cumulative footprint.
 
     Parameters
     ----------
-    flx : ndarray (ny, nx)
-        2-D footprint field (non-negative).
+    flx : ndarray (ny, nx) or (nz, ny, nx)
+        2-D footprint field (non-negative). If 3D, sliced at *level*.
     grid : tuple (X, Y, Z)
         Coordinate arrays from the solver.
     pct : float
         Fraction of the total footprint to enclose (0-1).
+    level : int
+        Z-index to use when *flx* is 3D. Default 0 (surface).
 
     Returns
     -------
@@ -27,6 +29,7 @@ def extract_percentile_contour(flx, grid, pct=0.8):
     area : float
         Approximate area [m^2] enclosed by that contour.
     """
+    flx, grid = _maybe_slice_level(flx, grid, level)
     X, Y, _ = grid
     dx = np.abs(X[0, 1] - X[0, 0]) if X.ndim == 2 else np.abs(X[1] - X[0])
     dy = np.abs(Y[1, 0] - Y[0, 0]) if Y.ndim == 2 else np.abs(Y[1] - Y[0])
@@ -47,14 +50,14 @@ def extract_percentile_contour(flx, grid, pct=0.8):
 
 
 def plot_footprint_field(
-    flx, grid, ax=None, contour_pcts=None, cmap="RdYlBu_r", title=None, **pcolormesh_kw
+    flx, grid, ax=None, contour_pcts=None, cmap="RdYlBu_r", title=None, level=0, **pcolormesh_kw
 ):
     """Plot a 2-D footprint field with optional percentile contours.
 
     Parameters
     ----------
-    flx : ndarray (ny, nx)
-        Footprint (or concentration) field.
+    flx : ndarray (ny, nx) or (nz, ny, nx)
+        Footprint (or concentration) field. If 3D, sliced at *level*.
     grid : tuple (X, Y, Z)
         Coordinate arrays from the solver.
     ax : matplotlib Axes, optional
@@ -63,6 +66,8 @@ def plot_footprint_field(
     cmap : str
         Colourmap name.
     title : str, optional
+    level : int
+        Z-index to use when *flx* is 3D. Default 0 (surface).
     **pcolormesh_kw
         Forwarded to ``ax.pcolormesh``.
 
@@ -70,6 +75,7 @@ def plot_footprint_field(
     -------
     ax : matplotlib Axes
     """
+    flx, grid = _maybe_slice_level(flx, grid, level)
     X, Y, _ = grid
     ax = ensure_ax(ax)
 
@@ -117,6 +123,7 @@ def plot_footprint_on_map(
     alpha=0.5,
     cmap="RdYlBu_r",
     title=None,
+    level=0,
 ):
     """Overlay footprint contours and tower marker(s) on map tiles.
 
@@ -124,8 +131,8 @@ def plot_footprint_on_map(
 
     Parameters
     ----------
-    flx : ndarray (ny, nx)
-        Footprint field.
+    flx : ndarray (ny, nx) or (nz, ny, nx)
+        Footprint field. If 3D, sliced at *level*.
     grid : tuple (X, Y, Z)
         Coordinate arrays (local metres).
     config : BLDFMConfig
@@ -149,6 +156,8 @@ def plot_footprint_on_map(
     cmap : str
         Colourmap for the footprint fill.
     title : str, optional
+    level : int
+        Z-index to use when *flx* is 3D. Default 0 (surface).
 
     Returns
     -------
@@ -161,6 +170,7 @@ def plot_footprint_on_map(
     if ref_lat is None or ref_lon is None:
         raise ValueError("config.domain must have ref_lat and ref_lon for map plots")
 
+    flx, grid = _maybe_slice_level(flx, grid, level)
     X, Y, _ = grid
     lats, lons = _geo.xy_to_latlon(X, Y, ref_lat, ref_lon)
 

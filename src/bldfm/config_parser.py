@@ -88,6 +88,7 @@ class DomainConfig:
     ref_lat: Optional[float] = None
     ref_lon: Optional[float] = None
     output_levels: Optional[List[int]] = None
+    full_output: bool = False
 
 
 @dataclass
@@ -241,6 +242,7 @@ def _parse_domain(d: dict) -> DomainConfig:
         ref_lat=d.get("ref_lat"),
         ref_lon=d.get("ref_lon"),
         output_levels=output_levels,
+        full_output=d.get("full_output", False),
     )
 
 

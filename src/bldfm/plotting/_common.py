@@ -39,3 +39,30 @@ def optional_import(module_name, package_hint):
             f"{module_name} is required for this feature. "
             f"Install it with: pip install {package_hint}"
         )
+
+
+def _maybe_slice_level(field, grid, level=0):
+    """If field is 3D (nz, ny, nx), extract a single z-level. Pass through 2D unchanged.
+
+    Parameters
+    ----------
+    field : ndarray
+        2D (ny, nx) or 3D (nz, ny, nx) array.
+    grid : tuple (X, Y, Z)
+        Coordinate arrays from the solver.
+    level : int
+        Z-index to extract when field is 3D. Default 0 (surface).
+
+    Returns
+    -------
+    field : ndarray (ny, nx)
+        Sliced (or original 2D) field.
+    grid : tuple
+        Sliced (or original) grid.
+    """
+    if field.ndim == 3:
+        field = field[level]
+        X, Y, Z = grid
+        if X.ndim == 3:
+            grid = (X[level], Y[level], Z[level])
+    return field, grid

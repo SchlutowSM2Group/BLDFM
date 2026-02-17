@@ -2,18 +2,18 @@
 
 import numpy as np
 
-from ._common import optional_import
+from ._common import optional_import, _maybe_slice_level
 
 
-def plot_footprint_interactive(flx, grid, title=None, xlim=None, ylim=None):
+def plot_footprint_interactive(flx, grid, title=None, xlim=None, ylim=None, level=0):
     """Create an interactive Plotly heatmap of the footprint.
 
     Requires the optional ``plotly`` package.
 
     Parameters
     ----------
-    flx : ndarray (ny, nx)
-        Footprint field.
+    flx : ndarray (ny, nx) or (nz, ny, nx)
+        Footprint field. If 3D, sliced at *level*.
     grid : tuple (X, Y, Z)
         Coordinate arrays.
     title : str, optional
@@ -21,6 +21,8 @@ def plot_footprint_interactive(flx, grid, title=None, xlim=None, ylim=None):
         (xmin, xmax) axis range.  Useful for excluding halo padding.
     ylim : tuple of float, optional
         (ymin, ymax) axis range.
+    level : int
+        Z-index to use when *flx* is 3D. Default 0 (surface).
 
     Returns
     -------
@@ -28,6 +30,7 @@ def plot_footprint_interactive(flx, grid, title=None, xlim=None, ylim=None):
     """
     go = optional_import("plotly.graph_objects", "plotly")
 
+    flx, grid = _maybe_slice_level(flx, grid, level)
     X, Y, _ = grid
     x = X[0, :] if X.ndim == 2 else X
     y = Y[:, 0] if Y.ndim == 2 else Y

@@ -105,7 +105,12 @@ def run_bldfm_single(
         )
 
     # Step 4: solve
-    levels = dom.output_levels if dom.output_levels else dom.nz
+    if dom.output_levels:
+        levels = dom.output_levels
+    elif dom.full_output:
+        levels = list(range(dom.nz + 1))
+    else:
+        levels = dom.nz
     grid, conc, flx = steady_state_transport_solver(
         srf_flx=surface_flux,
         z=z,
