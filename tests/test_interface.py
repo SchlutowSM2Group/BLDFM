@@ -93,3 +93,72 @@ def test_multitower_structure(multitower_results_session, timeseries_config_sess
     flx_0 = results[names[0]][0]["flx"]
     flx_1 = results[names[1]][0]["flx"]
     assert not np.allclose(flx_0, flx_1)
+
+
+def test_timeseries_met_params_vary(timeseries_results_session, timeseries_config_session):
+    """Test that time-varying ustar, mol, wind_dir, wind_speed propagate to each result."""
+    results = timeseries_results_session
+
+    # Each result carries its met params
+    for r in results:
+        assert "params" in r
+        for key in ("ustar", "mol", "wind_speed", "wind_dir"):
+            assert key in r["params"], f"Missing '{key}' in params"
+
+    # Met params should vary across timesteps (synthetic timeseries with seed=42)
+    for key in ("ustar", "mol", "wind_speed", "wind_dir"):
+        values = [r["params"][key] for r in results]
+        assert len(set(values)) > 1, (
+            f"Expected varying '{key}' across timesteps, got constant {values[0]}"
+        )
+
+
+def test_timeseries_footprints_evolve(timeseries_results_session, timeseries_config_session):
+    """Test that changing met conditions produce different footprints at each timestep."""
+    results = timeseries_results_session
+    config = timeseries_config_session
+    expected_shape = (config.domain.ny, config.domain.nx)
+
+    for i, r in enumerate(results):
+        # Correct shape
+        assert r["flx"].shape == expected_shape, f"Step {i}: wrong flx shape"
+
+        # Grid is a 3-tuple (X, Y, Z)
+        assert isinstance(r["grid"], tuple) and len(r["grid"]) == 3
+
+        # Non-trivial footprint (has positive values)
+        assert r["flx"].max() > 0, f"Step {i}: footprint is all non-positive"
+
+    # At least one pair of timesteps should produce different footprints
+    differs = any(
+        not np.allclose(results[0]["flx"], results[i]["flx"])
+        for i in range(1, len(results))
+    )
+    assert differs, "All timestep footprints are identical despite varying met conditions"
+
+
+def test_timeseries_aggregated_footprint(timeseries_results_session):
+    """Test aggregated mean footprint with 50% and 70% flux contribution contours."""
+    from bldfm.plotting import extract_percentile_contour
+
+    results = timeseries_results_session
+    grid = results[0]["grid"]
+
+    # Compute time-averaged footprint
+    mean_flx = np.mean([r["flx"] for r in results], axis=0)
+    assert mean_flx.shape == results[0]["flx"].shape
+    assert np.isfinite(mean_flx).all()
+
+    # Extract percentile contours at 50% and 70%
+    level_50, area_50 = extract_percentile_contour(mean_flx, grid, pct=0.5)
+    level_70, area_70 = extract_percentile_contour(mean_flx, grid, pct=0.7)
+
+    # Valid positive values
+    assert level_50 > 0 and area_50 > 0
+    assert level_70 > 0 and area_70 > 0
+
+    # 70% contour encloses at least as much area as 50%
+    assert area_70 >= area_50
+
+    # 50% contour level is at least as high (more concentrated core)
+    assert level_50 >= level_70
