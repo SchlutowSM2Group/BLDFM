@@ -341,3 +341,46 @@ def test_solver_defaults_new_fields():
     config = parse_config_dict(raw)
     assert config.solver.analytic is False
     assert config.solver.src_loc is None
+
+
+def test_domain_full_output():
+    """Test that full_output in domain config round-trips correctly."""
+    raw = {
+        "domain": {
+            "nx": 256,
+            "ny": 128,
+            "xmax": 1000.0,
+            "ymax": 500.0,
+            "nz": 32,
+            "ref_lat": 50.95,
+            "ref_lon": 11.586,
+            "full_output": True,
+        },
+        "towers": [
+            {"name": "A", "lat": 50.9505, "lon": 11.5865, "z_m": 10.0},
+        ],
+        "met": {"ustar": 0.4},
+    }
+    config = parse_config_dict(raw)
+    assert config.domain.full_output is True
+
+
+def test_domain_full_output_default():
+    """Test that full_output defaults to False when not specified."""
+    raw = {
+        "domain": {
+            "nx": 256,
+            "ny": 128,
+            "xmax": 1000.0,
+            "ymax": 500.0,
+            "nz": 32,
+            "ref_lat": 50.95,
+            "ref_lon": 11.586,
+        },
+        "towers": [
+            {"name": "A", "lat": 50.9505, "lon": 11.5865, "z_m": 10.0},
+        ],
+        "met": {"ustar": 0.4},
+    }
+    config = parse_config_dict(raw)
+    assert config.domain.full_output is False
