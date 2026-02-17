@@ -481,6 +481,32 @@ Overlays footprint contours and tower markers on map tiles:
     except ImportError as e:
         print(f"Skipping map plot (install contextily): {e}")
 
+plot_footprint_on_map with land cover (optional: owslib)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Overlays footprint on ESA WorldCover 2021 land cover classes instead of
+street map tiles.  Useful for interpreting what surface types (forest,
+cropland, water, etc.) fall within the footprint source area:
+
+.. code-block:: python
+
+    try:
+        from bldfm import plot_footprint_on_map
+
+        fig, ax = plt.subplots(figsize=(10, 8))
+        ax = plot_footprint_on_map(
+            result1["flx"], result1["grid"], config_small,
+            tower=config_small.towers[0],
+            contour_pcts=[0.5, 0.8],
+            land_cover=True,
+            title="Footprint on land cover",
+        )
+        plt.savefig("plots/tutorial_landcover.png", dpi=150, bbox_inches="tight")
+        plt.close()
+        print("Saved plots/tutorial_landcover.png")
+    except ImportError as e:
+        print(f"Skipping land cover plot (install owslib): {e}")
+
 plot_wind_rose (optional: windrose)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
