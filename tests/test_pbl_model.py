@@ -8,6 +8,8 @@ The tests use parameterized inputs to check the function's output shapes, values
 """
 
 import pytest
+
+pytestmark = pytest.mark.unit
 import numpy as np
 from bldfm.pbl_model import vertical_profiles
 
