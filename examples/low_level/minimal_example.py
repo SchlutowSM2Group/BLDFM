@@ -10,22 +10,23 @@ from bldfm.solver import steady_state_transport_solver
 
 logger = get_logger("minimal_example")
 
-nxy = 512, 256
-nz = 16
-domain = 2000.0, 1000.0
-meas_height = 10.0
-wind = 4.0, 1.0
-ustar = 0.4
-
-srf_flx = ideal_source(nxy, domain)
-
-z, profs = vertical_profiles(nz, meas_height, wind, ustar)
-
-grid, conc, flx = steady_state_transport_solver(srf_flx, z, profs, domain, nz)
-
-X, Y, Z = grid
 
 if __name__ == "__main__":
+    nxy = 512, 256
+    nz = 16
+    domain = 2000.0, 1000.0
+    meas_height = 10.0
+    wind = 4.0, 1.0
+    ustar = 0.4
+
+    srf_flx = ideal_source(nxy, domain)
+
+    z, profs = vertical_profiles(nz, meas_height, wind, ustar)
+
+    grid, conc, flx = steady_state_transport_solver(srf_flx, z, profs, domain, nz)
+
+    X, Y, Z = grid
+
     logger.info("Minimal example for neutrally stratified BL and default settings.")
     logger.info("")
 
