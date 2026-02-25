@@ -14,6 +14,10 @@ import pytest
 pytestmark = pytest.mark.integration
 
 import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
 from bldfm.pbl_model import vertical_profiles
 from bldfm.utils import ideal_source
 from bldfm.solver import steady_state_transport_solver
@@ -62,6 +66,22 @@ def test_integration():
 
     assert np.allclose(diff_conc, 0, atol=1e-3), "Concentration mismatch too large"
     assert np.allclose(diff_flx, 0, atol=1e-3), "Flux mismatch too large"
+
+    print(
+        f"\nINTEGRATION numerical_vs_analytical: "
+        f"max_err_conc={np.abs(diff_conc).max():.4e} "
+        f"max_err_flx={np.abs(diff_flx).max():.4e}"
+    )
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    axes[0].imshow(flx_ana, origin="lower", aspect="auto")
+    axes[0].set_title("Analytical")
+    axes[1].imshow(flx, origin="lower", aspect="auto")
+    axes[1].set_title("Numerical")
+    fig.suptitle("Flux: analytical vs numerical")
+    fig.savefig(
+        "plots/test_numerical_vs_analytical.png", dpi=150, bbox_inches="tight"
+    )
+    plt.close("all")
 
 
 def test_convergence_trend():
@@ -126,6 +146,18 @@ def test_convergence_trend():
             f"<= errors[{i+1}]={errors[i+1]:.6e}"
         )
 
+    print("\nINTEGRATION convergence_trend:")
+    for res, err in zip(resolutions, errors):
+        print(f"  modes={res['modes']} nz={res['nz']} rmse={err:.6e}")
+
+    from bldfm.plotting import plot_convergence
+    grid_sizes = np.array([r["modes"][0] for r in resolutions], dtype=float)
+    ax = plot_convergence(
+        grid_sizes, np.array(errors), title="Convergence trend (test)"
+    )
+    ax.figure.savefig("plots/test_convergence.png", dpi=150, bbox_inches="tight")
+    plt.close("all")
+
 
 def _quick_solve(
     footprint=True, precision="single", modes=(128, 64), halo=None, meas_pt=(0.0, 0.0)
@@ -162,6 +194,7 @@ def test_solver_single_precision():
     assert conc.dtype == np.float32 or conc.dtype == np.float64
     # Single precision uses complex64 internally -> real part is float32
     assert flx.shape == conc.shape
+    print(f"\nINTEGRATION solver_single: dtype={conc.dtype} shape={conc.shape}")
 
 
 def test_solver_double_precision():
@@ -169,6 +202,7 @@ def test_solver_double_precision():
     _, conc, flx = _quick_solve(precision="double")
     assert conc.dtype == np.float64
     assert flx.dtype == np.float64
+    print(f"\nINTEGRATION solver_double: dtype={conc.dtype} shape={conc.shape}")
 
 
 def test_solver_invalid_precision_raises():
@@ -189,6 +223,7 @@ def test_solver_halo_overflow():
     _, conc, flx = _quick_solve(modes=(512, 512), halo=1.0)
     assert conc.shape == flx.shape
     assert np.isfinite(flx).all()
+    print(f"\nINTEGRATION solver_halo_overflow: shape={conc.shape} all_finite=True")
 
 
 def test_solver_non_footprint_shift():
@@ -198,6 +233,7 @@ def test_solver_non_footprint_shift():
     )
     assert conc.shape == flx.shape
     assert np.isfinite(conc).all()
+    print(f"\nINTEGRATION solver_non_footprint_shift: shape={conc.shape} all_finite=True")
 
 
 if __name__ == "__main__":

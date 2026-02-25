@@ -32,6 +32,12 @@ def test_netcdf_roundtrip_and_values(multitower_results_session):
                 original_flx = results[name][t]["flx"]
                 loaded_flx = ds["footprint"].values[t, ti]
                 np.testing.assert_allclose(loaded_flx, original_flx, rtol=1e-6)
+
+        print(
+            f"\nIO roundtrip: dims={dict(ds.sizes)} "
+            f"vars={list(ds.data_vars)} "
+            f"flx_range=[{ds['footprint'].values.min():.4e}, {ds['footprint'].values.max():.4e}]"
+        )
         ds.close()
 
 
@@ -58,6 +64,13 @@ def test_netcdf_metadata(multitower_results_session):
         for var in ("tower_lat", "tower_lon", "tower_z"):
             assert var in ds
         assert len(ds["tower_lat"]) == 2
+
+        print(
+            f"\nIO metadata: conventions={ds.attrs['Conventions']} "
+            f"closure={ds.attrs['closure']} "
+            f"met_vars={['ustar', 'mol', 'wind_speed', 'wind_dir']} "
+            f"n_towers={len(ds['tower_lat'])}"
+        )
         ds.close()
 
 
@@ -85,6 +98,11 @@ def test_netcdf_met_values_match(multitower_results_session):
                     rtol=1e-6,
                     err_msg=f"Mismatch for {var} at timestep {t}",
                 )
+
+        print(
+            f"\nIO met_values: "
+            + " ".join(f"{v}={ds[v].values.tolist()}" for v in ("ustar", "mol", "wind_speed", "wind_dir"))
+        )
         ds.close()
 
 
@@ -105,6 +123,12 @@ def test_netcdf_tower_metadata_match(multitower_results_session):
             np.testing.assert_allclose(ds["tower_lat"].values[i], tower.lat)
             np.testing.assert_allclose(ds["tower_lon"].values[i], tower.lon)
             np.testing.assert_allclose(ds["tower_z"].values[i], tower.z_m)
+
+        print(
+            f"\nIO tower_metadata: names={list(ds['tower'].values)} "
+            f"lats={ds['tower_lat'].values.tolist()} "
+            f"lons={ds['tower_lon'].values.tolist()}"
+        )
         ds.close()
 
 
@@ -131,6 +155,11 @@ def test_netcdf_multitower_select_by_name(multitower_results_session):
                     results[tower_name][t]["flx"],
                     rtol=1e-6,
                 )
+
+        print(
+            f"\nIO select_by_name: towers={list(results.keys())} "
+            f"per_tower_dims={('time', 'y', 'x')}"
+        )
         ds.close()
 
 
@@ -153,6 +182,11 @@ def test_netcdf_timeseries_timestamps(multitower_results_session):
         for var in ("ustar", "mol", "wind_speed", "wind_dir"):
             values = ds[var].values
             assert len(set(values)) > 1, f"{var} is constant across timesteps"
+
+        print(
+            f"\nIO timestamps: {list(ds['time'].values)} "
+            f"n_time={ds.sizes['time']}"
+        )
         ds.close()
 
 
@@ -189,6 +223,11 @@ def test_netcdf_single_tower_timeseries(
                 results[t]["flx"],
                 rtol=1e-6,
             )
+
+        print(
+            f"\nIO single_tower_timeseries: tower={tower_name} "
+            f"dims={dict(ds.sizes)}"
+        )
         ds.close()
 
 
@@ -211,6 +250,12 @@ def test_netcdf_global_attrs(multitower_results_session):
         assert ds["y"].values[0] < ds["y"].values[-1]
         assert "units" in ds["x"].attrs
         assert "units" in ds["y"].attrs
+
+        print(
+            f"\nIO global_attrs: title={ds.attrs['title']} "
+            f"source={ds.attrs['source']} "
+            f"domain=({ds.attrs['domain_xmax']}, {ds.attrs['domain_ymax']})"
+        )
         ds.close()
 
 
@@ -293,4 +338,9 @@ def test_netcdf_3d_roundtrip():
 
         # z coordinate values are correct
         np.testing.assert_allclose(ds["z"].values, Z[:, 0, 0], rtol=1e-6)
+
+        print(
+            f"\nIO 3d_roundtrip: dims={dict(ds.sizes)} "
+            f"z_levels={ds['z'].values.tolist()}"
+        )
         ds.close()
