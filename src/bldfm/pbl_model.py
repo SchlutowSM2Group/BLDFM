@@ -120,7 +120,11 @@ def vertical_profiles(
 
     dzeta = zm / n
 
-    zeta = np.arange(0.0, zetamx + dzeta, dzeta)
+    # np.arange requires a scalar stop argument; numpy 2.x removed the
+    # implicit array-to-scalar coercion that was deprecated in numpy 1.25.
+    # Use np.squeeze().item() to handle both 0-d and shaped arrays from
+    # OAAHOC path where z0/aa/bb may have extra dimensions from tke broadcast.
+    zeta = np.arange(0.0, np.squeeze(zetamx).item() + dzeta, dzeta)
 
     z = -h * np.log(-(zeta - aa) / bb)
 

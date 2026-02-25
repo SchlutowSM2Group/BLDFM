@@ -96,18 +96,22 @@ def plot_footprint_field(
             lvl, _ = extract_percentile_contour(flx, grid, p)
             levels.append(lvl)
             pct_labels[lvl] = f"{int(p * 100)}%"
-        cs = ax.contour(
-            X,
-            Y,
-            flx,
-            levels=sorted(levels),
-            colors="k",
-            linewidths=0.8,
-            linestyles="--",
-        )
-        ax.clabel(
-            cs, fmt=lambda x: pct_labels.get(x, f"{x:.2e}"), fontsize=8, inline=True
-        )
+        # Deduplicate levels — matplotlib requires strictly increasing values.
+        # Coarse grids can produce identical thresholds for adjacent percentiles.
+        unique_levels = sorted(set(levels))
+        if unique_levels:
+            cs = ax.contour(
+                X,
+                Y,
+                flx,
+                levels=unique_levels,
+                colors="k",
+                linewidths=0.8,
+                linestyles="--",
+            )
+            ax.clabel(
+                cs, fmt=lambda x: pct_labels.get(x, f"{x:.2e}"), fontsize=8, inline=True
+            )
 
     ax.set_xlabel("x [m]")
     ax.set_ylabel("y [m]")

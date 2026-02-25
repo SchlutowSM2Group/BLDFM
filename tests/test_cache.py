@@ -4,8 +4,6 @@ import tempfile
 import numpy as np
 import pytest
 
-pytestmark = pytest.mark.unit
-
 from bldfm.cache import GreensFunctionCache
 from bldfm.config_parser import parse_config_dict
 from bldfm.interface import run_bldfm_single
@@ -35,11 +33,13 @@ def solver_inputs():
     return z, profiles, domain, modes, meas_pt, halo, precision
 
 
+@pytest.mark.unit
 def test_cache_miss(cache, solver_inputs):
     result = cache.get(*solver_inputs)
     assert result is None
 
 
+@pytest.mark.unit
 def test_cache_put_and_hit(cache, solver_inputs):
     grid = (np.ones((4, 4)), np.ones((4, 4)), np.ones((4, 4)))
     conc = np.random.rand(4, 4)
@@ -54,6 +54,7 @@ def test_cache_put_and_hit(cache, solver_inputs):
     np.testing.assert_array_equal(cached_flx, flx)
 
 
+@pytest.mark.unit
 def test_cache_different_inputs_miss(cache, solver_inputs):
     grid = (np.ones((4, 4)), np.ones((4, 4)), np.ones((4, 4)))
     conc = np.random.rand(4, 4)
@@ -67,6 +68,7 @@ def test_cache_different_inputs_miss(cache, solver_inputs):
     assert result is None
 
 
+@pytest.mark.unit
 def test_cache_clear(cache, solver_inputs):
     grid = (np.ones((4, 4)), np.ones((4, 4)), np.ones((4, 4)))
     cache.put(*solver_inputs, grid, np.ones((4, 4)), np.ones((4, 4)))
@@ -75,6 +77,7 @@ def test_cache_clear(cache, solver_inputs):
     assert cache.get(*solver_inputs) is None
 
 
+@pytest.mark.integration
 def test_cache_integration():
     """Test caching through the full solver with footprint=True."""
     config = parse_config_dict(

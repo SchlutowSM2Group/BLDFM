@@ -56,11 +56,17 @@ def test_plot_footprint_field_variants(footprint_result_session):
     # Basic
     ax = plot_footprint_field(result["flx"], result["grid"])
     assert ax is not None
+    ax.figure.savefig(
+        "plots/test_footprint_field_basic.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
     # With contours
     ax = plot_footprint_field(result["flx"], result["grid"], contour_pcts=[0.5, 0.8])
     assert ax is not None
+    ax.figure.savefig(
+        "plots/test_footprint_field_contours.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
     # Custom axes
@@ -69,6 +75,9 @@ def test_plot_footprint_field_variants(footprint_result_session):
         result["flx"], result["grid"], ax=ax, title="Test"
     )
     assert returned_ax is ax
+    fig.savefig(
+        "plots/test_footprint_field_custom_ax.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -248,6 +257,9 @@ def test_plot_footprint_on_map_land_cover_mock(footprint_result_session, monkeyp
     # Verify legend is present
     legend = ax.get_legend()
     assert legend is not None
+    ax.figure.savefig(
+        "plots/test_land_cover_mock.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -269,6 +281,9 @@ def test_plot_footprint_comparison(footprint_result_session):
     )
     assert fig is not None
     assert len(axes) == 2
+    fig.savefig(
+        "plots/test_footprint_comparison.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -289,6 +304,9 @@ def test_plot_field_comparison():
     fig, axs = plot_field_comparison(fields, domain=(200, 100), src_pt=(10, 10))
     assert fig is not None
     assert axs.shape == (2, 2)
+    fig.savefig(
+        "plots/test_field_comparison.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -303,6 +321,9 @@ def test_plot_convergence():
     # Without fits
     ax = plot_convergence(h, err, title="Convergence test")
     assert ax is not None
+    ax.figure.savefig(
+        "plots/test_plot_convergence_basic.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
     # With fits
@@ -314,6 +335,9 @@ def test_plot_convergence():
         ],
     )
     assert ax is not None
+    ax.figure.savefig(
+        "plots/test_plot_convergence_fits.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -335,6 +359,9 @@ def test_plot_vertical_profiles():
     )
     assert fig is not None
     assert len(axes) == 2
+    fig.savefig(
+        "plots/test_vertical_profiles.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -360,6 +387,9 @@ def test_plot_vertical_slice():
     for axis in ("x", "y", "z"):
         ax = plot_vertical_slice(field, grid, slice_axis=axis, slice_index=0)
         assert ax is not None
+        ax.figure.savefig(
+            f"plots/test_vertical_slice_{axis}.png", dpi=150, bbox_inches="tight"
+        )
         plt.close("all")
 
     # Invalid axis raises ValueError
@@ -437,6 +467,9 @@ def test_plot_source_area_contours(footprint_result_session):
         result["flx"], result["grid"], rescaled, title="Test contours"
     )
     assert ax is not None
+    ax.figure.savefig(
+        "plots/test_source_area_contours.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -452,6 +485,9 @@ def test_plot_source_area_contours_custom_ax(footprint_result_session):
         result["flx"], result["grid"], rescaled, ax=ax
     )
     assert returned_ax is ax
+    fig.savefig(
+        "plots/test_source_area_contours_custom.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -525,6 +561,9 @@ def test_plot_footprint_field_3d_input():
 
     ax = plot_footprint_field(flx, grid, level=1)
     assert ax is not None
+    ax.figure.savefig(
+        "plots/test_footprint_field_3d.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 

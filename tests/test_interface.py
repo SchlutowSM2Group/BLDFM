@@ -5,8 +5,13 @@ import pytest
 
 pytestmark = pytest.mark.integration
 
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
 from bldfm.config_parser import parse_config_dict
 from bldfm.interface import run_bldfm_single, run_bldfm_multitower
+from bldfm.plotting import plot_footprint_field
 from bldfm.synthetic import generate_synthetic_timeseries, generate_towers_grid
 
 
@@ -26,6 +31,18 @@ def test_single_run_structure(single_run_result, simple_config_session):
 
     # Tower name
     assert result["tower_name"] == "test_tower"
+
+    print(
+        f"\nINTERFACE single_run: tower={result['tower_name']} "
+        f"shape={result['flx'].shape} "
+        f"flx_range=[{result['flx'].min():.4e}, {result['flx'].max():.4e}]"
+    )
+    ax = plot_footprint_field(
+        result["flx"], result["grid"], contour_pcts=[0.5, 0.8],
+        title="Single run footprint",
+    )
+    ax.figure.savefig("plots/test_single_run.png", dpi=150, bbox_inches="tight")
+    plt.close("all")
 
 
 def test_single_run_with_synthetic_data():
@@ -55,6 +72,11 @@ def test_single_run_with_synthetic_data():
     assert result["flx"] is not None
     assert np.isfinite(result["flx"]).all()
 
+    print(
+        f"\nINTERFACE synthetic_single: shape={result['flx'].shape} "
+        f"all_finite=True"
+    )
+
 
 def test_timeseries_structure(timeseries_results_session, timeseries_config_session):
     """Test timeseries output: list structure, keys, unique timestamps, finite values."""
@@ -77,6 +99,11 @@ def test_timeseries_structure(timeseries_results_session, timeseries_config_sess
     for r in results:
         assert np.isfinite(r["flx"]).all()
         assert np.isfinite(r["conc"]).all()
+
+    print(
+        f"\nINTERFACE timeseries: n_steps={len(results)} "
+        f"timestamps={timestamps}"
+    )
 
 
 def test_multitower_structure(multitower_results_session, timeseries_config_session):
@@ -101,6 +128,19 @@ def test_multitower_structure(multitower_results_session, timeseries_config_sess
     flx_1 = results[names[1]][0]["flx"]
     assert not np.allclose(flx_0, flx_1)
 
+    print(
+        f"\nINTERFACE multitower: towers={names} "
+        f"shape={flx_0.shape} n_steps=3"
+    )
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    for i, name in enumerate(names):
+        flx = results[name][0]["flx"]
+        grid = results[name][0]["grid"]
+        plot_footprint_field(flx, grid, ax=axes[i], title=name, contour_pcts=[0.5, 0.8])
+    fig.suptitle("Multitower footprints (t=0)")
+    fig.savefig("plots/test_multitower.png", dpi=150, bbox_inches="tight")
+    plt.close("all")
+
 
 def test_timeseries_met_params_vary(
     timeseries_results_session, timeseries_config_session
@@ -120,6 +160,11 @@ def test_timeseries_met_params_vary(
         assert (
             len(set(values)) > 1
         ), f"Expected varying '{key}' across timesteps, got constant {values[0]}"
+
+    print("\nINTERFACE met_params_vary:")
+    for key in ("ustar", "mol", "wind_speed", "wind_dir"):
+        values = [r["params"][key] for r in results]
+        print(f"  {key}: {values}")
 
 
 def test_timeseries_footprints_evolve(
@@ -149,6 +194,18 @@ def test_timeseries_footprints_evolve(
         differs
     ), "All timestep footprints are identical despite varying met conditions"
 
+    print("\nINTERFACE footprints_evolve:")
+    for i, r in enumerate(results):
+        print(f"  step {i}: max_flx={r['flx'].max():.4e}")
+
+    n = len(results)
+    fig, axes = plt.subplots(1, n, figsize=(5 * n, 4))
+    for i, r in enumerate(results):
+        plot_footprint_field(r["flx"], r["grid"], ax=axes[i], title=f"t={i}")
+    fig.suptitle("Timeseries footprint evolution")
+    fig.savefig("plots/test_timeseries_evolution.png", dpi=150, bbox_inches="tight")
+    plt.close("all")
+
 
 def test_timeseries_aggregated_footprint(timeseries_results_session):
     """Test aggregated mean footprint with 50% and 70% flux contribution contours."""
@@ -175,3 +232,17 @@ def test_timeseries_aggregated_footprint(timeseries_results_session):
 
     # 50% contour level is at least as high (more concentrated core)
     assert level_50 >= level_70
+
+    print(
+        f"\nINTERFACE aggregated_footprint: "
+        f"50%: level={level_50:.4e} area={area_50:.1f}m² | "
+        f"70%: level={level_70:.4e} area={area_70:.1f}m²"
+    )
+    ax = plot_footprint_field(
+        mean_flx, grid, contour_pcts=[0.5, 0.7],
+        title="Aggregated mean footprint",
+    )
+    ax.figure.savefig(
+        "plots/test_aggregated_footprint.png", dpi=150, bbox_inches="tight"
+    )
+    plt.close("all")
