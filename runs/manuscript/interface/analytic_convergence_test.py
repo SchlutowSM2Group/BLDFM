@@ -139,4 +139,4 @@ if __name__ == "__main__":
         ],
         title="Error convergence for ANALY",
     )
-    ax.get_figure().savefig("plots/error_convergence_analytic.png", dpi=300)
+    ax.get_figure().savefig("plots/manuscript_error_convergence_analytic.png", dpi=300)

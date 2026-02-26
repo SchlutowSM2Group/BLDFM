@@ -85,4 +85,4 @@ if __name__ == "__main__":
     }
 
     fig, axs = plot_field_comparison(fields, domain=domain_ext, src_pt=src_pt)
-    fig.savefig("plots/comparison_analytic.png", dpi=300)
+    fig.savefig("plots/manuscript_comparison_analytic.png", dpi=300)

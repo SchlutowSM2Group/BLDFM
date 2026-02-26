@@ -100,4 +100,4 @@ if __name__ == "__main__":
         meas_pt=meas_pt,
     )
 
-    fig.savefig("plots/comparison_footprint_stable.png", dpi=300)
+    fig.savefig("plots/manuscript_comparison_footprint_stable.png", dpi=300)

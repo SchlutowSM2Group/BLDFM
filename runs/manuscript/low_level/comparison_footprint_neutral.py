@@ -130,4 +130,4 @@ if __name__ == "__main__":
     for ax in axs:
         ax.scatter(meas_pt[0], meas_pt[1], zorder=5, marker="*", color="red", s=300)
 
-    plt.savefig("plots/comparison_footprint_neutral.png", dpi=300)
+    plt.savefig("plots/manuscript_low_level_comparison_footprint_neutral.png", dpi=300)

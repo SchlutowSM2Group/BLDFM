@@ -137,4 +137,4 @@ if __name__ == "__main__":
         ],
         title="Error convergence for HI-RES",
     )
-    ax.get_figure().savefig("plots/error_convergence_numeric.png", dpi=300)
+    ax.get_figure().savefig("plots/manuscript_error_convergence_numeric.png", dpi=300)

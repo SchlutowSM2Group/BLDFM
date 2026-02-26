@@ -103,4 +103,4 @@ if __name__ == "__main__":
         vmin=2e-6,
     )
 
-    fig.savefig("plots/comparison_footprint_unstable.png", dpi=300)
+    fig.savefig("plots/manuscript_comparison_footprint_unstable.png", dpi=300)

@@ -3,31 +3,93 @@
 Example scripts and workflows
 =============================
 
-BLDFM provides two tiers of example scripts:
+BLDFM ships with instructional examples organised in three tiers of
+increasing complexity.  All plot output is saved to ``plots/`` in the
+repository root (create with ``mkdir -p plots`` if needed).
 
-- **``runs/low_level/``** — Direct API calls for power users
-- **``runs/manuscript/``** — Paper reproduction scripts (both interface and low-level)
+Config-driven examples (``examples/``)
+---------------------------------------
 
+**Recommended starting point.**  These scripts use the high-level
+YAML/dataclass workflow: ``load_config()``, ``run_bldfm_single()``, and the
+plotting library.  Each script has a matching YAML file in
+``examples/configs/``.
 
-Low-level examples (``runs/low_level/``)
------------------------------------------
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
 
-These scripts call ``vertical_profiles``, ``ideal_source``, and
-``steady_state_transport_solver`` directly, giving full control over every parameter.
+   * - Script
+     - Description
+   * - ``minimal_example.py``
+     - Neutral BL concentration and flux fields
+   * - ``minimal_example_3d.py``
+     - 3D output with vertical slices
+   * - ``3d_plume.py``
+     - Point-source plume with horizontal and vertical slices (concentration **and** flux)
+   * - ``footprint_example.py``
+     - Flux footprint with percentile contours
+   * - ``timeseries_example.py``
+     - Single-tower timeseries: footprint climatology workflow
+   * - ``parallel_example.py``
+     - High-resolution solve with multi-threaded FFT
+   * - ``multitower_example.py``
+     - Multiple towers over a synthetic timeseries
+   * - ``visualization_example.py``
+     - Map tiles, land cover, wind rose, and interactive plots (optional deps)
 
 .. code-block:: bash
 
-    $ python runs/low_level/minimal_example.py
-    $ python runs/low_level/footprint_example.py
-    $ python runs/low_level/plot_profiles.py
-    $ python runs/low_level/point_measurement_example.py
-    $ python runs/low_level/source_area_example.py
+    $ python examples/minimal_example.py
+    $ python examples/footprint_example.py
+    $ python examples/timeseries_example.py
 
+Low-level API examples (``examples/low_level/``)
+--------------------------------------------------
+
+These scripts call ``vertical_profiles()``, ``steady_state_transport_solver()``,
+and other solver-level functions directly.  Use these to understand the
+internals or to build custom workflows outside the config system.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 70
+
+   * - Script
+     - Description
+   * - ``minimal_example.py``
+     - Basic neutral BL solve
+   * - ``minimal_example_3d.py``
+     - 3D output
+   * - ``3d_plume.py``
+     - Point-source plume
+   * - ``footprint_example.py``
+     - Flux footprint calculation
+   * - ``parallel_example.py``
+     - Parallel execution
+   * - ``plot_profiles.py``
+     - Vertical profiles of wind and eddy diffusivity under MOST
+   * - ``point_measurement_example.py``
+     - Point measurement via footprint convolution
+
+.. code-block:: bash
+
+    $ python examples/low_level/minimal_example.py
+    $ python examples/low_level/footprint_example.py
+
+Source-area analysis (``runs/low_level/``)
+-------------------------------------------
+
+The ``runs/low_level/`` directory contains the source-area example:
+
+.. code-block:: bash
+
+    $ python runs/low_level/source_area_example.py
 
 Manuscript figures (``runs/manuscript/``)
 ------------------------------------------
 
-These scripts reproduce the figures in the BLDFM paper. They are provided in
+These scripts reproduce the figures in the BLDFM paper.  They are provided in
 two forms:
 
 - **``runs/manuscript/interface/``** — Config-driven interface with ``dataclasses.replace()``
@@ -43,3 +105,14 @@ To regenerate all manuscript figures (both tiers):
     # Or only one tier:
     $ python runs/manuscript/generate_all.py --tier interface
     $ python runs/manuscript/generate_all.py --tier low_level
+
+Plot naming conventions
+-----------------------
+
+All scripts use filename prefixes to distinguish their output in ``plots/``:
+
+- ``test_*`` — Test-generated plots (e.g. ``test_interface_multitower_structure.png``)
+- ``examples_*`` — Config-driven example plots (e.g. ``examples_timeseries_aggregated.png``)
+- ``examples_low_level_*`` — Low-level example plots (e.g. ``examples_low_level_most_profiles.png``)
+- ``manuscript_*`` — Manuscript interface plots (e.g. ``manuscript_comparison_analytic.png``)
+- ``manuscript_low_level_*`` — Manuscript low-level plots (e.g. ``manuscript_low_level_comparison_analytic.png``)
