@@ -15,7 +15,9 @@ from bldfm.plotting import plot_footprint_field
 from bldfm.synthetic import generate_synthetic_timeseries, generate_towers_grid
 
 
-def test_single_run_structure(single_run_result, simple_config_session):
+def test_single_run_structure(
+    single_run_result, simple_config_session, source_area_result_session
+):
     """Test output structure, shapes, types, and metadata from a single run."""
     result = single_run_result
     config = simple_config_session
@@ -37,11 +39,14 @@ def test_single_run_structure(single_run_result, simple_config_session):
         f"shape={result['flx'].shape} "
         f"flx_range=[{result['flx'].min():.4e}, {result['flx'].max():.4e}]"
     )
+    # Visual output uses low-level source area result for clean rendering
+    r = source_area_result_session
     ax = plot_footprint_field(
-        result["flx"], result["grid"], contour_pcts=[0.5, 0.8],
+        r["flx"], r["grid"], contour_pcts=[0.25, 0.5, 0.75],
         title="Single run footprint",
     )
-    ax.figure.savefig("plots/test_single_run.png", dpi=150, bbox_inches="tight")
+    ax.set_aspect("auto")
+    ax.figure.savefig("plots/test_interface_single_run_structure.png", dpi=150, bbox_inches="tight")
     plt.close("all")
 
 
@@ -137,8 +142,9 @@ def test_multitower_structure(multitower_results_session, timeseries_config_sess
         flx = results[name][0]["flx"]
         grid = results[name][0]["grid"]
         plot_footprint_field(flx, grid, ax=axes[i], title=name, contour_pcts=[0.5, 0.8])
+        axes[i].set_aspect("auto")
     fig.suptitle("Multitower footprints (t=0)")
-    fig.savefig("plots/test_multitower.png", dpi=150, bbox_inches="tight")
+    fig.savefig("plots/test_interface_multitower_structure.png", dpi=150, bbox_inches="tight")
     plt.close("all")
 
 
@@ -202,8 +208,9 @@ def test_timeseries_footprints_evolve(
     fig, axes = plt.subplots(1, n, figsize=(5 * n, 4))
     for i, r in enumerate(results):
         plot_footprint_field(r["flx"], r["grid"], ax=axes[i], title=f"t={i}")
+        axes[i].set_aspect("auto")
     fig.suptitle("Timeseries footprint evolution")
-    fig.savefig("plots/test_timeseries_evolution.png", dpi=150, bbox_inches="tight")
+    fig.savefig("plots/test_interface_timeseries_footprints_evolve.png", dpi=150, bbox_inches="tight")
     plt.close("all")
 
 
@@ -242,7 +249,8 @@ def test_timeseries_aggregated_footprint(timeseries_results_session):
         mean_flx, grid, contour_pcts=[0.5, 0.7],
         title="Aggregated mean footprint",
     )
+    ax.set_aspect("auto")
     ax.figure.savefig(
-        "plots/test_aggregated_footprint.png", dpi=150, bbox_inches="tight"
+        "plots/test_interface_timeseries_aggregated_footprint.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")

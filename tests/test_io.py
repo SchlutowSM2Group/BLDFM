@@ -22,8 +22,8 @@ def test_netcdf_roundtrip_and_values(multitower_results_session):
         assert "concentration" in ds
         assert ds.sizes["time"] == 3
         assert ds.sizes["tower"] == 2
-        assert ds.sizes["x"] == 64
-        assert ds.sizes["y"] == 64
+        assert ds.sizes["x"] == config.domain.nx
+        assert ds.sizes["y"] == config.domain.ny
 
         # Values match
         tower_names = list(results.keys())

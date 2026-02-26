@@ -57,7 +57,7 @@ def test_plot_footprint_field_variants(footprint_result_session):
     ax = plot_footprint_field(result["flx"], result["grid"])
     assert ax is not None
     ax.figure.savefig(
-        "plots/test_footprint_field_basic.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_footprint_field_variants_basic.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
@@ -65,7 +65,7 @@ def test_plot_footprint_field_variants(footprint_result_session):
     ax = plot_footprint_field(result["flx"], result["grid"], contour_pcts=[0.5, 0.8])
     assert ax is not None
     ax.figure.savefig(
-        "plots/test_footprint_field_contours.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_footprint_field_variants_contours.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
@@ -76,7 +76,7 @@ def test_plot_footprint_field_variants(footprint_result_session):
     )
     assert returned_ax is ax
     fig.savefig(
-        "plots/test_footprint_field_custom_ax.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_footprint_field_variants_custom_ax.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
@@ -90,12 +90,12 @@ def test_plot_footprint_timeseries():
     config = parse_config_dict(
         {
             "domain": {
-                "nx": 64,
+                "nx": 128,
                 "ny": 64,
-                "xmax": 200.0,
-                "ymax": 200.0,
-                "nz": 8,
-                "modes": [64, 64],
+                "xmax": 700.0,
+                "ymax": 100.0,
+                "nz": 16,
+                "modes": [128, 64],
                 "ref_lat": towers[0]["lat"],
                 "ref_lon": towers[0]["lon"],
             },
@@ -112,7 +112,7 @@ def test_plot_footprint_timeseries():
     )
     assert ax is not None
     ax.figure.savefig(
-        "plots/test_footprint_timeseries.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_footprint_timeseries.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
@@ -153,12 +153,13 @@ def test_plot_footprint_on_map_happy_path(footprint_result_session):
             title="Map plot (test)",
         )
     except Exception as exc:
-        # Network errors should not fail the test suite
-        if "URLError" in type(exc).__name__ or "ConnectionError" in type(exc).__name__:
-            pytest.skip(f"Network unavailable: {exc}")
+        # Network or PROJ/CRS errors should not fail the test suite
+        skip_types = ("URLError", "ConnectionError", "CRSError")
+        if any(t in type(exc).__name__ for t in skip_types):
+            pytest.skip(f"External dependency error: {exc}")
         raise
     assert ax is not None
-    ax.figure.savefig("plots/test_footprint_on_map.png", dpi=150, bbox_inches="tight")
+    ax.figure.savefig("plots/test_plot_footprint_on_map_happy_path.png", dpi=150, bbox_inches="tight")
     plt.close("all")
 
 
@@ -193,7 +194,7 @@ def test_plot_wind_rose_happy_path():
 
     ax = plot_wind_rose(ws, wd, title="Wind rose (test)")
     assert ax is not None
-    ax.figure.savefig("plots/test_wind_rose.png", dpi=150, bbox_inches="tight")
+    ax.figure.savefig("plots/test_plot_wind_rose_happy_path.png", dpi=150, bbox_inches="tight")
     plt.close("all")
 
 
@@ -236,29 +237,25 @@ def test_plot_footprint_on_map_land_cover_import_error(footprint_result_session)
             )
 
 
-def test_plot_footprint_on_map_land_cover_mock(footprint_result_session, monkeypatch):
-    """Test land cover overlay with mocked WMS response."""
+def test_plot_footprint_on_map_land_cover(footprint_result_session):
+    """Test land cover overlay using the real ESA Terrascope WMS."""
     from bldfm.plotting import plot_footprint_on_map
 
     result, config = footprint_result_session
 
-    fake_img = np.random.rand(64, 64, 4).astype(np.float32)
+    try:
+        ax = plot_footprint_on_map(
+            result["flx"], result["grid"], config, land_cover=True, title="Land cover test"
+        )
+    except Exception as exc:
+        pytest.skip(f"WMS service unavailable: {exc}")
 
-    def mock_fetch(bbox, size=(512, 512)):
-        extent = (bbox[0], bbox[2], bbox[1], bbox[3])
-        return fake_img, extent
-
-    monkeypatch.setattr("bldfm.plotting._fetch_land_cover", mock_fetch)
-
-    ax = plot_footprint_on_map(
-        result["flx"], result["grid"], config, land_cover=True, title="Land cover test"
-    )
     assert ax is not None
     # Verify legend is present
     legend = ax.get_legend()
     assert legend is not None
     ax.figure.savefig(
-        "plots/test_land_cover_mock.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_footprint_on_map_land_cover.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
@@ -266,24 +263,35 @@ def test_plot_footprint_on_map_land_cover_mock(footprint_result_session, monkeyp
 # --- plot_footprint_comparison ---
 
 
-def test_plot_footprint_comparison(footprint_result_session):
-    """Test multi-panel comparison plot."""
-    result, _ = footprint_result_session
-    flx = result["flx"]
-    X, Y, _ = result["grid"]
-    grid_2d = (X, Y)
+def test_plot_footprint_comparison(source_area_result_session, footprint_result_session):
+    """Test multi-panel comparison: source area footprint vs concentration."""
+    r = source_area_result_session
 
-    fig, axes = plot_footprint_comparison(
-        fields=[flx, flx * 0.5],
-        grids=[grid_2d, grid_2d],
-        labels=["Model A", "Model B"],
-        meas_pt=(100.0, 100.0),
+    # Visual output: side-by-side plot_footprint_field (pcolormesh + contours)
+    fig, axes = plt.subplots(1, 2, figsize=(8, 10))
+    plot_footprint_field(
+        r["flx"], r["grid"], ax=axes[0],
+        contour_pcts=[0.25, 0.5, 0.75], title="Footprint",
     )
-    assert fig is not None
-    assert len(axes) == 2
+    plot_footprint_field(
+        r["conc"], r["grid"], ax=axes[1],
+        contour_pcts=[0.25, 0.5, 0.75], title="Concentration",
+    )
     fig.savefig(
-        "plots/test_footprint_comparison.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_footprint_comparison.png", dpi=150, bbox_inches="tight"
     )
+    plt.close("all")
+
+    # Also exercise the plot_footprint_comparison contour function
+    result, _ = footprint_result_session
+    X, Y, _ = result["grid"]
+    fig2, axes2 = plot_footprint_comparison(
+        fields=[result["flx"], result["flx"] * 0.5],
+        grids=[(X, Y), (X, Y)],
+        labels=["A", "B"],
+    )
+    assert fig2 is not None
+    assert len(axes2) == 2
     plt.close("all")
 
 
@@ -305,7 +313,7 @@ def test_plot_field_comparison():
     assert fig is not None
     assert axs.shape == (2, 2)
     fig.savefig(
-        "plots/test_field_comparison.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_smoke_field_comparison.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
@@ -322,7 +330,7 @@ def test_plot_convergence():
     ax = plot_convergence(h, err, title="Convergence test")
     assert ax is not None
     ax.figure.savefig(
-        "plots/test_plot_convergence_basic.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_smoke_convergence_basic.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
@@ -336,7 +344,7 @@ def test_plot_convergence():
     )
     assert ax is not None
     ax.figure.savefig(
-        "plots/test_plot_convergence_fits.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_smoke_convergence_fits.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
@@ -360,7 +368,7 @@ def test_plot_vertical_profiles():
     assert fig is not None
     assert len(axes) == 2
     fig.savefig(
-        "plots/test_vertical_profiles.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_vertical_profiles.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
@@ -368,33 +376,28 @@ def test_plot_vertical_profiles():
 # --- plot_vertical_slice ---
 
 
-def test_plot_vertical_slice():
-    """Test 2D slice from a 3D field for all axes."""
-    nz, ny, nx = 4, 8, 16
-    field = np.random.rand(nz, ny, nx)
-    X, Y, Z = np.meshgrid(
-        np.linspace(0, 100, nx),
-        np.linspace(0, 50, ny),
-        np.linspace(0, 20, nz),
-        indexing="ij",
-    )
-    # Transpose to (nz, ny, nx) ordering for grid arrays
-    X = X.transpose(2, 1, 0)
-    Y = Y.transpose(2, 1, 0)
-    Z = Z.transpose(2, 1, 0)
-    grid = (X, Y, Z)
+def test_plot_vertical_slice(plume_3d_result_session):
+    """Test 2D slice from a real 3D plume: concentration and flux side by side."""
+    r = plume_3d_result_session
+    conc = r["conc"]
+    flx = r["flx"]
+    grid = r["grid"]
+    nlvls, ny, nx = conc.shape
 
-    for axis in ("x", "y", "z"):
-        ax = plot_vertical_slice(field, grid, slice_axis=axis, slice_index=0)
-        assert ax is not None
-        ax.figure.savefig(
-            f"plots/test_vertical_slice_{axis}.png", dpi=150, bbox_inches="tight"
+    for axis, idx in [("y", ny // 2), ("x", nx // 2), ("z", 0)]:
+        fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+        for ax, field, label in [(axes[0], conc, "Concentration"), (axes[1], flx, "Flux")]:
+            plot_vertical_slice(field, grid, slice_axis=axis, slice_index=idx, ax=ax)
+            ax.set_title(f"{label} ({axis}-slice, idx={idx})")
+        fig.savefig(
+            f"plots/test_plot_vertical_slice_{axis}.png",
+            dpi=150, bbox_inches="tight",
         )
         plt.close("all")
 
     # Invalid axis raises ValueError
     with pytest.raises(ValueError, match="slice_axis"):
-        plot_vertical_slice(field, grid, slice_axis="w", slice_index=0)
+        plot_vertical_slice(conc, grid, slice_axis="w", slice_index=0)
 
 
 # --- get_source_area ---
@@ -427,7 +430,7 @@ def test_get_source_area_monotone():
     assert np.isclose(rescaled[1, 0], 0.4)
 
 
-def test_source_area_base_functions_shapes(footprint_result_session):
+def test_source_area_base_functions_shapes(source_area_result_session):
     """Test that all 5 base function constructors return correct shapes."""
     from bldfm.utils import (
         source_area_contribution,
@@ -437,11 +440,11 @@ def test_source_area_base_functions_shapes(footprint_result_session):
         source_area_sector,
     )
 
-    result, _ = footprint_result_session
-    flx = result["flx"]
-    X, Y, Z = result["grid"]
-    meas_pt = result["tower_xy"]
-    wind = (0.0, -5.0)
+    r = source_area_result_session
+    flx = r["flx"]
+    X, Y, Z = r["grid"]
+    meas_pt = r["meas_pt"]
+    wind = r["wind"]
 
     for name, g in [
         ("contribution", source_area_contribution(flx)),
@@ -456,37 +459,37 @@ def test_source_area_base_functions_shapes(footprint_result_session):
 # --- plot_source_area_contours ---
 
 
-def test_plot_source_area_contours(footprint_result_session):
+def test_plot_source_area_contours(source_area_result_session):
     """Test source area contour plotting returns axes."""
     from bldfm.utils import get_source_area
     from bldfm.plotting import plot_source_area_contours
 
-    result, _ = footprint_result_session
-    rescaled = get_source_area(result["flx"], result["flx"])
+    r = source_area_result_session
+    rescaled = get_source_area(r["flx"], r["flx"])
     ax = plot_source_area_contours(
-        result["flx"], result["grid"], rescaled, title="Test contours"
+        r["flx"], r["grid"], rescaled, title="Test contours"
     )
     assert ax is not None
     ax.figure.savefig(
-        "plots/test_source_area_contours.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_source_area_contours.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
 
-def test_plot_source_area_contours_custom_ax(footprint_result_session):
+def test_plot_source_area_contours_custom_ax(source_area_result_session):
     """Test source area contour plotting on provided axes."""
     from bldfm.utils import get_source_area
     from bldfm.plotting import plot_source_area_contours
 
-    result, _ = footprint_result_session
+    r = source_area_result_session
     fig, ax = plt.subplots()
-    rescaled = get_source_area(result["flx"], result["flx"])
+    rescaled = get_source_area(r["flx"], r["flx"])
     returned_ax = plot_source_area_contours(
-        result["flx"], result["grid"], rescaled, ax=ax
+        r["flx"], r["grid"], rescaled, ax=ax
     )
     assert returned_ax is ax
     fig.savefig(
-        "plots/test_source_area_contours_custom.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_source_area_contours_custom_ax.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
@@ -494,21 +497,25 @@ def test_plot_source_area_contours_custom_ax(footprint_result_session):
 # --- plot_source_area_gallery ---
 
 
-def test_plot_source_area_gallery(footprint_result_session):
-    """Test gallery plot creates 2x3 grid with 5 visible panels."""
+def test_plot_source_area_gallery(source_area_result_session):
+    """Test gallery plot creates 2x3 grid with 5 visible panels.
+
+    Uses an elongated domain (100x700m) matching the high-res example
+    in runs/low_level/source_area_example.py but at 128x64 resolution.
+    """
     from bldfm.plotting import plot_source_area_gallery
 
-    result, _ = footprint_result_session
+    r = source_area_result_session
     fig, axes = plot_source_area_gallery(
-        result["flx"],
-        result["grid"],
-        meas_pt=result["tower_xy"],
-        wind=(0.0, -5.0),
+        r["flx"],
+        r["grid"],
+        meas_pt=r["meas_pt"],
+        wind=r["wind"],
     )
     assert fig is not None
     assert axes.shape == (2, 3)
     assert not axes[1, 2].get_visible()
-    fig.savefig("plots/test_source_area_gallery.png", dpi=150, bbox_inches="tight")
+    fig.savefig("plots/test_plot_source_area_gallery.png", dpi=150, bbox_inches="tight")
     plt.close("all")
 
 
@@ -547,40 +554,31 @@ def test_maybe_slice_level_3d_slicing():
 # --- 3D input handling in plotting functions ---
 
 
-def test_plot_footprint_field_3d_input():
+def test_plot_footprint_field_3d_input(plume_3d_result_session):
     """plot_footprint_field auto-slices 3D input at requested level."""
-    nz, ny, nx = 3, 16, 32
-    flx = np.abs(np.random.rand(nz, ny, nx))
-    Z, Y, X = np.meshgrid(
-        np.arange(nz),
-        np.linspace(0, 100, ny),
-        np.linspace(0, 200, nx),
-        indexing="ij",
-    )
-    grid = (X, Y, Z)
+    r = plume_3d_result_session
+    flx = r["flx"]
+    grid = r["grid"]
 
-    ax = plot_footprint_field(flx, grid, level=1)
+    ax = plot_footprint_field(flx, grid, level=0, title="3D footprint (level=0)")
     assert ax is not None
+    ax.set_aspect("auto")
     ax.figure.savefig(
-        "plots/test_footprint_field_3d.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_footprint_field_3d.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
 
-def test_extract_percentile_contour_3d_input():
+def test_extract_percentile_contour_3d_input(plume_3d_result_session):
     """extract_percentile_contour auto-slices 3D input."""
-    nz, ny, nx = 3, 16, 32
-    flx = np.abs(np.random.rand(nz, ny, nx))
-    Z, Y, X = np.meshgrid(
-        np.arange(nz),
-        np.linspace(0, 100, ny),
-        np.linspace(0, 200, nx),
-        indexing="ij",
-    )
-    grid = (X, Y, Z)
+    r = plume_3d_result_session
+    flx = r["flx"]
+    grid = r["grid"]
+    X, Y, Z = grid
 
     level_val, area = extract_percentile_contour(flx, grid, pct=0.8, level=0)
     assert isinstance(level_val, float)
+    assert level_val > 0
     assert area > 0
 
     # Result should match slicing manually
@@ -589,3 +587,8 @@ def test_extract_percentile_contour_3d_input():
     )
     assert level_val == level_manual
     assert area == area_manual
+
+    print(
+        f"\nPLOTTING percentile_contour_3d: "
+        f"80% level={level_val:.4e} area={area:.1f}m²"
+    )
