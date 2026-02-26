@@ -109,8 +109,10 @@ To regenerate all manuscript figures (both tiers):
 Plot naming conventions
 -----------------------
 
-Example scripts and tests use filename prefixes to distinguish their output:
+All scripts use filename prefixes to distinguish their output in ``plots/``:
 
 - ``test_*`` — Test-generated plots (e.g. ``test_interface_multitower_structure.png``)
 - ``examples_*`` — Config-driven example plots (e.g. ``examples_timeseries_aggregated.png``)
 - ``examples_low_level_*`` — Low-level example plots (e.g. ``examples_low_level_most_profiles.png``)
+- ``manuscript_*`` — Manuscript interface plots (e.g. ``manuscript_comparison_analytic.png``)
+- ``manuscript_low_level_*`` — Manuscript low-level plots (e.g. ``manuscript_low_level_comparison_analytic.png``)
