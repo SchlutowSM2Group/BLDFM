@@ -57,11 +57,43 @@ def single_run_result(simple_config_session):
 
 @pytest.fixture(scope="session")
 def timeseries_config_session():
-    """Config with 3-step timeseries met data and 2 towers.
+    """Config with 3-step timeseries met data and 1 tower (primary use case).
 
     Met conditions are explicit variants of simple_config_session
     (ustar=0.5, mol=-100, wind_speed=6, wind_dir=0) so that each
     timestep produces a recognisable footprint plume.
+    """
+    return parse_config_dict(
+        {
+            "domain": {
+                "nx": 64,
+                "ny": 128,
+                "xmax": 100.0,
+                "ymax": 700.0,
+                "nz": 16,
+                "modes": [64, 128],
+                "ref_lat": 50.95,
+                "ref_lon": 11.586,
+            },
+            "towers": [
+                {"name": "tower_A", "lat": 50.95, "lon": 11.5867, "z_m": 10.0},
+            ],
+            "met": {
+                "ustar": [0.5, 0.4, 0.6],
+                "mol": [-100.0, -200.0, -50.0],
+                "wind_speed": [6.0, 5.0, 7.0],
+                "wind_dir": [0.0, 15.0, 345.0],
+            },
+            "solver": {"closure": "MOST", "footprint": True},
+        }
+    )
+
+
+@pytest.fixture(scope="session")
+def multitower_config_session():
+    """Config with 3-step timeseries met data and 2 towers.
+
+    Same domain and met as timeseries_config_session but with a second tower.
     """
     return parse_config_dict(
         {
@@ -92,16 +124,16 @@ def timeseries_config_session():
 
 @pytest.fixture(scope="session")
 def timeseries_results_session(timeseries_config_session):
-    """Run timeseries once for first tower."""
+    """Run timeseries once for the single tower."""
     return run_bldfm_timeseries(
         timeseries_config_session, timeseries_config_session.towers[0]
     )
 
 
 @pytest.fixture(scope="session")
-def multitower_results_session(timeseries_config_session):
+def multitower_results_session(multitower_config_session):
     """Run multitower once, shared by interface and I/O tests."""
-    return run_bldfm_multitower(timeseries_config_session), timeseries_config_session
+    return run_bldfm_multitower(multitower_config_session), multitower_config_session
 
 
 @pytest.fixture(scope="session")
@@ -162,8 +194,14 @@ def source_area_result_session():
     srf_flx = np.zeros([ny, nx])
     z, profs = vertical_profiles(nz, meas_height, wind, ustar)
     grid, conc, flx = steady_state_transport_solver(
-        srf_flx, z, profs, domain, nz,
-        modes=modes, meas_pt=meas_pt, footprint=True,
+        srf_flx,
+        z,
+        profs,
+        domain,
+        nz,
+        modes=modes,
+        meas_pt=meas_pt,
+        footprint=True,
     )
     return {
         "grid": grid,
@@ -194,7 +232,13 @@ def plume_3d_result_session():
     levels = np.arange(0, nz + 1, 2)  # [0, 2, 4, ..., 16]
 
     grid, conc, flx = steady_state_transport_solver(
-        srf_flx, z, profs, domain, levels,
-        modes=modes, meas_pt=meas_pt, footprint=False,
+        srf_flx,
+        z,
+        profs,
+        domain,
+        levels,
+        modes=modes,
+        meas_pt=meas_pt,
+        footprint=False,
     )
     return {"grid": grid, "conc": conc, "flx": flx, "levels": levels}

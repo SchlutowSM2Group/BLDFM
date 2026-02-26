@@ -35,7 +35,9 @@ if __name__ == "__main__":
         ax=ax,
         title=f"Concentration at {config.towers[0].z_m} m",
     )
-    fig.savefig("plots/concentration_at_meas_height.png", dpi=150, bbox_inches="tight")
+    fig.savefig(
+        "plots/examples_concentration_at_meas_height.png", dpi=150, bbox_inches="tight"
+    )
     plt.close(fig)
 
     fig, ax = plt.subplots()
@@ -45,8 +47,10 @@ if __name__ == "__main__":
         ax=ax,
         title=f"Vertical kinematic flux at {config.towers[0].z_m} m",
     )
-    fig.savefig("plots/kinematic_flux_at_meas_height.png", dpi=150, bbox_inches="tight")
+    fig.savefig(
+        "plots/examples_kinematic_flux_at_meas_height.png", dpi=150, bbox_inches="tight"
+    )
     plt.close(fig)
 
-    print("Saved plots/concentration_at_meas_height.png")
-    print("Saved plots/kinematic_flux_at_meas_height.png")
+    print("Saved plots/examples_concentration_at_meas_height.png")
+    print("Saved plots/examples_kinematic_flux_at_meas_height.png")

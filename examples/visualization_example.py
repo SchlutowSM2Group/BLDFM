@@ -40,9 +40,11 @@ if __name__ == "__main__":
             contour_pcts=[0.5, 0.8],
             title="Footprint on map tiles",
         )
-        ax.figure.savefig("plots/viz_map_overlay.png", dpi=150, bbox_inches="tight")
+        ax.figure.savefig(
+            "plots/examples_viz_map_overlay.png", dpi=150, bbox_inches="tight"
+        )
         plt.close(ax.figure)
-        print("Saved plots/viz_map_overlay.png")
+        print("Saved plots/examples_viz_map_overlay.png")
     except ImportError as e:
         print(f"Skipping map overlay (install contextily): {e}")
 
@@ -59,9 +61,11 @@ if __name__ == "__main__":
             land_cover=True,
             title="Footprint on ESA WorldCover 2021",
         )
-        ax.figure.savefig("plots/viz_land_cover.png", dpi=150, bbox_inches="tight")
+        ax.figure.savefig(
+            "plots/examples_viz_land_cover.png", dpi=150, bbox_inches="tight"
+        )
         plt.close(ax.figure)
-        print("Saved plots/viz_land_cover.png")
+        print("Saved plots/examples_viz_land_cover.png")
     except ImportError as e:
         print(f"Skipping land cover overlay (install owslib): {e}")
 
@@ -75,9 +79,11 @@ if __name__ == "__main__":
             met_ts["wind_dir"],
             title="Synthetic wind rose",
         )
-        ax.figure.savefig("plots/viz_wind_rose.png", dpi=150, bbox_inches="tight")
+        ax.figure.savefig(
+            "plots/examples_viz_wind_rose.png", dpi=150, bbox_inches="tight"
+        )
         plt.close(ax.figure)
-        print("Saved plots/viz_wind_rose.png")
+        print("Saved plots/examples_viz_wind_rose.png")
     except ImportError as e:
         print(f"Skipping wind rose (install windrose): {e}")
 
@@ -92,7 +98,7 @@ if __name__ == "__main__":
             xlim=(0, config.domain.xmax),
             ylim=(0, config.domain.ymax),
         )
-        fig.write_html("plots/viz_interactive.html")
-        print("Saved plots/viz_interactive.html")
+        fig.write_html("plots/examples_viz_interactive.html")
+        print("Saved plots/examples_viz_interactive.html")
     except ImportError as e:
         print(f"Skipping interactive plot (install plotly): {e}")

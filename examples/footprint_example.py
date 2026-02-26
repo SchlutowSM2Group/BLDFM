@@ -45,7 +45,7 @@ if __name__ == "__main__":
         markeredgewidth=1.5,
         zorder=5,
     )
-    fig.savefig("plots/flux_footprint.png", dpi=150, bbox_inches="tight")
+    fig.savefig("plots/examples_flux_footprint.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 
-    print("Saved plots/flux_footprint.png")
+    print("Saved plots/examples_flux_footprint.png")

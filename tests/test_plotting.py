@@ -9,8 +9,6 @@ import matplotlib
 matplotlib.use("Agg")  # non-interactive backend for CI
 import matplotlib.pyplot as plt
 
-from bldfm.config_parser import parse_config_dict
-from bldfm.interface import run_bldfm_timeseries
 from bldfm.plotting import (
     extract_percentile_contour,
     plot_footprint_field,
@@ -21,7 +19,6 @@ from bldfm.plotting import (
     plot_vertical_profiles,
     plot_vertical_slice,
 )
-from bldfm.synthetic import generate_synthetic_timeseries, generate_towers_grid
 
 
 # --- extract_percentile_contour ---
@@ -57,7 +54,9 @@ def test_plot_footprint_field_variants(footprint_result_session):
     ax = plot_footprint_field(result["flx"], result["grid"])
     assert ax is not None
     ax.figure.savefig(
-        "plots/test_plot_footprint_field_variants_basic.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_footprint_field_variants_basic.png",
+        dpi=150,
+        bbox_inches="tight",
     )
     plt.close("all")
 
@@ -65,7 +64,9 @@ def test_plot_footprint_field_variants(footprint_result_session):
     ax = plot_footprint_field(result["flx"], result["grid"], contour_pcts=[0.5, 0.8])
     assert ax is not None
     ax.figure.savefig(
-        "plots/test_plot_footprint_field_variants_contours.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_footprint_field_variants_contours.png",
+        dpi=150,
+        bbox_inches="tight",
     )
     plt.close("all")
 
@@ -76,7 +77,9 @@ def test_plot_footprint_field_variants(footprint_result_session):
     )
     assert returned_ax is ax
     fig.savefig(
-        "plots/test_plot_footprint_field_variants_custom_ax.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_footprint_field_variants_custom_ax.png",
+        dpi=150,
+        bbox_inches="tight",
     )
     plt.close("all")
 
@@ -84,27 +87,9 @@ def test_plot_footprint_field_variants(footprint_result_session):
 # --- plot_footprint_timeseries ---
 
 
-def test_plot_footprint_timeseries():
-    towers = generate_towers_grid(n_towers=1, z_m=10.0, seed=42)
-    met = generate_synthetic_timeseries(n_timesteps=3, seed=42)
-    config = parse_config_dict(
-        {
-            "domain": {
-                "nx": 128,
-                "ny": 64,
-                "xmax": 700.0,
-                "ymax": 100.0,
-                "nz": 16,
-                "modes": [128, 64],
-                "ref_lat": towers[0]["lat"],
-                "ref_lon": towers[0]["lon"],
-            },
-            "towers": towers[:1],
-            "met": met,
-            "solver": {"closure": "MOST", "footprint": True},
-        }
-    )
-    results = run_bldfm_timeseries(config, config.towers[0])
+def test_plot_footprint_timeseries(timeseries_results_session):
+    """Test temporal evolution plot using the shared timeseries fixture."""
+    results = timeseries_results_session
     grid = results[0]["grid"]
 
     ax = plot_footprint_timeseries(
@@ -159,7 +144,9 @@ def test_plot_footprint_on_map_happy_path(footprint_result_session):
             pytest.skip(f"External dependency error: {exc}")
         raise
     assert ax is not None
-    ax.figure.savefig("plots/test_plot_footprint_on_map_happy_path.png", dpi=150, bbox_inches="tight")
+    ax.figure.savefig(
+        "plots/test_plot_footprint_on_map_happy_path.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -194,7 +181,9 @@ def test_plot_wind_rose_happy_path():
 
     ax = plot_wind_rose(ws, wd, title="Wind rose (test)")
     assert ax is not None
-    ax.figure.savefig("plots/test_plot_wind_rose_happy_path.png", dpi=150, bbox_inches="tight")
+    ax.figure.savefig(
+        "plots/test_plot_wind_rose_happy_path.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -245,7 +234,11 @@ def test_plot_footprint_on_map_land_cover(footprint_result_session):
 
     try:
         ax = plot_footprint_on_map(
-            result["flx"], result["grid"], config, land_cover=True, title="Land cover test"
+            result["flx"],
+            result["grid"],
+            config,
+            land_cover=True,
+            title="Land cover test",
         )
     except Exception as exc:
         pytest.skip(f"WMS service unavailable: {exc}")
@@ -263,19 +256,27 @@ def test_plot_footprint_on_map_land_cover(footprint_result_session):
 # --- plot_footprint_comparison ---
 
 
-def test_plot_footprint_comparison(source_area_result_session, footprint_result_session):
+def test_plot_footprint_comparison(
+    source_area_result_session, footprint_result_session
+):
     """Test multi-panel comparison: source area footprint vs concentration."""
     r = source_area_result_session
 
     # Visual output: side-by-side plot_footprint_field (pcolormesh + contours)
     fig, axes = plt.subplots(1, 2, figsize=(8, 10))
     plot_footprint_field(
-        r["flx"], r["grid"], ax=axes[0],
-        contour_pcts=[0.25, 0.5, 0.75], title="Footprint",
+        r["flx"],
+        r["grid"],
+        ax=axes[0],
+        contour_pcts=[0.25, 0.5, 0.75],
+        title="Footprint",
     )
     plot_footprint_field(
-        r["conc"], r["grid"], ax=axes[1],
-        contour_pcts=[0.25, 0.5, 0.75], title="Concentration",
+        r["conc"],
+        r["grid"],
+        ax=axes[1],
+        contour_pcts=[0.25, 0.5, 0.75],
+        title="Concentration",
     )
     fig.savefig(
         "plots/test_plot_footprint_comparison.png", dpi=150, bbox_inches="tight"
@@ -367,9 +368,7 @@ def test_plot_vertical_profiles():
     )
     assert fig is not None
     assert len(axes) == 2
-    fig.savefig(
-        "plots/test_plot_vertical_profiles.png", dpi=150, bbox_inches="tight"
-    )
+    fig.savefig("plots/test_plot_vertical_profiles.png", dpi=150, bbox_inches="tight")
     plt.close("all")
 
 
@@ -386,12 +385,16 @@ def test_plot_vertical_slice(plume_3d_result_session):
 
     for axis, idx in [("y", ny // 2), ("x", nx // 2), ("z", 0)]:
         fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-        for ax, field, label in [(axes[0], conc, "Concentration"), (axes[1], flx, "Flux")]:
+        for ax, field, label in [
+            (axes[0], conc, "Concentration"),
+            (axes[1], flx, "Flux"),
+        ]:
             plot_vertical_slice(field, grid, slice_axis=axis, slice_index=idx, ax=ax)
             ax.set_title(f"{label} ({axis}-slice, idx={idx})")
         fig.savefig(
             f"plots/test_plot_vertical_slice_{axis}.png",
-            dpi=150, bbox_inches="tight",
+            dpi=150,
+            bbox_inches="tight",
         )
         plt.close("all")
 
@@ -466,9 +469,7 @@ def test_plot_source_area_contours(source_area_result_session):
 
     r = source_area_result_session
     rescaled = get_source_area(r["flx"], r["flx"])
-    ax = plot_source_area_contours(
-        r["flx"], r["grid"], rescaled, title="Test contours"
-    )
+    ax = plot_source_area_contours(r["flx"], r["grid"], rescaled, title="Test contours")
     assert ax is not None
     ax.figure.savefig(
         "plots/test_plot_source_area_contours.png", dpi=150, bbox_inches="tight"
@@ -484,12 +485,12 @@ def test_plot_source_area_contours_custom_ax(source_area_result_session):
     r = source_area_result_session
     fig, ax = plt.subplots()
     rescaled = get_source_area(r["flx"], r["flx"])
-    returned_ax = plot_source_area_contours(
-        r["flx"], r["grid"], rescaled, ax=ax
-    )
+    returned_ax = plot_source_area_contours(r["flx"], r["grid"], rescaled, ax=ax)
     assert returned_ax is ax
     fig.savefig(
-        "plots/test_plot_source_area_contours_custom_ax.png", dpi=150, bbox_inches="tight"
+        "plots/test_plot_source_area_contours_custom_ax.png",
+        dpi=150,
+        bbox_inches="tight",
     )
     plt.close("all")
 

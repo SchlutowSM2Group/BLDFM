@@ -41,7 +41,7 @@ if __name__ == "__main__":
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")
     plt.colorbar()
-    plt.savefig("plots/concentration_vertical_slice.png")
+    plt.savefig("plots/examples_low_level_concentration_vertical_slice.png")
 
     plt.figure()
     plt.pcolormesh(X[:, 128, :], Z[:, 128, :], flx[:, 128, :])
@@ -49,4 +49,4 @@ if __name__ == "__main__":
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")
     plt.colorbar()
-    plt.savefig("plots/flux_vertical_slice.png")
+    plt.savefig("plots/examples_low_level_flux_vertical_slice.png")
