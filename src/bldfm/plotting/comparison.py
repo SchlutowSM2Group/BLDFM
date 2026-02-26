@@ -34,7 +34,7 @@ def plot_footprint_comparison(
     n_levels : int
         Number of contour levels (default 6).
     vmin : float, optional
-        Minimum contour level. If None, uses 1e-5.
+        Minimum contour level. If None, uses 5% of vmax.
     vmax : float, optional
         Maximum contour level. If None, uses max across all fields.
     cmap : str
@@ -62,7 +62,7 @@ def plot_footprint_comparison(
     if vmax is None:
         vmax = max(np.max(f) for f in fields)
     if vmin is None:
-        vmin = 1e-5
+        vmin = 0.05 * vmax
 
     levels = np.linspace(vmin, vmax, n_levels, endpoint=False)
 
