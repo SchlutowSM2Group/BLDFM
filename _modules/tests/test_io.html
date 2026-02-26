@@ -131,8 +131,8 @@
         <span class="k">assert</span> <span class="s2">&quot;concentration&quot;</span> <span class="ow">in</span> <span class="n">ds</span>
         <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span>
         <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;tower&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span>
-        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">64</span>
-        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">64</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">nx</span>
+        <span class="k">assert</span> <span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">config</span><span class="o">.</span><span class="n">domain</span><span class="o">.</span><span class="n">ny</span>
 
         <span class="c1"># Values match</span>
         <span class="n">tower_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
@@ -141,6 +141,12 @@
                 <span class="n">original_flx</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
                 <span class="n">loaded_flx</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;footprint&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">ti</span><span class="p">]</span>
                 <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">loaded_flx</span><span class="p">,</span> <span class="n">original_flx</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">IO roundtrip: dims=</span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;vars=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">data_vars</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;flx_range=[</span><span class="si">{</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;footprint&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;footprint&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="p">)</span>
         <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
@@ -170,6 +176,13 @@
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;tower_lat&quot;</span><span class="p">,</span> <span class="s2">&quot;tower_lon&quot;</span><span class="p">,</span> <span class="s2">&quot;tower_z&quot;</span><span class="p">):</span>
             <span class="k">assert</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">ds</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;tower_lat&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">IO metadata: conventions=</span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;Conventions&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;closure=</span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;closure&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;met_vars=</span><span class="si">{</span><span class="p">[</span><span class="s1">&#39;ustar&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;mol&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;wind_speed&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;wind_dir&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;n_towers=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;tower_lat&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
@@ -203,6 +216,14 @@
                     <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
                     <span class="n">err_msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Mismatch for </span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> at timestep </span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">IO met_values: &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="n">ds</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ustar&quot;</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_speed&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_dir&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
@@ -226,6 +247,12 @@
             <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;tower_lat&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tower</span><span class="o">.</span><span class="n">lat</span><span class="p">)</span>
             <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;tower_lon&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tower</span><span class="o">.</span><span class="n">lon</span><span class="p">)</span>
             <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;tower_z&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tower</span><span class="o">.</span><span class="n">z_m</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">IO tower_metadata: names=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;tower&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;lats=</span><span class="si">{</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;tower_lat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;lons=</span><span class="si">{</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;tower_lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
@@ -255,6 +282,11 @@
                     <span class="n">results</span><span class="p">[</span><span class="n">tower_name</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
                     <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
                 <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">IO select_by_name: towers=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;per_tower_dims=</span><span class="si">{</span><span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;y&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;x&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
@@ -280,6 +312,10 @@
         <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ustar&quot;</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_speed&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_dir&quot;</span><span class="p">):</span>
             <span class="n">values</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">var</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
             <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">values</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2"> is constant across timesteps&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">IO timestamps: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s2">&quot;n_time=</span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
@@ -319,6 +355,11 @@
                 <span class="n">results</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
                 <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span>
             <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">IO single_tower_timeseries: tower=</span><span class="si">{</span><span class="n">tower_name</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;dims=</span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
@@ -344,6 +385,12 @@
         <span class="k">assert</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="k">assert</span> <span class="s2">&quot;units&quot;</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
         <span class="k">assert</span> <span class="s2">&quot;units&quot;</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">IO global_attrs: title=</span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;source=</span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;source&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;domain=(</span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;domain_xmax&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ds</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s1">&#39;domain_ymax&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span>
         <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
@@ -429,6 +476,11 @@
 
         <span class="c1"># z coordinate values are correct</span>
         <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">Z</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">IO 3d_roundtrip: dims=</span><span class="si">{</span><span class="nb">dict</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">sizes</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;z_levels=</span><span class="si">{</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="n">ds</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 </pre></div>

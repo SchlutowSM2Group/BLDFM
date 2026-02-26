@@ -52,6 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial_full.html">Full tutorial</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quick reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#config-driven-workflow-recommended">Config-driven workflow (recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#single-tower-timeseries">Single-tower timeseries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#multi-tower-timeseries">Multi-tower timeseries</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parallel-execution">Parallel execution</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#synthetic-data-for-testing">Synthetic data for testing</a></li>
@@ -172,6 +173,28 @@ $<span class="w"> </span>bldfm<span class="w"> </span>run<span class="w"> </span
 </pre></div>
 </div>
 </section>
+<section id="single-tower-timeseries">
+<h2>Single-tower timeseries<a class="headerlink" href="#single-tower-timeseries" title="Link to this heading">¶</a></h2>
+<p>The primary use case: one eddy-covariance tower with half-hourly forcing to
+build a footprint climatology.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span><span class="p">,</span> <span class="n">run_bldfm_timeseries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span><span class="p">,</span> <span class="n">plot_footprint_timeseries</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;examples/configs/timeseries.yaml&quot;</span><span class="p">)</span>
+<span class="n">tower</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">run_bldfm_timeseries</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">tower</span><span class="p">)</span>
+
+<span class="c1"># Time-averaged footprint</span>
+<span class="n">mean_flx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
+<span class="n">plot_footprint_field</span><span class="p">(</span><span class="n">mean_flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">])</span>
+
+<span class="c1"># Temporal evolution of source area</span>
+<span class="n">plot_footprint_timeseries</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
 <section id="multi-tower-timeseries">
 <h2>Multi-tower timeseries<a class="headerlink" href="#multi-tower-timeseries" title="Link to this heading">¶</a></h2>
 <p>For multiple towers and time-varying meteorology:</p>
@@ -231,7 +254,7 @@ $<span class="w"> </span>bldfm<span class="w"> </span>run<span class="w"> </span
 </section>
 <section id="low-level-workflow">
 <h2>Low-level workflow<a class="headerlink" href="#low-level-workflow" title="Link to this heading">¶</a></h2>
-<p>For full control, you can call the solver steps directly (as in the <code class="docutils literal notranslate"><span class="pre">runs/low_level/minimal_example.py</span></code> script):</p>
+<p>For full control, you can call the solver steps directly (as in the <code class="docutils literal notranslate"><span class="pre">examples/low_level/minimal_example.py</span></code> script):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_wind_fields</span><span class="p">,</span> <span class="n">ideal_source</span><span class="p">,</span> <span class="n">steady_state_transport_solver</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.pbl_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">vertical_profiles</span>
 

@@ -498,7 +498,7 @@ pipeline directly.  The high-level ``run_bldfm_single()`` wraps three steps:
 
 See the ``examples/low_level/`` directory for complete scripts:
 ``minimal_example.py``, ``footprint_example.py``, ``plot_profiles.py``,
-``source_area_example.py``, and more.
+and more.  For source area analysis, see ``runs/low_level/source_area_example.py``.
 
 
 Command-line interface
@@ -524,8 +524,8 @@ Further resources
 
 - `Quick Reference <reference.html>`_: concise code snippets for common
   workflows.
-- `Example Scripts <runs.html>`_: ``examples/low_level/`` (direct API) and
-  ``runs/manuscript/`` (paper reproduction).
+- `Example Scripts <runs.html>`_: ``examples/`` (config-driven),
+  ``examples/low_level/`` (direct API), and ``runs/manuscript/`` (paper reproduction).
 - `API Reference <src.html>`_: full function signatures and docstrings.
 - Manuscript figures: ``python runs/manuscript/generate_all.py`` regenerates
   all paper figures.

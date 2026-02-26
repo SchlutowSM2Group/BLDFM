@@ -57,8 +57,11 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Example scripts and workflows</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#low-level-examples-runs-low-level">Low-level examples (<code class="docutils literal notranslate"><span class="pre">runs/low_level/</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#config-driven-examples-examples">Config-driven examples (<code class="docutils literal notranslate"><span class="pre">examples/</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#low-level-api-examples-examples-low-level">Low-level API examples (<code class="docutils literal notranslate"><span class="pre">examples/low_level/</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#source-area-analysis-runs-low-level">Source-area analysis (<code class="docutils literal notranslate"><span class="pre">runs/low_level/</span></code>)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#manuscript-figures-runs-manuscript">Manuscript figures (<code class="docutils literal notranslate"><span class="pre">runs/manuscript/</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plot-naming-conventions">Plot naming conventions</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
@@ -121,26 +124,112 @@
             
   <section id="example-scripts-and-workflows">
 <span id="runs"></span><h1>Example scripts and workflows<a class="headerlink" href="#example-scripts-and-workflows" title="Link to this heading">¶</a></h1>
-<p>BLDFM provides two tiers of example scripts:</p>
-<ul class="simple">
-<li><p><strong>``runs/low_level/``</strong> — Direct API calls for power users</p></li>
-<li><p><strong>``runs/manuscript/``</strong> — Paper reproduction scripts (both interface and low-level)</p></li>
-</ul>
-<section id="low-level-examples-runs-low-level">
-<h2>Low-level examples (<code class="docutils literal notranslate"><span class="pre">runs/low_level/</span></code>)<a class="headerlink" href="#low-level-examples-runs-low-level" title="Link to this heading">¶</a></h2>
-<p>These scripts call <code class="docutils literal notranslate"><span class="pre">vertical_profiles</span></code>, <code class="docutils literal notranslate"><span class="pre">ideal_source</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">steady_state_transport_solver</span></code> directly, giving full control over every parameter.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>runs/low_level/minimal_example.py
-$<span class="w"> </span>python<span class="w"> </span>runs/low_level/footprint_example.py
-$<span class="w"> </span>python<span class="w"> </span>runs/low_level/plot_profiles.py
-$<span class="w"> </span>python<span class="w"> </span>runs/low_level/point_measurement_example.py
-$<span class="w"> </span>python<span class="w"> </span>runs/low_level/source_area_example.py
+<p>BLDFM ships with instructional examples organised in three tiers of
+increasing complexity.  All plot output is saved to <code class="docutils literal notranslate"><span class="pre">plots/</span></code> in the
+repository root (create with <code class="docutils literal notranslate"><span class="pre">mkdir</span> <span class="pre">-p</span> <span class="pre">plots</span></code> if needed).</p>
+<section id="config-driven-examples-examples">
+<h2>Config-driven examples (<code class="docutils literal notranslate"><span class="pre">examples/</span></code>)<a class="headerlink" href="#config-driven-examples-examples" title="Link to this heading">¶</a></h2>
+<p><strong>Recommended starting point.</strong>  These scripts use the high-level
+YAML/dataclass workflow: <code class="docutils literal notranslate"><span class="pre">load_config()</span></code>, <code class="docutils literal notranslate"><span class="pre">run_bldfm_single()</span></code>, and the
+plotting library.  Each script has a matching YAML file in
+<code class="docutils literal notranslate"><span class="pre">examples/configs/</span></code>.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Script</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">minimal_example.py</span></code></p></td>
+<td><p>Neutral BL concentration and flux fields</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">minimal_example_3d.py</span></code></p></td>
+<td><p>3D output with vertical slices</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">3d_plume.py</span></code></p></td>
+<td><p>Point-source plume with horizontal and vertical slices (concentration <strong>and</strong> flux)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">footprint_example.py</span></code></p></td>
+<td><p>Flux footprint with percentile contours</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">timeseries_example.py</span></code></p></td>
+<td><p>Single-tower timeseries: footprint climatology workflow</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">parallel_example.py</span></code></p></td>
+<td><p>High-resolution solve with multi-threaded FFT</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">multitower_example.py</span></code></p></td>
+<td><p>Multiple towers over a synthetic timeseries</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">visualization_example.py</span></code></p></td>
+<td><p>Map tiles, land cover, wind rose, and interactive plots (optional deps)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>examples/minimal_example.py
+$<span class="w"> </span>python<span class="w"> </span>examples/footprint_example.py
+$<span class="w"> </span>python<span class="w"> </span>examples/timeseries_example.py
+</pre></div>
+</div>
+</section>
+<section id="low-level-api-examples-examples-low-level">
+<h2>Low-level API examples (<code class="docutils literal notranslate"><span class="pre">examples/low_level/</span></code>)<a class="headerlink" href="#low-level-api-examples-examples-low-level" title="Link to this heading">¶</a></h2>
+<p>These scripts call <code class="docutils literal notranslate"><span class="pre">vertical_profiles()</span></code>, <code class="docutils literal notranslate"><span class="pre">steady_state_transport_solver()</span></code>,
+and other solver-level functions directly.  Use these to understand the
+internals or to build custom workflows outside the config system.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 70.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Script</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">minimal_example.py</span></code></p></td>
+<td><p>Basic neutral BL solve</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">minimal_example_3d.py</span></code></p></td>
+<td><p>3D output</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">3d_plume.py</span></code></p></td>
+<td><p>Point-source plume</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">footprint_example.py</span></code></p></td>
+<td><p>Flux footprint calculation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">parallel_example.py</span></code></p></td>
+<td><p>Parallel execution</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">plot_profiles.py</span></code></p></td>
+<td><p>Vertical profiles of wind and eddy diffusivity under MOST</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">point_measurement_example.py</span></code></p></td>
+<td><p>Point measurement via footprint convolution</p></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>examples/low_level/minimal_example.py
+$<span class="w"> </span>python<span class="w"> </span>examples/low_level/footprint_example.py
+</pre></div>
+</div>
+</section>
+<section id="source-area-analysis-runs-low-level">
+<h2>Source-area analysis (<code class="docutils literal notranslate"><span class="pre">runs/low_level/</span></code>)<a class="headerlink" href="#source-area-analysis-runs-low-level" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">runs/low_level/</span></code> directory contains the source-area example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python<span class="w"> </span>runs/low_level/source_area_example.py
 </pre></div>
 </div>
 </section>
 <section id="manuscript-figures-runs-manuscript">
 <h2>Manuscript figures (<code class="docutils literal notranslate"><span class="pre">runs/manuscript/</span></code>)<a class="headerlink" href="#manuscript-figures-runs-manuscript" title="Link to this heading">¶</a></h2>
-<p>These scripts reproduce the figures in the BLDFM paper. They are provided in
+<p>These scripts reproduce the figures in the BLDFM paper.  They are provided in
 two forms:</p>
 <ul class="simple">
 <li><p><strong>``runs/manuscript/interface/``</strong> — Config-driven interface with <code class="docutils literal notranslate"><span class="pre">dataclasses.replace()</span></code>
@@ -155,6 +244,15 @@ $<span class="w"> </span>python<span class="w"> </span>runs/manuscript/generate_
 $<span class="w"> </span>python<span class="w"> </span>runs/manuscript/generate_all.py<span class="w"> </span>--tier<span class="w"> </span>low_level
 </pre></div>
 </div>
+</section>
+<section id="plot-naming-conventions">
+<h2>Plot naming conventions<a class="headerlink" href="#plot-naming-conventions" title="Link to this heading">¶</a></h2>
+<p>Example scripts and tests use filename prefixes to distinguish their output:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">test_*</span></code> — Test-generated plots (e.g. <code class="docutils literal notranslate"><span class="pre">test_interface_multitower_structure.png</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples_*</span></code> — Config-driven example plots (e.g. <code class="docutils literal notranslate"><span class="pre">examples_timeseries_aggregated.png</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples_low_level_*</span></code> — Low-level example plots (e.g. <code class="docutils literal notranslate"><span class="pre">examples_low_level_most_profiles.png</span></code>)</p></li>
+</ul>
 </section>
 </section>
 

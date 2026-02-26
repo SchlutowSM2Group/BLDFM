@@ -143,7 +143,7 @@
 <span class="sd">    n_levels : int</span>
 <span class="sd">        Number of contour levels (default 6).</span>
 <span class="sd">    vmin : float, optional</span>
-<span class="sd">        Minimum contour level. If None, uses 1e-5.</span>
+<span class="sd">        Minimum contour level. If None, uses 5% of vmax.</span>
 <span class="sd">    vmax : float, optional</span>
 <span class="sd">        Maximum contour level. If None, uses max across all fields.</span>
 <span class="sd">    cmap : str</span>
@@ -171,7 +171,7 @@
     <span class="k">if</span> <span class="n">vmax</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">vmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">vmin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">vmin</span> <span class="o">=</span> <span class="mf">1e-5</span>
+        <span class="n">vmin</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="o">*</span> <span class="n">vmax</span>
 
     <span class="n">levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="n">n_levels</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 

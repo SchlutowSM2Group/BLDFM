@@ -112,14 +112,22 @@
 
 <span class="n">pytestmark</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">integration</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.config_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_config_dict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_bldfm_single</span><span class="p">,</span> <span class="n">run_bldfm_multitower</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.synthetic</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_synthetic_timeseries</span><span class="p">,</span> <span class="n">generate_towers_grid</span>
 
 
 <div class="viewcode-block" id="test_single_run_structure">
 <a class="viewcode-back" href="../../tests.html#tests.test_interface.test_single_run_structure">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_single_run_structure</span><span class="p">(</span><span class="n">single_run_result</span><span class="p">,</span> <span class="n">simple_config_session</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_single_run_structure</span><span class="p">(</span>
+    <span class="n">single_run_result</span><span class="p">,</span> <span class="n">simple_config_session</span><span class="p">,</span> <span class="n">source_area_result_session</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test output structure, shapes, types, and metadata from a single run.&quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">single_run_result</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">simple_config_session</span>
@@ -134,7 +142,26 @@
     <span class="k">assert</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 
     <span class="c1"># Tower name</span>
-    <span class="k">assert</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;tower_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;test_tower&quot;</span></div>
+    <span class="k">assert</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;tower_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;test_tower&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTERFACE single_run: tower=</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;tower_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;shape=</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;flx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;flx_range=[</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;flx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;flx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">]&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># Visual output uses low-level source area result for clean rendering</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">source_area_result_session</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_field</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span>
+        <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">],</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Single run footprint&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_interface_single_run_structure.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
 
@@ -165,7 +192,11 @@
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">run_bldfm_single</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">met_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTERFACE synthetic_single: shape=</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;flx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s2">&quot;all_finite=True&quot;</span>
+    <span class="p">)</span></div>
 
 
 
@@ -191,13 +222,15 @@
     <span class="c1"># Finite outputs</span>
     <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+        <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTERFACE timeseries: n_steps=</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s2">&quot;timestamps=</span><span class="si">{</span><span class="n">timestamps</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="test_multitower_structure">
 <a class="viewcode-back" href="../../tests.html#tests.test_interface.test_multitower_structure">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_multitower_structure</span><span class="p">(</span><span class="n">multitower_results_session</span><span class="p">,</span> <span class="n">timeseries_config_session</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_multitower_structure</span><span class="p">(</span><span class="n">multitower_results_session</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test multitower output: dict keyed by tower names, all timesteps, different footprints.&quot;&quot;&quot;</span>
     <span class="n">results</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">multitower_results_session</span>
 
@@ -217,7 +250,20 @@
     <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
     <span class="n">flx_0</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
     <span class="n">flx_1</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
-    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">flx_0</span><span class="p">,</span> <span class="n">flx_1</span><span class="p">)</span></div>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">flx_0</span><span class="p">,</span> <span class="n">flx_1</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTERFACE multitower: towers=</span><span class="si">{</span><span class="n">names</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s2">&quot;shape=</span><span class="si">{</span><span class="n">flx_0</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> n_steps=3&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">names</span><span class="p">):</span>
+        <span class="n">flx</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
+        <span class="n">grid</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
+        <span class="n">plot_footprint_field</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Multitower footprints (t=0)&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_interface_multitower_structure.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
 
@@ -240,7 +286,12 @@
         <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
         <span class="k">assert</span> <span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">values</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expected varying &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; across timesteps, got constant </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Expected varying &#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39; across timesteps, got constant </span><span class="si">{</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTERFACE met_params_vary:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ustar&quot;</span><span class="p">,</span> <span class="s2">&quot;mol&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_speed&quot;</span><span class="p">,</span> <span class="s2">&quot;wind_dir&quot;</span><span class="p">):</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">values</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 
@@ -271,7 +322,24 @@
     <span class="p">)</span>
     <span class="k">assert</span> <span class="p">(</span>
         <span class="n">differs</span>
-    <span class="p">),</span> <span class="s2">&quot;All timestep footprints are identical despite varying met conditions&quot;</span></div>
+    <span class="p">),</span> <span class="s2">&quot;All timestep footprints are identical despite varying met conditions&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTERFACE footprints_evolve:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  step </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: max_flx=</span><span class="si">{</span><span class="n">r</span><span class="p">[</span><span class="s1">&#39;flx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+        <span class="n">plot_footprint_field</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;t=</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Timeseries footprint evolution&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_interface_timeseries_footprints_evolve.png&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
 
@@ -301,7 +369,26 @@
     <span class="k">assert</span> <span class="n">area_70</span> <span class="o">&gt;=</span> <span class="n">area_50</span>
 
     <span class="c1"># 50% contour level is at least as high (more concentrated core)</span>
-    <span class="k">assert</span> <span class="n">level_50</span> <span class="o">&gt;=</span> <span class="n">level_70</span></div>
+    <span class="k">assert</span> <span class="n">level_50</span> <span class="o">&gt;=</span> <span class="n">level_70</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTERFACE aggregated_footprint: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;50%: level=</span><span class="si">{</span><span class="n">level_50</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> area=</span><span class="si">{</span><span class="n">area_50</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">m² | &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;70%: level=</span><span class="si">{</span><span class="n">level_70</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> area=</span><span class="si">{</span><span class="n">area_70</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">m²&quot;</span>
+    <span class="p">)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_field</span><span class="p">(</span>
+        <span class="n">mean_flx</span><span class="p">,</span>
+        <span class="n">grid</span><span class="p">,</span>
+        <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Aggregated mean footprint&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_interface_timeseries_aggregated_footprint.png&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 </pre></div>
 

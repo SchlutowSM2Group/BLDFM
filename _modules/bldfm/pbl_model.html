@@ -229,7 +229,11 @@
 
     <span class="n">dzeta</span> <span class="o">=</span> <span class="n">zm</span> <span class="o">/</span> <span class="n">n</span>
 
-    <span class="n">zeta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">zetamx</span> <span class="o">+</span> <span class="n">dzeta</span><span class="p">,</span> <span class="n">dzeta</span><span class="p">)</span>
+    <span class="c1"># np.arange requires a scalar stop argument; numpy 2.x removed the</span>
+    <span class="c1"># implicit array-to-scalar coercion that was deprecated in numpy 1.25.</span>
+    <span class="c1"># Use np.squeeze().item() to handle both 0-d and shaped arrays from</span>
+    <span class="c1"># OAAHOC path where z0/aa/bb may have extra dimensions from tke broadcast.</span>
+    <span class="n">zeta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">zetamx</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span> <span class="o">+</span> <span class="n">dzeta</span><span class="p">,</span> <span class="n">dzeta</span><span class="p">)</span>
 
     <span class="n">z</span> <span class="o">=</span> <span class="o">-</span><span class="n">h</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">zeta</span> <span class="o">-</span> <span class="n">aa</span><span class="p">)</span> <span class="o">/</span> <span class="n">bb</span><span class="p">)</span>
 

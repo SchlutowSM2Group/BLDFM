@@ -120,20 +120,22 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_wind_fields</span><span class="p">(</span><span class="n">u_rot</span><span class="p">,</span> <span class="n">wind_dir</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the zonal (u) and meridional (v) wind components from a rotated</span>
-<span class="sd">    wind speed and direction.</span>
+<span class="sd">    wind speed and direction using the meteorological convention.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">        u_rot (float): Rotated wind speed.</span>
-<span class="sd">        wind_dir (float): Wind direction in degrees (clockwise from north).</span>
+<span class="sd">        wind_dir (float): Wind direction in degrees (meteorological convention:</span>
+<span class="sd">            direction the wind is coming FROM, clockwise from north).</span>
+<span class="sd">            0 = from north, 90 = from east, 180 = from south, 270 = from west.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple: A tuple (u, v) where:</span>
-<span class="sd">            - u (float): Zonal wind component (east-west).</span>
-<span class="sd">            - v (float): Meridional wind component (north-south).</span>
+<span class="sd">            - u (float): Zonal wind component (east-west, positive = eastward).</span>
+<span class="sd">            - v (float): Meridional wind component (north-south, positive = northward).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">wind_dir</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">wind_dir</span><span class="p">)</span>
-    <span class="n">u</span> <span class="o">=</span> <span class="n">u_rot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">wind_dir</span><span class="p">)</span>
-    <span class="n">v</span> <span class="o">=</span> <span class="n">u_rot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">wind_dir</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="o">-</span><span class="n">u_rot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">wind_dir</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="o">-</span><span class="n">u_rot</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">wind_dir</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span></div>
 

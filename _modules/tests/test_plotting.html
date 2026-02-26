@@ -116,8 +116,6 @@
 <span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>  <span class="c1"># non-interactive backend for CI</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.config_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_config_dict</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_bldfm_timeseries</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">extract_percentile_contour</span><span class="p">,</span>
     <span class="n">plot_footprint_field</span><span class="p">,</span>
@@ -128,7 +126,6 @@
     <span class="n">plot_vertical_profiles</span><span class="p">,</span>
     <span class="n">plot_vertical_slice</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.synthetic</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_synthetic_timeseries</span><span class="p">,</span> <span class="n">generate_towers_grid</span>
 
 
 <span class="c1"># --- extract_percentile_contour ---</span>
@@ -168,11 +165,21 @@
     <span class="c1"># Basic</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_field</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">])</span>
     <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_footprint_field_variants_basic.png&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
 
     <span class="c1"># With contours</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_field</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">])</span>
     <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_footprint_field_variants_contours.png&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
 
     <span class="c1"># Custom axes</span>
@@ -181,6 +188,11 @@
         <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Test&quot;</span>
     <span class="p">)</span>
     <span class="k">assert</span> <span class="n">returned_ax</span> <span class="ow">is</span> <span class="n">ax</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_footprint_field_variants_custom_ax.png&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
@@ -190,27 +202,9 @@
 
 <div class="viewcode-block" id="test_plot_footprint_timeseries">
 <a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_timeseries">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_timeseries</span><span class="p">():</span>
-    <span class="n">towers</span> <span class="o">=</span> <span class="n">generate_towers_grid</span><span class="p">(</span><span class="n">n_towers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z_m</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-    <span class="n">met</span> <span class="o">=</span> <span class="n">generate_synthetic_timeseries</span><span class="p">(</span><span class="n">n_timesteps</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">parse_config_dict</span><span class="p">(</span>
-        <span class="p">{</span>
-            <span class="s2">&quot;domain&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s2">&quot;nx&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
-                <span class="s2">&quot;ny&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
-                <span class="s2">&quot;xmax&quot;</span><span class="p">:</span> <span class="mf">200.0</span><span class="p">,</span>
-                <span class="s2">&quot;ymax&quot;</span><span class="p">:</span> <span class="mf">200.0</span><span class="p">,</span>
-                <span class="s2">&quot;nz&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-                <span class="s2">&quot;modes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">],</span>
-                <span class="s2">&quot;ref_lat&quot;</span><span class="p">:</span> <span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lat&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;ref_lon&quot;</span><span class="p">:</span> <span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;lon&quot;</span><span class="p">],</span>
-            <span class="p">},</span>
-            <span class="s2">&quot;towers&quot;</span><span class="p">:</span> <span class="n">towers</span><span class="p">[:</span><span class="mi">1</span><span class="p">],</span>
-            <span class="s2">&quot;met&quot;</span><span class="p">:</span> <span class="n">met</span><span class="p">,</span>
-            <span class="s2">&quot;solver&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;closure&quot;</span><span class="p">:</span> <span class="s2">&quot;MOST&quot;</span><span class="p">,</span> <span class="s2">&quot;footprint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-        <span class="p">}</span>
-    <span class="p">)</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="n">run_bldfm_timeseries</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_timeseries</span><span class="p">(</span><span class="n">timeseries_results_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test temporal evolution plot using the shared timeseries fixture.&quot;&quot;&quot;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">timeseries_results_session</span>
     <span class="n">grid</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
 
     <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_timeseries</span><span class="p">(</span>
@@ -218,7 +212,7 @@
     <span class="p">)</span>
     <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
-        <span class="s2">&quot;plots/test_footprint_timeseries.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+        <span class="s2">&quot;plots/test_plot_footprint_timeseries.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
     <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
@@ -265,12 +259,15 @@
             <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Map plot (test)&quot;</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="c1"># Network errors should not fail the test suite</span>
-        <span class="k">if</span> <span class="s2">&quot;URLError&quot;</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="ow">or</span> <span class="s2">&quot;ConnectionError&quot;</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span>
-            <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Network unavailable: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Network or PROJ/CRS errors should not fail the test suite</span>
+        <span class="n">skip_types</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;URLError&quot;</span><span class="p">,</span> <span class="s2">&quot;ConnectionError&quot;</span><span class="p">,</span> <span class="s2">&quot;CRSError&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">t</span> <span class="ow">in</span> <span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">skip_types</span><span class="p">):</span>
+            <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;External dependency error: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">raise</span>
     <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/test_footprint_on_map.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_footprint_on_map_happy_path.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
@@ -311,7 +308,9 @@
 
     <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_wind_rose</span><span class="p">(</span><span class="n">ws</span><span class="p">,</span> <span class="n">wd</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Wind rose (test)&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/test_wind_rose.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_wind_rose_happy_path.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
@@ -361,29 +360,32 @@
 
 
 
-<div class="viewcode-block" id="test_plot_footprint_on_map_land_cover_mock">
-<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_on_map_land_cover_mock">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_on_map_land_cover_mock</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">,</span> <span class="n">monkeypatch</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test land cover overlay with mocked WMS response.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="test_plot_footprint_on_map_land_cover">
+<a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_on_map_land_cover">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_on_map_land_cover</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test land cover overlay using the real ESA Terrascope WMS.&quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_on_map</span>
 
     <span class="n">result</span><span class="p">,</span> <span class="n">config</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
 
-    <span class="n">fake_img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_on_map</span><span class="p">(</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span>
+            <span class="n">config</span><span class="p">,</span>
+            <span class="n">land_cover</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Land cover test&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WMS service unavailable: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">mock_fetch</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)):</span>
-        <span class="n">extent</span> <span class="o">=</span> <span class="p">(</span><span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">fake_img</span><span class="p">,</span> <span class="n">extent</span>
-
-    <span class="n">monkeypatch</span><span class="o">.</span><span class="n">setattr</span><span class="p">(</span><span class="s2">&quot;bldfm.plotting._fetch_land_cover&quot;</span><span class="p">,</span> <span class="n">mock_fetch</span><span class="p">)</span>
-
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_on_map</span><span class="p">(</span>
-        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">config</span><span class="p">,</span> <span class="n">land_cover</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Land cover test&quot;</span>
-    <span class="p">)</span>
     <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="c1"># Verify legend is present</span>
     <span class="n">legend</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">legend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_footprint_on_map_land_cover.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
@@ -393,21 +395,43 @@
 
 <div class="viewcode-block" id="test_plot_footprint_comparison">
 <a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_comparison">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_comparison</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test multi-panel comparison plot.&quot;&quot;&quot;</span>
-    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
-    <span class="n">flx</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
-    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
-    <span class="n">grid_2d</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_comparison</span><span class="p">(</span>
+    <span class="n">source_area_result_session</span><span class="p">,</span> <span class="n">footprint_result_session</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test multi-panel comparison: source area footprint vs concentration.&quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">source_area_result_session</span>
 
-    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plot_footprint_comparison</span><span class="p">(</span>
-        <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="n">flx</span><span class="p">,</span> <span class="n">flx</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">],</span>
-        <span class="n">grids</span><span class="o">=</span><span class="p">[</span><span class="n">grid_2d</span><span class="p">,</span> <span class="n">grid_2d</span><span class="p">],</span>
-        <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Model A&quot;</span><span class="p">,</span> <span class="s2">&quot;Model B&quot;</span><span class="p">],</span>
-        <span class="n">meas_pt</span><span class="o">=</span><span class="p">(</span><span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">),</span>
+    <span class="c1"># Visual output: side-by-side plot_footprint_field (pcolormesh + contours)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">plot_footprint_field</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span>
+        <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">],</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Footprint&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">assert</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="n">plot_footprint_field</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">],</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span>
+        <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">contour_pcts</span><span class="o">=</span><span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">],</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Concentration&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_footprint_comparison.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Also exercise the plot_footprint_comparison contour function</span>
+    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
+    <span class="n">fig2</span><span class="p">,</span> <span class="n">axes2</span> <span class="o">=</span> <span class="n">plot_footprint_comparison</span><span class="p">(</span>
+        <span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">],</span>
+        <span class="n">grids</span><span class="o">=</span><span class="p">[(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">),</span> <span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)],</span>
+        <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">assert</span> <span class="n">fig2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
@@ -431,6 +455,9 @@
     <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plot_field_comparison</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">src_pt</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
     <span class="k">assert</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="n">axs</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_smoke_field_comparison.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
@@ -448,6 +475,9 @@
     <span class="c1"># Without fits</span>
     <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_convergence</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Convergence test&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_smoke_convergence_basic.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
 
     <span class="c1"># With fits</span>
@@ -459,6 +489,9 @@
         <span class="p">],</span>
     <span class="p">)</span>
     <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_smoke_convergence_fits.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
@@ -483,6 +516,7 @@
     <span class="p">)</span>
     <span class="k">assert</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/test_plot_vertical_profiles.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
@@ -492,30 +526,32 @@
 
 <div class="viewcode-block" id="test_plot_vertical_slice">
 <a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_vertical_slice">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_vertical_slice</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test 2D slice from a 3D field for all axes.&quot;&quot;&quot;</span>
-    <span class="n">nz</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span>
-    <span class="n">field</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
-    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">nx</span><span class="p">),</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="n">ny</span><span class="p">),</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">nz</span><span class="p">),</span>
-        <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="c1"># Transpose to (nz, ny, nx) ordering for grid arrays</span>
-    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">Y</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_vertical_slice</span><span class="p">(</span><span class="n">plume_3d_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test 2D slice from a real 3D plume: concentration and flux side by side.&quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">plume_3d_result_session</span>
+    <span class="n">conc</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">]</span>
+    <span class="n">flx</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
+    <span class="n">nlvls</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="n">conc</span><span class="o">.</span><span class="n">shape</span>
 
-    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">):</span>
-        <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_vertical_slice</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">slice_axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">slice_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">idx</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">ny</span> <span class="o">//</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">nx</span> <span class="o">//</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">conc</span><span class="p">,</span> <span class="s2">&quot;Concentration&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">flx</span><span class="p">,</span> <span class="s2">&quot;Flux&quot;</span><span class="p">),</span>
+        <span class="p">]:</span>
+            <span class="n">plot_vertical_slice</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">slice_axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">slice_index</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2">-slice, idx=</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;plots/test_plot_vertical_slice_</span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2">.png&quot;</span><span class="p">,</span>
+            <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+            <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
 
     <span class="c1"># Invalid axis raises ValueError</span>
     <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">match</span><span class="o">=</span><span class="s2">&quot;slice_axis&quot;</span><span class="p">):</span>
-        <span class="n">plot_vertical_slice</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">slice_axis</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">slice_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+        <span class="n">plot_vertical_slice</span><span class="p">(</span><span class="n">conc</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">slice_axis</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">slice_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
 
 
 
@@ -557,7 +593,7 @@
 
 <div class="viewcode-block" id="test_source_area_base_functions_shapes">
 <a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_source_area_base_functions_shapes">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_source_area_base_functions_shapes</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_source_area_base_functions_shapes</span><span class="p">(</span><span class="n">source_area_result_session</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test that all 5 base function constructors return correct shapes.&quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
         <span class="n">source_area_contribution</span><span class="p">,</span>
@@ -567,11 +603,11 @@
         <span class="n">source_area_sector</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
-    <span class="n">flx</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
-    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
-    <span class="n">meas_pt</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;tower_xy&quot;</span><span class="p">]</span>
-    <span class="n">wind</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">source_area_result_session</span>
+    <span class="n">flx</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
+    <span class="n">meas_pt</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;meas_pt&quot;</span><span class="p">]</span>
+    <span class="n">wind</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;wind&quot;</span><span class="p">]</span>
 
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="p">[</span>
         <span class="p">(</span><span class="s2">&quot;contribution&quot;</span><span class="p">,</span> <span class="n">source_area_contribution</span><span class="p">(</span><span class="n">flx</span><span class="p">)),</span>
@@ -589,35 +625,39 @@
 
 <div class="viewcode-block" id="test_plot_source_area_contours">
 <a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_source_area_contours">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_source_area_contours</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_source_area_contours</span><span class="p">(</span><span class="n">source_area_result_session</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test source area contour plotting returns axes.&quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_source_area</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_source_area_contours</span>
 
-    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
-    <span class="n">rescaled</span> <span class="o">=</span> <span class="n">get_source_area</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">])</span>
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_source_area_contours</span><span class="p">(</span>
-        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">rescaled</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Test contours&quot;</span>
-    <span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">source_area_result_session</span>
+    <span class="n">rescaled</span> <span class="o">=</span> <span class="n">get_source_area</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">])</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_source_area_contours</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">rescaled</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Test contours&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_source_area_contours.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="test_plot_source_area_contours_custom_ax">
 <a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_source_area_contours_custom_ax">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_source_area_contours_custom_ax</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_source_area_contours_custom_ax</span><span class="p">(</span><span class="n">source_area_result_session</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test source area contour plotting on provided axes.&quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_source_area</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_source_area_contours</span>
 
-    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">source_area_result_session</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-    <span class="n">rescaled</span> <span class="o">=</span> <span class="n">get_source_area</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">])</span>
-    <span class="n">returned_ax</span> <span class="o">=</span> <span class="n">plot_source_area_contours</span><span class="p">(</span>
-        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">rescaled</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span>
-    <span class="p">)</span>
+    <span class="n">rescaled</span> <span class="o">=</span> <span class="n">get_source_area</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">])</span>
+    <span class="n">returned_ax</span> <span class="o">=</span> <span class="n">plot_source_area_contours</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">rescaled</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">returned_ax</span> <span class="ow">is</span> <span class="n">ax</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_source_area_contours_custom_ax.png&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
@@ -627,21 +667,25 @@
 
 <div class="viewcode-block" id="test_plot_source_area_gallery">
 <a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_source_area_gallery">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_source_area_gallery</span><span class="p">(</span><span class="n">footprint_result_session</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test gallery plot creates 2x3 grid with 5 visible panels.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_source_area_gallery</span><span class="p">(</span><span class="n">source_area_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test gallery plot creates 2x3 grid with 5 visible panels.</span>
+
+<span class="sd">    Uses an elongated domain (100x700m) matching the high-res example</span>
+<span class="sd">    in runs/low_level/source_area_example.py but at 128x64 resolution.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_source_area_gallery</span>
 
-    <span class="n">result</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">footprint_result_session</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">source_area_result_session</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plot_source_area_gallery</span><span class="p">(</span>
-        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
-        <span class="n">result</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span>
-        <span class="n">meas_pt</span><span class="o">=</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;tower_xy&quot;</span><span class="p">],</span>
-        <span class="n">wind</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span>
+        <span class="n">meas_pt</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;meas_pt&quot;</span><span class="p">],</span>
+        <span class="n">wind</span><span class="o">=</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;wind&quot;</span><span class="p">],</span>
     <span class="p">)</span>
     <span class="k">assert</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="n">axes</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
     <span class="k">assert</span> <span class="ow">not</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">get_visible</span><span class="p">()</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/test_source_area_gallery.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/test_plot_source_area_gallery.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
@@ -689,40 +733,34 @@
 
 <div class="viewcode-block" id="test_plot_footprint_field_3d_input">
 <a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_plot_footprint_field_3d_input">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_field_3d_input</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_plot_footprint_field_3d_input</span><span class="p">(</span><span class="n">plume_3d_result_session</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;plot_footprint_field auto-slices 3D input at requested level.&quot;&quot;&quot;</span>
-    <span class="n">nz</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span>
-    <span class="n">flx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
-    <span class="n">Z</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="p">),</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">ny</span><span class="p">),</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="n">nx</span><span class="p">),</span>
-        <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">plume_3d_result_session</span>
+    <span class="n">flx</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
 
-    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_field</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_footprint_field</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;3D footprint (level=0)&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">ax</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_plot_footprint_field_3d.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="test_extract_percentile_contour_3d_input">
 <a class="viewcode-back" href="../../tests.html#tests.test_plotting.test_extract_percentile_contour_3d_input">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">test_extract_percentile_contour_3d_input</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_extract_percentile_contour_3d_input</span><span class="p">(</span><span class="n">plume_3d_result_session</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;extract_percentile_contour auto-slices 3D input.&quot;&quot;&quot;</span>
-    <span class="n">nz</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">32</span>
-    <span class="n">flx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
-    <span class="n">Z</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nz</span><span class="p">),</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">ny</span><span class="p">),</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="n">nx</span><span class="p">),</span>
-        <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">plume_3d_result_session</span>
+    <span class="n">flx</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">grid</span>
 
     <span class="n">level_val</span><span class="p">,</span> <span class="n">area</span> <span class="o">=</span> <span class="n">extract_percentile_contour</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">pct</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">level_val</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">level_val</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="k">assert</span> <span class="n">area</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
     <span class="c1"># Result should match slicing manually</span>
@@ -730,7 +768,12 @@
         <span class="n">flx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Z</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">pct</span><span class="o">=</span><span class="mf">0.8</span>
     <span class="p">)</span>
     <span class="k">assert</span> <span class="n">level_val</span> <span class="o">==</span> <span class="n">level_manual</span>
-    <span class="k">assert</span> <span class="n">area</span> <span class="o">==</span> <span class="n">area_manual</span></div>
+    <span class="k">assert</span> <span class="n">area</span> <span class="o">==</span> <span class="n">area_manual</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">PLOTTING percentile_contour_3d: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;80% level=</span><span class="si">{</span><span class="n">level_val</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> area=</span><span class="si">{</span><span class="n">area</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">m²&quot;</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 

@@ -267,19 +267,21 @@ the halo to <cite>max(xmax, ymax)</cite>.</p></li>
 <dt class="sig sig-object py" id="bldfm.utils.compute_wind_fields">
 <span class="sig-prename descclassname"><span class="pre">bldfm.utils.</span></span><span class="sig-name descname"><span class="pre">compute_wind_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u_rot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/utils.html#compute_wind_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.utils.compute_wind_fields" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the zonal (u) and meridional (v) wind components from a rotated
-wind speed and direction.</p>
+wind speed and direction using the meteorological convention.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>u_rot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Rotated wind speed.</p></li>
-<li><p><strong>wind_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Wind direction in degrees (clockwise from north).</p></li>
+<li><p><strong>wind_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Wind direction in degrees (meteorological convention:
+direction the wind is coming FROM, clockwise from north).
+0 = from north, 90 = from east, 180 = from south, 270 = from west.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>A tuple (u, v) where:</dt><dd><ul class="simple">
-<li><p>u (float): Zonal wind component (east-west).</p></li>
-<li><p>v (float): Meridional wind component (north-south).</p></li>
+<li><p>u (float): Zonal wind component (east-west, positive = eastward).</p></li>
+<li><p>v (float): Meridional wind component (north-south, positive = northward).</p></li>
 </ul>
 </dd>
 </dl>
@@ -1317,7 +1319,7 @@ Values may be 2-D or 3-D arrays. If 3D, sliced at <em>level</em>.</p></li>
 <li><p><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Subplot titles.</p></li>
 <li><p><strong>meas_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>x</em><em>, </em><em>y</em><em>)</em><em>, </em><em>optional</em>) – Measurement point coordinates to mark with a red star on each panel.</p></li>
 <li><p><strong>n_levels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of contour levels (default 6).</p></li>
-<li><p><strong>vmin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Minimum contour level. If None, uses 1e-5.</p></li>
+<li><p><strong>vmin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Minimum contour level. If None, uses 5% of vmax.</p></li>
 <li><p><strong>vmax</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Maximum contour level. If None, uses max across all fields.</p></li>
 <li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colormap name (default “turbo”).</p></li>
 <li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – Figure size (width, height).</p></li>
@@ -1509,8 +1511,8 @@ If 3D, sliced at <em>level</em>.</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="bldfm.plotting.plot_vertical_profiles">
 <span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_vertical_profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profiles_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/diagnostics.html#plot_vertical_profiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_vertical_profiles" title="Link to this definition">¶</a></dt>
-<dd><p>Multi-panel (1x2) profile plot: velocity and diffusivity vs height.</p>
-<p>Left panel: u vs z.
+<dd><p>Multi-panel (1x2) profile plot: wind speed and diffusivity vs height.</p>
+<p>Left panel: wind speed <a href="#id1"><span class="problematic" id="id2">|U|</span></a> = sqrt(u² + v²) vs z.
 Right panel: Kz vs z.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1715,7 +1717,7 @@ Values may be 2-D or 3-D arrays. If 3D, sliced at <em>level</em>.</p></li>
 <li><p><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Subplot titles.</p></li>
 <li><p><strong>meas_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>x</em><em>, </em><em>y</em><em>)</em><em>, </em><em>optional</em>) – Measurement point coordinates to mark with a red star on each panel.</p></li>
 <li><p><strong>n_levels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of contour levels (default 6).</p></li>
-<li><p><strong>vmin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Minimum contour level. If None, uses 1e-5.</p></li>
+<li><p><strong>vmin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Minimum contour level. If None, uses 5% of vmax.</p></li>
 <li><p><strong>vmax</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Maximum contour level. If None, uses max across all fields.</p></li>
 <li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colormap name (default “turbo”).</p></li>
 <li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – Figure size (width, height).</p></li>
@@ -1768,8 +1770,8 @@ Example: (lambda h, a, b: a * h**b, {“a”: 0.1, “b”: 2.0}, “$O(h^2)$”
 <dl class="py function">
 <dt class="sig sig-object py" id="bldfm.plotting.diagnostics.plot_vertical_profiles">
 <span class="sig-prename descclassname"><span class="pre">bldfm.plotting.diagnostics.</span></span><span class="sig-name descname"><span class="pre">plot_vertical_profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profiles_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/diagnostics.html#plot_vertical_profiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.diagnostics.plot_vertical_profiles" title="Link to this definition">¶</a></dt>
-<dd><p>Multi-panel (1x2) profile plot: velocity and diffusivity vs height.</p>
-<p>Left panel: u vs z.
+<dd><p>Multi-panel (1x2) profile plot: wind speed and diffusivity vs height.</p>
+<p>Left panel: wind speed <a href="#id3"><span class="problematic" id="id4">|U|</span></a> = sqrt(u² + v²) vs z.
 Right panel: Kz vs z.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

@@ -208,18 +208,22 @@
             <span class="n">lvl</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">extract_percentile_contour</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
             <span class="n">levels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lvl</span><span class="p">)</span>
             <span class="n">pct_labels</span><span class="p">[</span><span class="n">lvl</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">p</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">%&quot;</span>
-        <span class="n">cs</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span>
-            <span class="n">X</span><span class="p">,</span>
-            <span class="n">Y</span><span class="p">,</span>
-            <span class="n">flx</span><span class="p">,</span>
-            <span class="n">levels</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span><span class="n">levels</span><span class="p">),</span>
-            <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
-            <span class="n">linewidths</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
-            <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span>
-            <span class="n">cs</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pct_labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
+        <span class="c1"># Deduplicate levels — matplotlib requires strictly increasing values.</span>
+        <span class="c1"># Coarse grids can produce identical thresholds for adjacent percentiles.</span>
+        <span class="n">unique_levels</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">levels</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">unique_levels</span><span class="p">:</span>
+            <span class="n">cs</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span>
+                <span class="n">X</span><span class="p">,</span>
+                <span class="n">Y</span><span class="p">,</span>
+                <span class="n">flx</span><span class="p">,</span>
+                <span class="n">levels</span><span class="o">=</span><span class="n">unique_levels</span><span class="p">,</span>
+                <span class="n">colors</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+                <span class="n">linewidths</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+                <span class="n">linestyles</span><span class="o">=</span><span class="s2">&quot;--&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">clabel</span><span class="p">(</span>
+                <span class="n">cs</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">pct_labels</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">inline</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
 
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y [m]&quot;</span><span class="p">)</span>

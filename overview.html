@@ -56,7 +56,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#configuration-and-interface">Configuration and interface</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-and-i-o">Data and I/O</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plotting">Plotting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-interactions">Module interactions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pipeline-architecture">Pipeline architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#design-philosophy-high-level-vs-low-level-api">Design philosophy: high-level vs. low-level API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#api-reference">API reference</a></li>
 </ul>
 </li>
@@ -225,15 +226,77 @@
 </li>
 </ol>
 </section>
-<section id="module-interactions">
-<h2>Module interactions<a class="headerlink" href="#module-interactions" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="src.html#module-bldfm.pbl_model" title="bldfm.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.pbl_model</span></code></a> provides the vertical profiles required by <a class="reference internal" href="src.html#module-bldfm.solver" title="bldfm.solver"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.solver</span></code></a>.</p></li>
-<li><p><a class="reference internal" href="src.html#module-bldfm.interface" title="bldfm.interface"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.interface</span></code></a> orchestrates the full pipeline (wind fields, profiles, solver) driven by <a class="reference internal" href="src.html#module-bldfm.config_parser" title="bldfm.config_parser"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.config_parser</span></code></a>.</p></li>
-<li><p><a class="reference internal" href="src.html#module-bldfm.cache" title="bldfm.cache"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.cache</span></code></a> accelerates repeated solves by caching Green’s functions.</p></li>
-<li><p><a class="reference internal" href="src.html#module-bldfm.io" title="bldfm.io"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.io</span></code></a> saves and loads multi-tower, multi-timestep results.</p></li>
-<li><p><a class="reference internal" href="src.html#module-bldfm.plotting" title="bldfm.plotting"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.plotting</span></code></a> visualises solver outputs.</p></li>
-</ul>
+<section id="pipeline-architecture">
+<h2>Pipeline architecture<a class="headerlink" href="#pipeline-architecture" title="Link to this heading">¶</a></h2>
+<p>The solver pipeline proceeds in four stages. The high-level interface
+(<a class="reference internal" href="src.html#module-bldfm.interface" title="bldfm.interface"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.interface</span></code></a>) runs all four automatically; the low-level API lets
+you call each stage individually.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>                 YAML file / dict
+                       │
+              load_config / parse_config_dict
+                       │
+                       ▼
+                  BLDFMConfig
+                       │
+       ┌───────────────┼───────────────┐
+       │          High-level            │
+       │   run_bldfm_single/timeseries  │
+       │   run_bldfm_multitower         │
+       │   run_bldfm_parallel           │
+       └───────────────┬───────────────┘
+                       │  internally calls ▼
+         ┌─────────────┼─────────────────┐
+         │                               │
+         ▼                               │
+compute_wind_fields()  [utils]           │
+         │                               │
+         ▼                               │
+vertical_profiles()    [pbl_model]       │
+         │                               │
+         ▼                               │
+ideal_source()         [utils]           │
+         │             (if no flux given) │
+         ▼                               │
+steady_state_transport_solver()  [solver]│
+         │                               │
+         └───────────────┬───────────────┘
+                         ▼
+              result dict {grid, conc, flx, …}
+                         │
+           ┌─────────────┼─────────────┐
+           │             │             │
+           ▼             ▼             ▼
+   GreensFunctionCache  save to     plot_*()
+       [cache]         NetCDF     [plotting]
+                       [io]
+</pre></div>
+</div>
+</section>
+<section id="design-philosophy-high-level-vs-low-level-api">
+<h2>Design philosophy: high-level vs. low-level API<a class="headerlink" href="#design-philosophy-high-level-vs-low-level-api" title="Link to this heading">¶</a></h2>
+<p>BLDFM exposes two tiers of API, each targeting a different use case.</p>
+<dl class="simple">
+<dt><strong>High-level API</strong> — <a class="reference internal" href="src.html#module-bldfm.interface" title="bldfm.interface"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.interface</span></code></a></dt><dd><p>The four <code class="docutils literal notranslate"><span class="pre">run_bldfm_*</span></code> functions accept a <a class="reference internal" href="src.html#bldfm.config_parser.BLDFMConfig" title="bldfm.config_parser.BLDFMConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BLDFMConfig</span></code></a>
+object and return result dictionaries. Configuration objects carry every
+parameter (domain, towers, meteorology, solver options), making runs
+reproducible from a single YAML file. Use this tier for production science
+workflows, batch runs, and the CLI.</p>
+</dd>
+<dt><strong>Low-level API</strong> — individual modules</dt><dd><p>The core functions <a class="reference internal" href="src.html#bldfm.pbl_model.vertical_profiles" title="bldfm.pbl_model.vertical_profiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">vertical_profiles()</span></code></a>,
+<a class="reference internal" href="src.html#bldfm.solver.steady_state_transport_solver" title="bldfm.solver.steady_state_transport_solver"><code class="xref py py-func docutils literal notranslate"><span class="pre">steady_state_transport_solver()</span></code></a>,
+<a class="reference internal" href="src.html#bldfm.utils.compute_wind_fields" title="bldfm.utils.compute_wind_fields"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_wind_fields()</span></code></a>, and
+<a class="reference internal" href="src.html#bldfm.utils.ideal_source" title="bldfm.utils.ideal_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">ideal_source()</span></code></a> can be called directly with plain
+NumPy arrays and scalars. This gives full control over intermediate results
+and is suited for custom parameter sweeps, debugging, or building new
+wrappers. Note that <a class="reference internal" href="src.html#bldfm.pbl_model.vertical_profiles" title="bldfm.pbl_model.vertical_profiles"><code class="xref py py-func docutils literal notranslate"><span class="pre">vertical_profiles()</span></code></a> is
+intentionally not re-exported in the top-level <code class="docutils literal notranslate"><span class="pre">__all__</span></code>; import it
+explicitly from <a class="reference internal" href="src.html#module-bldfm.pbl_model" title="bldfm.pbl_model"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.pbl_model</span></code></a> when working at this level.</p>
+</dd>
+</dl>
+<p><strong>Choosing a tier.</strong> Start with the high-level API. Drop to the low-level API
+when you need to inspect or modify intermediate quantities (e.g. vertical
+profiles), run the solver with non-standard inputs, or integrate BLDFM into a
+larger modelling framework.</p>
 </section>
 <section id="api-reference">
 <h2>API reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h2>

@@ -121,9 +121,15 @@
 <span class="n">pytestmark</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">integration</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
+
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.pbl_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">vertical_profiles</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ideal_source</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">steady_state_transport_solver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.ffm_kormann_meixner</span><span class="w"> </span><span class="kn">import</span> <span class="n">estimateFootprint</span> <span class="k">as</span> <span class="n">FKM</span>
 
 
 <div class="viewcode-block" id="test_integration">
@@ -170,7 +176,21 @@
     <span class="n">diff_flx</span> <span class="o">=</span> <span class="p">(</span><span class="n">flx</span> <span class="o">-</span> <span class="n">flx_ana</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">flx_ana</span><span class="p">)</span>
 
     <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">diff_conc</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> <span class="s2">&quot;Concentration mismatch too large&quot;</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">diff_flx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> <span class="s2">&quot;Flux mismatch too large&quot;</span></div>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">diff_flx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">),</span> <span class="s2">&quot;Flux mismatch too large&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION numerical_vs_analytical: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;max_err_conc=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">diff_conc</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;max_err_flx=</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">diff_flx</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">flx_ana</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Analytical&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">)</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Numerical&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Flux: analytical vs numerical&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/test_integration_integration.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
 
@@ -236,7 +256,22 @@
         <span class="k">assert</span> <span class="n">errors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">errors</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Error did not decrease: errors[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]=</span><span class="si">{</span><span class="n">errors</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2"> &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;&lt;= errors[</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">]=</span><span class="si">{</span><span class="n">errors</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION convergence_trend:&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">res</span><span class="p">,</span> <span class="n">err</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">resolutions</span><span class="p">,</span> <span class="n">errors</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  modes=</span><span class="si">{</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;modes&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> nz=</span><span class="si">{</span><span class="n">res</span><span class="p">[</span><span class="s1">&#39;nz&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> rmse=</span><span class="si">{</span><span class="n">err</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_convergence</span>
+
+    <span class="n">grid_spacings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">domain</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;modes&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resolutions</span><span class="p">])</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot_convergence</span><span class="p">(</span>
+        <span class="n">grid_spacings</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">errors</span><span class="p">),</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Convergence trend (test)&quot;</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_integration_convergence_trend.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
 
@@ -269,6 +304,52 @@
     <span class="p">)</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_quick_footprint_solve</span><span class="p">(</span>
+    <span class="n">closure</span><span class="o">=</span><span class="s2">&quot;MOST&quot;</span><span class="p">,</span>
+    <span class="n">wind</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
+    <span class="n">ustar</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+    <span class="n">z0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">mol</span><span class="o">=</span><span class="mf">1e9</span><span class="p">,</span>
+    <span class="n">nxy</span><span class="o">=</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
+    <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">),</span>
+    <span class="n">modes</span><span class="o">=</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span>
+    <span class="n">meas_pt</span><span class="o">=</span><span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">),</span>
+    <span class="n">meas_height</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span>
+    <span class="n">nz</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">halo</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper: footprint solve returning (grid, conc, flx, dx, dy).</span>
+
+<span class="sd">    Creates a zero surface-flux field (shape is all that matters in footprint</span>
+<span class="sd">    mode), builds vertical profiles via vertical_profiles, then calls</span>
+<span class="sd">    steady_state_transport_solver with footprint=True.  The extra dx/dy values</span>
+<span class="sd">    are included for mass-conservation integration tests.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">nxy</span>
+    <span class="n">xmx</span><span class="p">,</span> <span class="n">ymx</span> <span class="o">=</span> <span class="n">domain</span>
+    <span class="n">srf_flx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">ny</span><span class="p">,</span> <span class="n">nx</span><span class="p">))</span>
+    <span class="n">kw</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">nz</span><span class="p">,</span> <span class="n">meas_height</span><span class="o">=</span><span class="n">meas_height</span><span class="p">,</span> <span class="n">wind</span><span class="o">=</span><span class="n">wind</span><span class="p">,</span> <span class="n">closure</span><span class="o">=</span><span class="n">closure</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="n">mol</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">z0</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kw</span><span class="p">[</span><span class="s2">&quot;z0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">z0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">kw</span><span class="p">[</span><span class="s2">&quot;ustar&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ustar</span>
+    <span class="n">z</span><span class="p">,</span> <span class="n">profs</span> <span class="o">=</span> <span class="n">vertical_profiles</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+    <span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span> <span class="o">=</span> <span class="n">steady_state_transport_solver</span><span class="p">(</span>
+        <span class="n">srf_flx</span><span class="p">,</span>
+        <span class="n">z</span><span class="p">,</span>
+        <span class="n">profs</span><span class="p">,</span>
+        <span class="n">domain</span><span class="p">,</span>
+        <span class="n">nz</span><span class="p">,</span>
+        <span class="n">modes</span><span class="o">=</span><span class="n">modes</span><span class="p">,</span>
+        <span class="n">meas_pt</span><span class="o">=</span><span class="n">meas_pt</span><span class="p">,</span>
+        <span class="n">footprint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">halo</span><span class="o">=</span><span class="n">halo</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">xmx</span> <span class="o">/</span> <span class="n">nx</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">ymx</span> <span class="o">/</span> <span class="n">ny</span>
+    <span class="k">return</span> <span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span>
+
+
 <div class="viewcode-block" id="test_solver_single_precision">
 <a class="viewcode-back" href="../../tests.html#tests.test_integration.test_solver_single_precision">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_solver_single_precision</span><span class="p">():</span>
@@ -276,7 +357,8 @@
     <span class="n">_</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span> <span class="o">=</span> <span class="n">_quick_solve</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="s2">&quot;single&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">conc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span> <span class="ow">or</span> <span class="n">conc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
     <span class="c1"># Single precision uses complex64 internally -&gt; real part is float32</span>
-    <span class="k">assert</span> <span class="n">flx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">conc</span><span class="o">.</span><span class="n">shape</span></div>
+    <span class="k">assert</span> <span class="n">flx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">conc</span><span class="o">.</span><span class="n">shape</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION solver_single: dtype=</span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> shape=</span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 
@@ -286,7 +368,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify double precision path produces float64 output.&quot;&quot;&quot;</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span> <span class="o">=</span> <span class="n">_quick_solve</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="s2">&quot;double&quot;</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">conc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
-    <span class="k">assert</span> <span class="n">flx</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span></div>
+    <span class="k">assert</span> <span class="n">flx</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION solver_double: dtype=</span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> shape=</span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 
@@ -315,7 +398,8 @@
     <span class="c1"># Use a tiny halo so modes &gt; grid+halo triggers the clamping path</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span> <span class="o">=</span> <span class="n">_quick_solve</span><span class="p">(</span><span class="n">modes</span><span class="o">=</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span> <span class="n">halo</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">conc</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">flx</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">flx</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">flx</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION solver_halo_overflow: shape=</span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> all_finite=True&quot;</span><span class="p">)</span></div>
 
 
 
@@ -327,7 +411,580 @@
         <span class="n">footprint</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">meas_pt</span><span class="o">=</span><span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="mf">12.5</span><span class="p">),</span> <span class="n">precision</span><span class="o">=</span><span class="s2">&quot;double&quot;</span>
     <span class="p">)</span>
     <span class="k">assert</span> <span class="n">conc</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">flx</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">conc</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">conc</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION solver_non_footprint_shift: shape=</span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> all_finite=True&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Category 1: BLDFM footprint property tests</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="test_footprint_finite_values">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_footprint_finite_values">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_footprint_finite_values</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify that all footprint flux and concentration values are finite.</span>
+
+<span class="sd">    Runs the solver in footprint mode with default parameters and asserts</span>
+<span class="sd">    that neither NaN nor Inf appear anywhere in the output arrays.  Prints</span>
+<span class="sd">    shape, dtype, and value range for quick sanity inspection.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">_quick_footprint_solve</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">flx</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s2">&quot;flx contains non-finite values&quot;</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">conc</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s2">&quot;conc contains non-finite values&quot;</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION footprint_finite_values: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;flx shape=</span><span class="si">{</span><span class="n">flx</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> dtype=</span><span class="si">{</span><span class="n">flx</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;range=[</span><span class="si">{</span><span class="n">flx</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">flx</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">] &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;conc range=[</span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">]&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_footprint_positivity_constant">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_footprint_positivity_constant">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_footprint_positivity_constant</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify footprint flux is non-negative everywhere with CONSTANT closure.</span>
+
+<span class="sd">    FFT roundoff can produce tiny negative values; the tolerance -1e-15</span>
+<span class="sd">    accounts for this without masking genuine negativity bugs.  Prints the</span>
+<span class="sd">    minimum value and fraction of cells with positive weight.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">flx</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_quick_footprint_solve</span><span class="p">(</span><span class="n">closure</span><span class="o">=</span><span class="s2">&quot;CONSTANT&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+        <span class="n">flx</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">1e-15</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;CONSTANT closure produced flx &lt; -1e-15: min=</span><span class="si">{</span><span class="n">flx</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">pct_positive</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">flx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">flx</span><span class="o">.</span><span class="n">size</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION footprint_positivity_constant: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;min=</span><span class="si">{</span><span class="n">flx</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> pct_positive=</span><span class="si">{</span><span class="n">pct_positive</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_footprint_positivity_most">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_footprint_positivity_most">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_footprint_positivity_most</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify footprint flux has only small negatives with MOST closure (neutral).</span>
+
+<span class="sd">    The MOST closure uses a non-constant diffusivity profile which can cause</span>
+<span class="sd">    Gibbs/FFT ringing at the measurement-point singularity, producing negative</span>
+<span class="sd">    values of order ~1e-5.  The tolerance -1e-4 accepts this known numerical</span>
+<span class="sd">    artefact while still rejecting physically meaningless large negatives.</span>
+<span class="sd">    Neutral conditions (mol=1e9) are used as the baseline case.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">flx</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_quick_footprint_solve</span><span class="p">(</span><span class="n">closure</span><span class="o">=</span><span class="s2">&quot;MOST&quot;</span><span class="p">,</span> <span class="n">z0</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="mf">1e9</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+        <span class="n">flx</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">1e-4</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;MOST closure produced flx &lt; -1e-4: min=</span><span class="si">{</span><span class="n">flx</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">pct_positive</span> <span class="o">=</span> <span class="mf">100.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">flx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="n">flx</span><span class="o">.</span><span class="n">size</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION footprint_positivity_most: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;min=</span><span class="si">{</span><span class="n">flx</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> pct_positive=</span><span class="si">{</span><span class="n">pct_positive</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_footprint_mass_conservation_constant">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_footprint_mass_conservation_constant">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_footprint_mass_conservation_constant</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify footprint integrates to a reasonable fraction with CONSTANT closure.</span>
+
+<span class="sd">    Uses a larger domain and halo so that a substantial fraction of the</span>
+<span class="sd">    footprint falls within the window.  The acceptable range (0.25, 1.05]</span>
+<span class="sd">    accounts for the finite domain capturing only a partial footprint — the</span>
+<span class="sd">    true integral over an infinite domain is 1, but at this resolution and</span>
+<span class="sd">    domain size a significant portion escapes through the upwind boundary.</span>
+<span class="sd">    Prints the raw integral for inspection.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">flx</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">_quick_footprint_solve</span><span class="p">(</span>
+        <span class="n">closure</span><span class="o">=</span><span class="s2">&quot;CONSTANT&quot;</span><span class="p">,</span>
+        <span class="n">nxy</span><span class="o">=</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
+        <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">400.0</span><span class="p">),</span>
+        <span class="n">modes</span><span class="o">=</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
+        <span class="n">halo</span><span class="o">=</span><span class="mf">400.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">integral</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">flx</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">dy</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="mf">0.25</span> <span class="o">&lt;</span> <span class="n">integral</span> <span class="o">&lt;=</span> <span class="mf">1.05</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;CONSTANT footprint integral out of range: </span><span class="si">{</span><span class="n">integral</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION footprint_mass_conservation_constant: integral=</span><span class="si">{</span><span class="n">integral</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_footprint_mass_conservation_most">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_footprint_mass_conservation_most">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_footprint_mass_conservation_most</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify footprint integrates to a reasonable fraction with MOST closure (neutral).</span>
+
+<span class="sd">    Same domain and halo as the CONSTANT test, but uses a roughness length</span>
+<span class="sd">    (z0=0.5) and neutral Monin-Obukhov length (mol=1e9) to exercise the MOST</span>
+<span class="sd">    code path.  The acceptable range (0.25, 1.05] is identical to the CONSTANT</span>
+<span class="sd">    test — the finite domain captures a substantial but incomplete portion of</span>
+<span class="sd">    the footprint.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">flx</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">_quick_footprint_solve</span><span class="p">(</span>
+        <span class="n">closure</span><span class="o">=</span><span class="s2">&quot;MOST&quot;</span><span class="p">,</span>
+        <span class="n">z0</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">mol</span><span class="o">=</span><span class="mf">1e9</span><span class="p">,</span>
+        <span class="n">nxy</span><span class="o">=</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
+        <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">400.0</span><span class="p">),</span>
+        <span class="n">modes</span><span class="o">=</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span>
+        <span class="n">halo</span><span class="o">=</span><span class="mf">400.0</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">integral</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">flx</span><span class="p">)</span> <span class="o">*</span> <span class="n">dx</span> <span class="o">*</span> <span class="n">dy</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="mf">0.25</span> <span class="o">&lt;</span> <span class="n">integral</span> <span class="o">&lt;=</span> <span class="mf">1.05</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;MOST footprint integral out of range: </span><span class="si">{</span><span class="n">integral</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION footprint_mass_conservation_most: integral=</span><span class="si">{</span><span class="n">integral</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_footprint_peak_upwind_southward">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_footprint_peak_upwind_southward">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_footprint_peak_upwind_southward</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify footprint peak is upwind when wind blows southward (v &lt; 0).</span>
+
+<span class="sd">    With wind=(0, -5) the flow moves in the -y direction, so the upwind</span>
+<span class="sd">    surface contributing to the receptor is at y &gt; meas_y.  Saves a plot</span>
+<span class="sd">    showing the footprint field with the measurement point (red star) and</span>
+<span class="sd">    detected peak (blue cross) annotated for visual verification.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">meas_pt</span> <span class="o">=</span> <span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">)</span>
+    <span class="n">meas_x</span><span class="p">,</span> <span class="n">meas_y</span> <span class="o">=</span> <span class="n">meas_pt</span>
+    <span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">_quick_footprint_solve</span><span class="p">(</span>
+        <span class="n">closure</span><span class="o">=</span><span class="s2">&quot;MOST&quot;</span><span class="p">,</span>
+        <span class="n">wind</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">),</span>
+        <span class="n">z0</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">mol</span><span class="o">=</span><span class="mf">1e9</span><span class="p">,</span>
+        <span class="n">meas_pt</span><span class="o">=</span><span class="n">meas_pt</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">grid</span>
+    <span class="n">peak_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">flx</span><span class="p">),</span> <span class="n">flx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">peak_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="n">peak_idx</span><span class="p">])</span>
+    <span class="n">peak_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">peak_idx</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">peak_y</span> <span class="o">&gt;</span> <span class="n">meas_y</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Footprint peak at y=</span><span class="si">{</span><span class="n">peak_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> is NOT upwind of meas_y=</span><span class="si">{</span><span class="n">meas_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION footprint_peak_upwind_southward: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;peak=(</span><span class="si">{</span><span class="n">peak_x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">peak_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">) meas_pt=(</span><span class="si">{</span><span class="n">meas_x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">meas_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># --- plot ---</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+        <span class="n">flx</span><span class="p">,</span>
+        <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
+        <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">X</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">max</span><span class="p">()],</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">meas_x</span><span class="p">,</span> <span class="n">meas_y</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;meas_pt&quot;</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">peak_x</span><span class="p">,</span>
+        <span class="n">peak_y</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+        <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+        <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;peak&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;footprint weight&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y [m]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Footprint: southward wind — peak should be above star&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_integration_footprint_peak_southward.png&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_footprint_peak_upwind_westward">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_footprint_peak_upwind_westward">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_footprint_peak_upwind_westward</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify footprint peak is upwind when wind blows westward (u &lt; 0).</span>
+
+<span class="sd">    With wind=(-5, 0) the flow moves in the -x direction, so the upwind</span>
+<span class="sd">    surface is at x &gt; meas_x.  The domain is rotated (elongated in x)</span>
+<span class="sd">    so that the footprint has room to develop along the wind axis.  Saves</span>
+<span class="sd">    a plot with measurement point and peak annotated.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">meas_pt</span> <span class="o">=</span> <span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="mf">25.0</span><span class="p">)</span>
+    <span class="n">meas_x</span><span class="p">,</span> <span class="n">meas_y</span> <span class="o">=</span> <span class="n">meas_pt</span>
+    <span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">_quick_footprint_solve</span><span class="p">(</span>
+        <span class="n">closure</span><span class="o">=</span><span class="s2">&quot;MOST&quot;</span><span class="p">,</span>
+        <span class="n">wind</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="n">z0</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">mol</span><span class="o">=</span><span class="mf">1e9</span><span class="p">,</span>
+        <span class="n">nxy</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
+        <span class="n">domain</span><span class="o">=</span><span class="p">(</span><span class="mf">200.0</span><span class="p">,</span> <span class="mf">50.0</span><span class="p">),</span>
+        <span class="n">modes</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
+        <span class="n">meas_pt</span><span class="o">=</span><span class="n">meas_pt</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">grid</span>
+    <span class="n">peak_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">flx</span><span class="p">),</span> <span class="n">flx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">peak_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="n">peak_idx</span><span class="p">])</span>
+    <span class="n">peak_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">peak_idx</span><span class="p">])</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">peak_x</span> <span class="o">&gt;</span> <span class="n">meas_x</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Footprint peak at x=</span><span class="si">{</span><span class="n">peak_x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> is NOT upwind of meas_x=</span><span class="si">{</span><span class="n">meas_x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION footprint_peak_upwind_westward: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;peak=(</span><span class="si">{</span><span class="n">peak_x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">peak_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">) meas_pt=(</span><span class="si">{</span><span class="n">meas_x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">meas_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">)&quot;</span>
+    <span class="p">)</span>
+    <span class="c1"># --- plot ---</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span>
+        <span class="n">flx</span><span class="p">,</span>
+        <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;lower&quot;</span><span class="p">,</span>
+        <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="n">X</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">X</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">Y</span><span class="o">.</span><span class="n">max</span><span class="p">()],</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">meas_x</span><span class="p">,</span> <span class="n">meas_y</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;meas_pt&quot;</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span>
+        <span class="n">peak_x</span><span class="p">,</span>
+        <span class="n">peak_y</span><span class="p">,</span>
+        <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;+&quot;</span><span class="p">,</span>
+        <span class="n">color</span><span class="o">=</span><span class="s2">&quot;blue&quot;</span><span class="p">,</span>
+        <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+        <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s2">&quot;peak&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;footprint weight&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y [m]&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Footprint: westward wind — peak should be right of star&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_integration_footprint_peak_westward.png&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Category 2: BLDFM vs Kormann-Meixner comparison (neutral conditions)</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_run_comparison_neutral</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run both BLDFM and KM01 under neutral conditions and return results.</span>
+
+<span class="sd">    Parameters are taken from the manuscript neutral comparison script</span>
+<span class="sd">    (runs/manuscript/low_level/comparison_footprint_neutral.py) but at</span>
+<span class="sd">    reduced resolution for speed:</span>
+<span class="sd">      - nxy=(64, 256), domain=(50, 200), modes=(64, 256), nz=32, halo=300</span>
+<span class="sd">      - wind=(0, -5), ustar=0.668, z0=0.5, mol=1e9, sigma_v=0.32</span>
+
+<span class="sd">    Returns a dict with keys:</span>
+<span class="sd">      bldfm_flx, bldfm_grid, km01_ffm, km01_grid_x, km01_grid_y,</span>
+<span class="sd">      dx, dy, meas_pt</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">nxy</span> <span class="o">=</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+    <span class="n">domain</span> <span class="o">=</span> <span class="p">(</span><span class="mf">50.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">)</span>
+    <span class="n">modes</span> <span class="o">=</span> <span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">256</span><span class="p">)</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="mi">32</span>
+    <span class="n">halo</span> <span class="o">=</span> <span class="mf">300.0</span>
+    <span class="n">meas_pt</span> <span class="o">=</span> <span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="mf">20.0</span><span class="p">)</span>
+    <span class="n">meas_height</span> <span class="o">=</span> <span class="mf">10.0</span>
+    <span class="n">wind</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">ustar</span> <span class="o">=</span> <span class="mf">0.668</span>
+    <span class="n">z0</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">mol</span> <span class="o">=</span> <span class="mf">1e9</span>
+    <span class="n">sigma_v</span> <span class="o">=</span> <span class="mf">0.32</span>
+
+    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">nxy</span>
+    <span class="n">xmx</span><span class="p">,</span> <span class="n">ymx</span> <span class="o">=</span> <span class="n">domain</span>
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">xmx</span> <span class="o">/</span> <span class="n">nx</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">ymx</span> <span class="o">/</span> <span class="n">ny</span>
+
+    <span class="c1"># --- BLDFM with MOST closure ---</span>
+    <span class="n">surf_flx</span> <span class="o">=</span> <span class="n">ideal_source</span><span class="p">(</span><span class="n">nxy</span><span class="p">,</span> <span class="n">domain</span><span class="p">)</span>
+    <span class="n">z</span><span class="p">,</span> <span class="n">profs</span> <span class="o">=</span> <span class="n">vertical_profiles</span><span class="p">(</span><span class="n">nz</span><span class="p">,</span> <span class="n">meas_height</span><span class="p">,</span> <span class="n">wind</span><span class="p">,</span> <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span> <span class="n">mol</span><span class="o">=</span><span class="n">mol</span><span class="p">,</span> <span class="n">closure</span><span class="o">=</span><span class="s2">&quot;MOST&quot;</span><span class="p">)</span>
+    <span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">bldfm_flx</span> <span class="o">=</span> <span class="n">steady_state_transport_solver</span><span class="p">(</span>
+        <span class="n">surf_flx</span><span class="p">,</span>
+        <span class="n">z</span><span class="p">,</span>
+        <span class="n">profs</span><span class="p">,</span>
+        <span class="n">domain</span><span class="p">,</span>
+        <span class="n">nz</span><span class="p">,</span>
+        <span class="n">modes</span><span class="o">=</span><span class="n">modes</span><span class="p">,</span>
+        <span class="n">meas_pt</span><span class="o">=</span><span class="n">meas_pt</span><span class="p">,</span>
+        <span class="n">footprint</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">halo</span><span class="o">=</span><span class="n">halo</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># --- Kormann-Meixner footprint model ---</span>
+    <span class="c1"># Wind direction: angle where wind comes FROM, clockwise from +Y axis.</span>
+    <span class="c1"># wind=(0, -5) means southward flow, i.e. wind comes from the north (0 deg).</span>
+    <span class="n">wd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">wind</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">wind</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="mf">180.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="n">umean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">wind</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">wind</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">km01_grid_x</span><span class="p">,</span> <span class="n">km01_grid_y</span><span class="p">,</span> <span class="n">km01_ffm</span> <span class="o">=</span> <span class="n">FKM</span><span class="p">(</span>
+        <span class="n">zm</span><span class="o">=</span><span class="n">meas_height</span><span class="p">,</span>
+        <span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span>
+        <span class="n">ws</span><span class="o">=</span><span class="n">umean</span><span class="p">,</span>
+        <span class="n">ustar</span><span class="o">=</span><span class="n">ustar</span><span class="p">,</span>
+        <span class="n">mo_len</span><span class="o">=</span><span class="n">mol</span><span class="p">,</span>
+        <span class="n">sigma_v</span><span class="o">=</span><span class="n">sigma_v</span><span class="p">,</span>
+        <span class="n">grid_domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">xmx</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ymx</span><span class="p">],</span>
+        <span class="n">grid_res</span><span class="o">=</span><span class="n">dx</span><span class="p">,</span>
+        <span class="n">mxy</span><span class="o">=</span><span class="n">meas_pt</span><span class="p">,</span>
+        <span class="n">wd</span><span class="o">=</span><span class="n">wd</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;bldfm_flx&quot;</span><span class="p">:</span> <span class="n">bldfm_flx</span><span class="p">,</span>
+        <span class="s2">&quot;bldfm_grid&quot;</span><span class="p">:</span> <span class="n">grid</span><span class="p">,</span>
+        <span class="s2">&quot;km01_ffm&quot;</span><span class="p">:</span> <span class="n">km01_ffm</span><span class="p">,</span>
+        <span class="s2">&quot;km01_grid_x&quot;</span><span class="p">:</span> <span class="n">km01_grid_x</span><span class="p">,</span>
+        <span class="s2">&quot;km01_grid_y&quot;</span><span class="p">:</span> <span class="n">km01_grid_y</span><span class="p">,</span>
+        <span class="s2">&quot;dx&quot;</span><span class="p">:</span> <span class="n">dx</span><span class="p">,</span>
+        <span class="s2">&quot;dy&quot;</span><span class="p">:</span> <span class="n">dy</span><span class="p">,</span>
+        <span class="s2">&quot;meas_pt&quot;</span><span class="p">:</span> <span class="n">meas_pt</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<div class="viewcode-block" id="test_comparison_neutral_both_nonnegative">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_comparison_neutral_both_nonnegative">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_comparison_neutral_both_nonnegative</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify both BLDFM and KM01 produce nearly non-negative footprint values.</span>
+
+<span class="sd">    KM01 is analytical and strictly non-negative by construction (only</span>
+<span class="sd">    upwind cells with x &gt; 0 are filled).  BLDFM uses an FFT-based solver</span>
+<span class="sd">    whose MOST diffusivity profile introduces Gibbs ringing near the</span>
+<span class="sd">    measurement-point singularity, producing negatives up to ~1e-4.</span>
+<span class="sd">    The tolerance -1e-4 catches genuine solver divergence while accepting</span>
+<span class="sd">    this known artefact.  Prints minimum values of both for inspection.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">_run_comparison_neutral</span><span class="p">()</span>
+    <span class="n">bldfm_flx</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;bldfm_flx&quot;</span><span class="p">]</span>
+    <span class="n">km01_ffm</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;km01_ffm&quot;</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+        <span class="n">bldfm_flx</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">1e-4</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;BLDFM neutral footprint &lt; -1e-4: min=</span><span class="si">{</span><span class="n">bldfm_flx</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+        <span class="n">km01_ffm</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;KM01 neutral footprint &lt; 0: min=</span><span class="si">{</span><span class="n">km01_ffm</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION comparison_neutral_both_nonnegative: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;bldfm_min=</span><span class="si">{</span><span class="n">bldfm_flx</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2"> km01_min=</span><span class="si">{</span><span class="n">km01_ffm</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_comparison_neutral_mass_agreement">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_comparison_neutral_mass_agreement">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_comparison_neutral_mass_agreement</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify both models integrate to within a factor of 3 of each other.</span>
+
+<span class="sd">    Each integral is expected to lie in [0.3, 1.2] — a wide window that</span>
+<span class="sd">    accounts for the finite domain capturing only part of the footprint.</span>
+<span class="sd">    The ratio check ensures neither model wildly over- or under-estimates</span>
+<span class="sd">    the total footprint weight relative to the other.</span>
+<span class="sd">    Note: KM01 already includes grid_res**2 per cell (see ffm_kormann_meixner</span>
+<span class="sd">    line 321), so np.sum(km01_ffm) is directly the dimensionless integral.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">_run_comparison_neutral</span><span class="p">()</span>
+    <span class="n">bldfm_integral</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;bldfm_flx&quot;</span><span class="p">])</span> <span class="o">*</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;dx&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;dy&quot;</span><span class="p">])</span>
+    <span class="n">km01_integral</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;km01_ffm&quot;</span><span class="p">]))</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="mf">0.3</span> <span class="o">&lt;</span> <span class="n">bldfm_integral</span> <span class="o">&lt;</span> <span class="mf">1.2</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;BLDFM integral out of range: </span><span class="si">{</span><span class="n">bldfm_integral</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="mf">0.3</span> <span class="o">&lt;</span> <span class="n">km01_integral</span> <span class="o">&lt;</span> <span class="mf">1.2</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;KM01 integral out of range: </span><span class="si">{</span><span class="n">km01_integral</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">bldfm_integral</span> <span class="o">/</span> <span class="n">km01_integral</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="mf">0.3</span> <span class="o">&lt;</span> <span class="n">ratio</span> <span class="o">&lt;</span> <span class="mf">3.0</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Integral ratio BLDFM/KM01 out of [0.3, 3.0]: </span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION comparison_neutral_mass_agreement: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;bldfm=</span><span class="si">{</span><span class="n">bldfm_integral</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> km01=</span><span class="si">{</span><span class="n">km01_integral</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> ratio=</span><span class="si">{</span><span class="n">ratio</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_comparison_neutral_peak_proximity">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_comparison_neutral_peak_proximity">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_comparison_neutral_peak_proximity</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify BLDFM and KM01 peak locations agree within 50 m.</span>
+
+<span class="sd">    Both peaks must also be upwind of the measurement point (y &gt; meas_y)</span>
+<span class="sd">    for wind=(0, -5).  The 50 m tolerance is generous given the different</span>
+<span class="sd">    physical assumptions of the two models.  Prints both peak coordinates</span>
+<span class="sd">    and the Euclidean distance between them.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">_run_comparison_neutral</span><span class="p">()</span>
+    <span class="n">bldfm_flx</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;bldfm_flx&quot;</span><span class="p">]</span>
+    <span class="n">km01_ffm</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;km01_ffm&quot;</span><span class="p">]</span>
+    <span class="n">meas_x</span><span class="p">,</span> <span class="n">meas_y</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;meas_pt&quot;</span><span class="p">]</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;bldfm_grid&quot;</span><span class="p">]</span>
+
+    <span class="n">bldfm_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">bldfm_flx</span><span class="p">),</span> <span class="n">bldfm_flx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">bldfm_peak_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">bldfm_idx</span><span class="p">])</span>
+    <span class="n">bldfm_peak_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Y</span><span class="p">[</span><span class="n">bldfm_idx</span><span class="p">])</span>
+
+    <span class="n">km01_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">km01_ffm</span><span class="p">),</span> <span class="n">km01_ffm</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">km01_peak_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;km01_grid_x&quot;</span><span class="p">][</span><span class="n">km01_idx</span><span class="p">])</span>
+    <span class="n">km01_peak_y</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;km01_grid_y&quot;</span><span class="p">][</span><span class="n">km01_idx</span><span class="p">])</span>
+
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">bldfm_peak_x</span> <span class="o">-</span> <span class="n">km01_peak_x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">bldfm_peak_y</span> <span class="o">-</span> <span class="n">km01_peak_y</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+    <span class="p">)</span>
+
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">bldfm_peak_y</span> <span class="o">&gt;</span> <span class="n">meas_y</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;BLDFM peak at y=</span><span class="si">{</span><span class="n">bldfm_peak_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> is NOT upwind of meas_y=</span><span class="si">{</span><span class="n">meas_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">km01_peak_y</span> <span class="o">&gt;</span> <span class="n">meas_y</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;KM01 peak at y=</span><span class="si">{</span><span class="n">km01_peak_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> is NOT upwind of meas_y=</span><span class="si">{</span><span class="n">meas_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="n">dist</span> <span class="o">&lt;</span> <span class="mf">50.0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Peak distance </span><span class="si">{</span><span class="n">dist</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m exceeds 50 m tolerance&quot;</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION comparison_neutral_peak_proximity: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;bldfm_peak=(</span><span class="si">{</span><span class="n">bldfm_peak_x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">bldfm_peak_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">) &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;km01_peak=(</span><span class="si">{</span><span class="n">km01_peak_x</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">km01_peak_y</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">) &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;dist=</span><span class="si">{</span><span class="n">dist</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> m&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_comparison_neutral_bldfm_broader">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_comparison_neutral_bldfm_broader">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_comparison_neutral_bldfm_broader</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Verify BLDFM footprint is spatially broader than KM01.</span>
+
+<span class="sd">    Breadth is measured by counting grid cells above 10% of the respective</span>
+<span class="sd">    model&#39;s peak value.  BLDFM is expected to be broader because its PBL</span>
+<span class="sd">    diffusion scheme accounts for along-wind diffusion that KM01 neglects.</span>
+<span class="sd">    Saves a side-by-side contour plot for visual verification.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">_run_comparison_neutral</span><span class="p">()</span>
+    <span class="n">bldfm_flx</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;bldfm_flx&quot;</span><span class="p">]</span>
+    <span class="n">km01_ffm</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;km01_ffm&quot;</span><span class="p">]</span>
+    <span class="n">meas_x</span><span class="p">,</span> <span class="n">meas_y</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;meas_pt&quot;</span><span class="p">]</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;bldfm_grid&quot;</span><span class="p">]</span>
+
+    <span class="n">bldfm_threshold</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">bldfm_flx</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">km01_threshold</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">km01_ffm</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">bldfm_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">bldfm_flx</span> <span class="o">&gt;</span> <span class="n">bldfm_threshold</span><span class="p">))</span>
+    <span class="n">km01_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">km01_ffm</span> <span class="o">&gt;</span> <span class="n">km01_threshold</span><span class="p">))</span>
+
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">bldfm_count</span> <span class="o">&gt;=</span> <span class="n">km01_count</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;BLDFM breadth (</span><span class="si">{</span><span class="n">bldfm_count</span><span class="si">}</span><span class="s2"> cells) &lt; KM01 breadth (</span><span class="si">{</span><span class="n">km01_count</span><span class="si">}</span><span class="s2"> cells)&quot;</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION comparison_neutral_bldfm_broader: &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;bldfm_count=</span><span class="si">{</span><span class="n">bldfm_count</span><span class="si">}</span><span class="s2"> km01_count=</span><span class="si">{</span><span class="n">km01_count</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># --- side-by-side contour plot ---</span>
+    <span class="n">vmin</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1e-6</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">bldfm_flx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">km01_ffm</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="o">*</span> <span class="mf">0.01</span><span class="p">)</span>
+    <span class="n">vmax</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">bldfm_flx</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="n">km01_ffm</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+    <span class="n">lvls</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;turbo&quot;</span>
+
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="s2">&quot;constrained&quot;</span><span class="p">)</span>
+
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">bldfm_flx</span><span class="p">,</span> <span class="n">lvls</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">meas_x</span><span class="p">,</span> <span class="n">meas_y</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;BLDFM (MOST)&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y [m]&quot;</span><span class="p">)</span>
+
+    <span class="n">cs</span> <span class="o">=</span> <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;km01_grid_x&quot;</span><span class="p">],</span>
+        <span class="n">r</span><span class="p">[</span><span class="s2">&quot;km01_grid_y&quot;</span><span class="p">],</span>
+        <span class="n">km01_ffm</span><span class="p">,</span>
+        <span class="n">lvls</span><span class="p">,</span>
+        <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span>
+        <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
+        <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span>
+        <span class="n">linewidths</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">meas_x</span><span class="p">,</span> <span class="n">meas_y</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;KM01&quot;</span><span class="p">)</span>
+    <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
+
+    <span class="n">cbar</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">,</span> <span class="n">shrink</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">)</span>
+    <span class="n">cbar</span><span class="o">.</span><span class="n">formatter</span><span class="o">.</span><span class="n">set_powerlimits</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">cbar</span><span class="o">.</span><span class="n">formatter</span><span class="o">.</span><span class="n">set_useMathText</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">cbar</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;footprint weight [m$^{-2}$]&quot;</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Neutral footprint: BLDFM vs KM01&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span>
+        <span class="s2">&quot;plots/test_integration_comparison_neutral.png&quot;</span><span class="p">,</span>
+        <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span>
+        <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_3d_plume_structure">
+<a class="viewcode-back" href="../../tests.html#tests.test_integration.test_3d_plume_structure">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_3d_plume_structure</span><span class="p">(</span><span class="n">plume_3d_result_session</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Test 3D plume solver output: shapes, finite values, plume structure.&quot;&quot;&quot;</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">plume_3d_result_session</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">]</span>
+    <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span>
+    <span class="n">levels</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;levels&quot;</span><span class="p">]</span>
+    <span class="n">nlvls</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">levels</span><span class="p">)</span>
+
+    <span class="c1"># 3D shapes: (nlvls, ny, nx)</span>
+    <span class="k">assert</span> <span class="n">conc</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">conc</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="n">nlvls</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">flx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">conc</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">assert</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">conc</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="c1"># Finite values</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">conc</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">flx</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+    <span class="c1"># Non-trivial: concentration should have positive values (dispersion mode)</span>
+    <span class="k">assert</span> <span class="n">conc</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Concentration field is all non-positive&quot;</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">INTEGRATION 3d_plume: shape=</span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> levels=</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">levels</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;conc_range=[</span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">] &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;flx_range=[</span><span class="si">{</span><span class="n">flx</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">flx</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.4e</span><span class="si">}</span><span class="s2">]&quot;</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Plot: y-slice through domain centre showing vertical plume structure</span>
+    <span class="n">mid_y</span> <span class="o">=</span> <span class="n">conc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">conc</span><span class="p">,</span> <span class="s2">&quot;Concentration&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">flx</span><span class="p">,</span> <span class="s2">&quot;Flux&quot;</span><span class="p">),</span>
+    <span class="p">]:</span>
+        <span class="n">pm</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">[:,</span> <span class="n">mid_y</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">Z</span><span class="p">[:,</span> <span class="n">mid_y</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">field</span><span class="p">[:,</span> <span class="n">mid_y</span><span class="p">,</span> <span class="p">:],</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
+            <span class="n">shading</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">pm</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x [m]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;z [m]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> (y-slice at mid-domain)&quot;</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;3D plume vertical cross-section&quot;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;plots/test_integration_3d_plume.png&quot;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">,</span> <span class="n">bbox_inches</span><span class="o">=</span><span class="s2">&quot;tight&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
 
 
 

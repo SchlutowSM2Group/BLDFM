@@ -443,12 +443,134 @@ Currently, this test is similar to combining the <cite>pbl_model</cite> and <cit
 </ul>
 </section>
 <dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_3d_plume_structure">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_3d_plume_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plume_3d_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_3d_plume_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_3d_plume_structure" title="Link to this definition">¶</a></dt>
+<dd><p>Test 3D plume solver output: shapes, finite values, plume structure.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_comparison_neutral_bldfm_broader">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_comparison_neutral_bldfm_broader</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_comparison_neutral_bldfm_broader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_comparison_neutral_bldfm_broader" title="Link to this definition">¶</a></dt>
+<dd><p>Verify BLDFM footprint is spatially broader than KM01.</p>
+<p>Breadth is measured by counting grid cells above 10% of the respective
+model’s peak value.  BLDFM is expected to be broader because its PBL
+diffusion scheme accounts for along-wind diffusion that KM01 neglects.
+Saves a side-by-side contour plot for visual verification.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_comparison_neutral_both_nonnegative">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_comparison_neutral_both_nonnegative</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_comparison_neutral_both_nonnegative"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_comparison_neutral_both_nonnegative" title="Link to this definition">¶</a></dt>
+<dd><p>Verify both BLDFM and KM01 produce nearly non-negative footprint values.</p>
+<p>KM01 is analytical and strictly non-negative by construction (only
+upwind cells with x &gt; 0 are filled).  BLDFM uses an FFT-based solver
+whose MOST diffusivity profile introduces Gibbs ringing near the
+measurement-point singularity, producing negatives up to ~1e-4.
+The tolerance -1e-4 catches genuine solver divergence while accepting
+this known artefact.  Prints minimum values of both for inspection.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_comparison_neutral_mass_agreement">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_comparison_neutral_mass_agreement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_comparison_neutral_mass_agreement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_comparison_neutral_mass_agreement" title="Link to this definition">¶</a></dt>
+<dd><p>Verify both models integrate to within a factor of 3 of each other.</p>
+<p>Each integral is expected to lie in [0.3, 1.2] — a wide window that
+accounts for the finite domain capturing only part of the footprint.
+The ratio check ensures neither model wildly over- or under-estimates
+the total footprint weight relative to the other.
+Note: KM01 already includes grid_res**2 per cell (see ffm_kormann_meixner
+line 321), so np.sum(km01_ffm) is directly the dimensionless integral.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_comparison_neutral_peak_proximity">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_comparison_neutral_peak_proximity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_comparison_neutral_peak_proximity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_comparison_neutral_peak_proximity" title="Link to this definition">¶</a></dt>
+<dd><p>Verify BLDFM and KM01 peak locations agree within 50 m.</p>
+<p>Both peaks must also be upwind of the measurement point (y &gt; meas_y)
+for wind=(0, -5).  The 50 m tolerance is generous given the different
+physical assumptions of the two models.  Prints both peak coordinates
+and the Euclidean distance between them.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="tests.test_integration.test_convergence_trend">
 <span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_convergence_trend</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_convergence_trend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_convergence_trend" title="Link to this definition">¶</a></dt>
 <dd><p>Verify that numerical error decreases monotonically with resolution.</p>
 <p>Runs the solver at 3 resolution levels against the analytic solution
 (CONSTANT closure) and asserts that relative MSE decreases at each
 refinement step.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_footprint_finite_values">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_footprint_finite_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_footprint_finite_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_footprint_finite_values" title="Link to this definition">¶</a></dt>
+<dd><p>Verify that all footprint flux and concentration values are finite.</p>
+<p>Runs the solver in footprint mode with default parameters and asserts
+that neither NaN nor Inf appear anywhere in the output arrays.  Prints
+shape, dtype, and value range for quick sanity inspection.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_footprint_mass_conservation_constant">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_footprint_mass_conservation_constant</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_footprint_mass_conservation_constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_footprint_mass_conservation_constant" title="Link to this definition">¶</a></dt>
+<dd><p>Verify footprint integrates to a reasonable fraction with CONSTANT closure.</p>
+<p>Uses a larger domain and halo so that a substantial fraction of the
+footprint falls within the window.  The acceptable range (0.25, 1.05]
+accounts for the finite domain capturing only a partial footprint — the
+true integral over an infinite domain is 1, but at this resolution and
+domain size a significant portion escapes through the upwind boundary.
+Prints the raw integral for inspection.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_footprint_mass_conservation_most">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_footprint_mass_conservation_most</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_footprint_mass_conservation_most"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_footprint_mass_conservation_most" title="Link to this definition">¶</a></dt>
+<dd><p>Verify footprint integrates to a reasonable fraction with MOST closure (neutral).</p>
+<p>Same domain and halo as the CONSTANT test, but uses a roughness length
+(z0=0.5) and neutral Monin-Obukhov length (mol=1e9) to exercise the MOST
+code path.  The acceptable range (0.25, 1.05] is identical to the CONSTANT
+test — the finite domain captures a substantial but incomplete portion of
+the footprint.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_footprint_peak_upwind_southward">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_footprint_peak_upwind_southward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_footprint_peak_upwind_southward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_footprint_peak_upwind_southward" title="Link to this definition">¶</a></dt>
+<dd><p>Verify footprint peak is upwind when wind blows southward (v &lt; 0).</p>
+<p>With wind=(0, -5) the flow moves in the -y direction, so the upwind
+surface contributing to the receptor is at y &gt; meas_y.  Saves a plot
+showing the footprint field with the measurement point (red star) and
+detected peak (blue cross) annotated for visual verification.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_footprint_peak_upwind_westward">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_footprint_peak_upwind_westward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_footprint_peak_upwind_westward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_footprint_peak_upwind_westward" title="Link to this definition">¶</a></dt>
+<dd><p>Verify footprint peak is upwind when wind blows westward (u &lt; 0).</p>
+<p>With wind=(-5, 0) the flow moves in the -x direction, so the upwind
+surface is at x &gt; meas_x.  The domain is rotated (elongated in x)
+so that the footprint has room to develop along the wind axis.  Saves
+a plot with measurement point and peak annotated.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_footprint_positivity_constant">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_footprint_positivity_constant</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_footprint_positivity_constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_footprint_positivity_constant" title="Link to this definition">¶</a></dt>
+<dd><p>Verify footprint flux is non-negative everywhere with CONSTANT closure.</p>
+<p>FFT roundoff can produce tiny negative values; the tolerance -1e-15
+accounts for this without masking genuine negativity bugs.  Prints the
+minimum value and fraction of cells with positive weight.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_integration.test_footprint_positivity_most">
+<span class="sig-prename descclassname"><span class="pre">tests.test_integration.</span></span><span class="sig-name descname"><span class="pre">test_footprint_positivity_most</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_integration.html#test_footprint_positivity_most"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_integration.test_footprint_positivity_most" title="Link to this definition">¶</a></dt>
+<dd><p>Verify footprint flux has only small negatives with MOST closure (neutral).</p>
+<p>The MOST closure uses a non-constant diffusivity profile which can cause
+Gibbs/FFT ringing at the measurement-point singularity, producing negative
+values of order ~1e-5.  The tolerance -1e-4 accepts this known numerical
+artefact while still rejecting physically meaningless large negatives.
+Neutral conditions (mol=1e9) are used as the baseline case.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -511,13 +633,13 @@ refinement step.</p>
 <p>Tests for the high-level interface module.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="tests.test_interface.test_multitower_structure">
-<span class="sig-prename descclassname"><span class="pre">tests.test_interface.</span></span><span class="sig-name descname"><span class="pre">test_multitower_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitower_results_session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeseries_config_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_interface.html#test_multitower_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_interface.test_multitower_structure" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">tests.test_interface.</span></span><span class="sig-name descname"><span class="pre">test_multitower_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">multitower_results_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_interface.html#test_multitower_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_interface.test_multitower_structure" title="Link to this definition">¶</a></dt>
 <dd><p>Test multitower output: dict keyed by tower names, all timesteps, different footprints.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="tests.test_interface.test_single_run_structure">
-<span class="sig-prename descclassname"><span class="pre">tests.test_interface.</span></span><span class="sig-name descname"><span class="pre">test_single_run_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">single_run_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simple_config_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_interface.html#test_single_run_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_interface.test_single_run_structure" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">tests.test_interface.</span></span><span class="sig-name descname"><span class="pre">test_single_run_structure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">single_run_result</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simple_config_session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_area_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_interface.html#test_single_run_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_interface.test_single_run_structure" title="Link to this definition">¶</a></dt>
 <dd><p>Test output structure, shapes, types, and metadata from a single run.</p>
 </dd></dl>
 
@@ -657,7 +779,7 @@ refinement step.</p>
 <p>Tests for the plotting module.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="tests.test_plotting.test_extract_percentile_contour_3d_input">
-<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_extract_percentile_contour_3d_input</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_extract_percentile_contour_3d_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_extract_percentile_contour_3d_input" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_extract_percentile_contour_3d_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plume_3d_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_extract_percentile_contour_3d_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_extract_percentile_contour_3d_input" title="Link to this definition">¶</a></dt>
 <dd><p>extract_percentile_contour auto-slices 3D input.</p>
 </dd></dl>
 
@@ -705,13 +827,13 @@ refinement step.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_comparison">
-<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_comparison" title="Link to this definition">¶</a></dt>
-<dd><p>Test multi-panel comparison plot.</p>
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_area_result_session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_comparison" title="Link to this definition">¶</a></dt>
+<dd><p>Test multi-panel comparison: source area footprint vs concentration.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_field_3d_input">
-<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_field_3d_input</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_field_3d_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_field_3d_input" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_field_3d_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plume_3d_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_field_3d_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_field_3d_input" title="Link to this definition">¶</a></dt>
 <dd><p>plot_footprint_field auto-slices 3D input at requested level.</p>
 </dd></dl>
 
@@ -739,38 +861,41 @@ refinement step.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_on_map_land_cover">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_on_map_land_cover</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_on_map_land_cover"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_on_map_land_cover" title="Link to this definition">¶</a></dt>
+<dd><p>Test land cover overlay using the real ESA Terrascope WMS.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_on_map_land_cover_import_error">
 <span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_on_map_land_cover_import_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_on_map_land_cover_import_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_on_map_land_cover_import_error" title="Link to this definition">¶</a></dt>
 <dd><p>Should raise ImportError with helpful message if owslib missing.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_on_map_land_cover_mock">
-<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_on_map_land_cover_mock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monkeypatch</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_on_map_land_cover_mock"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_on_map_land_cover_mock" title="Link to this definition">¶</a></dt>
-<dd><p>Test land cover overlay with mocked WMS response.</p>
+<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_timeseries">
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_timeseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timeseries_results_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_timeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_timeseries" title="Link to this definition">¶</a></dt>
+<dd><p>Test temporal evolution plot using the shared timeseries fixture.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="tests.test_plotting.test_plot_footprint_timeseries">
-<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_footprint_timeseries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_footprint_timeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_footprint_timeseries" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="tests.test_plotting.test_plot_source_area_contours">
-<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_source_area_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_source_area_contours"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_source_area_contours" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_source_area_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_area_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_source_area_contours"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_source_area_contours" title="Link to this definition">¶</a></dt>
 <dd><p>Test source area contour plotting returns axes.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="tests.test_plotting.test_plot_source_area_contours_custom_ax">
-<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_source_area_contours_custom_ax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_source_area_contours_custom_ax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_source_area_contours_custom_ax" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_source_area_contours_custom_ax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_area_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_source_area_contours_custom_ax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_source_area_contours_custom_ax" title="Link to this definition">¶</a></dt>
 <dd><p>Test source area contour plotting on provided axes.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="tests.test_plotting.test_plot_source_area_gallery">
-<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_source_area_gallery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_source_area_gallery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_source_area_gallery" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_source_area_gallery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_area_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_source_area_gallery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_source_area_gallery" title="Link to this definition">¶</a></dt>
 <dd><p>Test gallery plot creates 2x3 grid with 5 visible panels.</p>
+<p>Uses an elongated domain (100x700m) matching the high-res example
+in runs/low_level/source_area_example.py but at 128x64 resolution.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -781,8 +906,8 @@ refinement step.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="tests.test_plotting.test_plot_vertical_slice">
-<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_vertical_slice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_vertical_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_vertical_slice" title="Link to this definition">¶</a></dt>
-<dd><p>Test 2D slice from a 3D field for all axes.</p>
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_plot_vertical_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plume_3d_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_plot_vertical_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_plot_vertical_slice" title="Link to this definition">¶</a></dt>
+<dd><p>Test 2D slice from a real 3D plume: concentration and flux side by side.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -799,7 +924,7 @@ refinement step.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="tests.test_plotting.test_source_area_base_functions_shapes">
-<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_source_area_base_functions_shapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">footprint_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_source_area_base_functions_shapes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_source_area_base_functions_shapes" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">tests.test_plotting.</span></span><span class="sig-name descname"><span class="pre">test_source_area_base_functions_shapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_area_result_session</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/tests/test_plotting.html#test_source_area_base_functions_shapes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#tests.test_plotting.test_source_area_base_functions_shapes" title="Link to this definition">¶</a></dt>
 <dd><p>Test that all 5 base function constructors return correct shapes.</p>
 </dd></dl>
 

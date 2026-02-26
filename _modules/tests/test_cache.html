@@ -111,8 +111,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
 
-<span class="n">pytestmark</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">unit</span>
-
 <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.cache</span><span class="w"> </span><span class="kn">import</span> <span class="n">GreensFunctionCache</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.config_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse_config_dict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.interface</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_bldfm_single</span>
@@ -150,6 +148,7 @@
 
 <div class="viewcode-block" id="test_cache_miss">
 <a class="viewcode-back" href="../../tests.html#tests.test_cache.test_cache_miss">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">unit</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_cache_miss</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">solver_inputs</span><span class="p">):</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="o">*</span><span class="n">solver_inputs</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="kc">None</span></div>
@@ -158,6 +157,7 @@
 
 <div class="viewcode-block" id="test_cache_put_and_hit">
 <a class="viewcode-back" href="../../tests.html#tests.test_cache.test_cache_put_and_hit">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">unit</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_cache_put_and_hit</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">solver_inputs</span><span class="p">):</span>
     <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
     <span class="n">conc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
@@ -175,6 +175,7 @@
 
 <div class="viewcode-block" id="test_cache_different_inputs_miss">
 <a class="viewcode-back" href="../../tests.html#tests.test_cache.test_cache_different_inputs_miss">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">unit</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_cache_different_inputs_miss</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">solver_inputs</span><span class="p">):</span>
     <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
     <span class="n">conc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
@@ -191,6 +192,7 @@
 
 <div class="viewcode-block" id="test_cache_clear">
 <a class="viewcode-back" href="../../tests.html#tests.test_cache.test_cache_clear">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">unit</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_cache_clear</span><span class="p">(</span><span class="n">cache</span><span class="p">,</span> <span class="n">solver_inputs</span><span class="p">):</span>
     <span class="n">grid</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
     <span class="n">cache</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="o">*</span><span class="n">solver_inputs</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
@@ -202,6 +204,7 @@
 
 <div class="viewcode-block" id="test_cache_integration">
 <a class="viewcode-back" href="../../tests.html#tests.test_cache.test_cache_integration">[docs]</a>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">integration</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">test_cache_integration</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Test caching through the full solver with footprint=True.&quot;&quot;&quot;</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">parse_config_dict</span><span class="p">(</span>
