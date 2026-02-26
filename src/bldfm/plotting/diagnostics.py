@@ -67,9 +67,9 @@ def plot_convergence(
 def plot_vertical_profiles(
     z_list, profiles_list, labels, meas_height=None, figsize=None, title=None
 ):
-    """Multi-panel (1x2) profile plot: velocity and diffusivity vs height.
+    """Multi-panel (1x2) profile plot: wind speed and diffusivity vs height.
 
-    Left panel: u vs z.
+    Left panel: wind speed |U| = sqrt(u² + v²) vs z.
     Right panel: Kz vs z.
 
     Parameters
@@ -102,16 +102,17 @@ def plot_vertical_profiles(
 
     for z, profs, label, color in zip(z_list, profiles_list, labels, colors):
         u, v, Kx, Ky, Kz = profs
-        axes[0].plot(u, z, marker="+", linestyle="-", label=label, color=color)
+        speed = np.sqrt(np.asarray(u) ** 2 + np.asarray(v) ** 2)
+        axes[0].plot(speed, z, marker="+", linestyle="-", label=label, color=color)
         axes[1].plot(Kz, z, marker="", linestyle="-", label=label, color=color)
 
     if meas_height is not None:
         for ax in axes:
             ax.axhline(meas_height, color="gray", linestyle="--", linewidth=1, zorder=0)
 
-    axes[0].set_xlabel("u [m/s]")
+    axes[0].set_xlabel("|U| [m/s]")
     axes[0].set_ylabel("z [m]")
-    axes[0].set_title("Velocity profile")
+    axes[0].set_title("Wind speed profile")
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
 
