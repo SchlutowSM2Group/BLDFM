@@ -11,20 +11,22 @@ from bldfm import config
 def compute_wind_fields(u_rot, wind_dir):
     """
     Computes the zonal (u) and meridional (v) wind components from a rotated
-    wind speed and direction.
+    wind speed and direction using the meteorological convention.
 
     Parameters:
         u_rot (float): Rotated wind speed.
-        wind_dir (float): Wind direction in degrees (clockwise from north).
+        wind_dir (float): Wind direction in degrees (meteorological convention:
+            direction the wind is coming FROM, clockwise from north).
+            0 = from north, 90 = from east, 180 = from south, 270 = from west.
 
     Returns:
         tuple: A tuple (u, v) where:
-            - u (float): Zonal wind component (east-west).
-            - v (float): Meridional wind component (north-south).
+            - u (float): Zonal wind component (east-west, positive = eastward).
+            - v (float): Meridional wind component (north-south, positive = northward).
     """
     wind_dir = np.deg2rad(wind_dir)
-    u = u_rot * np.sin(wind_dir)
-    v = u_rot * np.cos(wind_dir)
+    u = -u_rot * np.sin(wind_dir)
+    v = -u_rot * np.cos(wind_dir)
 
     return u, v
 

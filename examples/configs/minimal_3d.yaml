@@ -23,7 +23,7 @@ towers:
 met:
   ustar: 0.5             # friction velocity [m/s]
   wind_speed: 6.0         # horizontal wind speed [m/s]
-  wind_dir: 90.0          # wind direction [degrees] (easterly; from wind=(6, 0))
+  wind_dir: 270.0         # wind direction [degrees] (from west; wind=(6, 0))
   mol: 1.0e+9            # Monin-Obukhov length [m] (neutral)
 
 solver:

@@ -23,7 +23,7 @@ met:
   z0: 0.1                # roughness length [m] (used instead of ustar)
   ustar: 0.4             # friction velocity [m/s] (fallback; z0 takes precedence)
   wind_speed: 4.123      # horizontal wind speed [m/s] (from sqrt(4^2 + 1^2))
-  wind_dir: 76.0         # wind direction [degrees] (from atan2(4, 1))
+  wind_dir: 256.0        # wind direction [degrees] (from WSW; wind=(4, 1))
   mol: 1.0e+9            # Monin-Obukhov length [m] (neutral)
 
 solver:
