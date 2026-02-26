@@ -6,6 +6,7 @@ import pytest
 pytestmark = pytest.mark.integration
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
@@ -42,11 +43,15 @@ def test_single_run_structure(
     # Visual output uses low-level source area result for clean rendering
     r = source_area_result_session
     ax = plot_footprint_field(
-        r["flx"], r["grid"], contour_pcts=[0.25, 0.5, 0.75],
+        r["flx"],
+        r["grid"],
+        contour_pcts=[0.25, 0.5, 0.75],
         title="Single run footprint",
     )
     ax.set_aspect("auto")
-    ax.figure.savefig("plots/test_interface_single_run_structure.png", dpi=150, bbox_inches="tight")
+    ax.figure.savefig(
+        "plots/test_interface_single_run_structure.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -78,8 +83,7 @@ def test_single_run_with_synthetic_data():
     assert np.isfinite(result["flx"]).all()
 
     print(
-        f"\nINTERFACE synthetic_single: shape={result['flx'].shape} "
-        f"all_finite=True"
+        f"\nINTERFACE synthetic_single: shape={result['flx'].shape} " f"all_finite=True"
     )
 
 
@@ -105,13 +109,10 @@ def test_timeseries_structure(timeseries_results_session, timeseries_config_sess
         assert np.isfinite(r["flx"]).all()
         assert np.isfinite(r["conc"]).all()
 
-    print(
-        f"\nINTERFACE timeseries: n_steps={len(results)} "
-        f"timestamps={timestamps}"
-    )
+    print(f"\nINTERFACE timeseries: n_steps={len(results)} " f"timestamps={timestamps}")
 
 
-def test_multitower_structure(multitower_results_session, timeseries_config_session):
+def test_multitower_structure(multitower_results_session):
     """Test multitower output: dict keyed by tower names, all timesteps, different footprints."""
     results, config = multitower_results_session
 
@@ -133,10 +134,7 @@ def test_multitower_structure(multitower_results_session, timeseries_config_sess
     flx_1 = results[names[1]][0]["flx"]
     assert not np.allclose(flx_0, flx_1)
 
-    print(
-        f"\nINTERFACE multitower: towers={names} "
-        f"shape={flx_0.shape} n_steps=3"
-    )
+    print(f"\nINTERFACE multitower: towers={names} " f"shape={flx_0.shape} n_steps=3")
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
     for i, name in enumerate(names):
         flx = results[name][0]["flx"]
@@ -144,7 +142,9 @@ def test_multitower_structure(multitower_results_session, timeseries_config_sess
         plot_footprint_field(flx, grid, ax=axes[i], title=name, contour_pcts=[0.5, 0.8])
         axes[i].set_aspect("auto")
     fig.suptitle("Multitower footprints (t=0)")
-    fig.savefig("plots/test_interface_multitower_structure.png", dpi=150, bbox_inches="tight")
+    fig.savefig(
+        "plots/test_interface_multitower_structure.png", dpi=150, bbox_inches="tight"
+    )
     plt.close("all")
 
 
@@ -210,7 +210,11 @@ def test_timeseries_footprints_evolve(
         plot_footprint_field(r["flx"], r["grid"], ax=axes[i], title=f"t={i}")
         axes[i].set_aspect("auto")
     fig.suptitle("Timeseries footprint evolution")
-    fig.savefig("plots/test_interface_timeseries_footprints_evolve.png", dpi=150, bbox_inches="tight")
+    fig.savefig(
+        "plots/test_interface_timeseries_footprints_evolve.png",
+        dpi=150,
+        bbox_inches="tight",
+    )
     plt.close("all")
 
 
@@ -246,11 +250,15 @@ def test_timeseries_aggregated_footprint(timeseries_results_session):
         f"70%: level={level_70:.4e} area={area_70:.1f}m²"
     )
     ax = plot_footprint_field(
-        mean_flx, grid, contour_pcts=[0.5, 0.7],
+        mean_flx,
+        grid,
+        contour_pcts=[0.5, 0.7],
         title="Aggregated mean footprint",
     )
     ax.set_aspect("auto")
     ax.figure.savefig(
-        "plots/test_interface_timeseries_aggregated_footprint.png", dpi=150, bbox_inches="tight"
+        "plots/test_interface_timeseries_aggregated_footprint.png",
+        dpi=150,
+        bbox_inches="tight",
     )
     plt.close("all")

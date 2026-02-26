@@ -50,7 +50,7 @@ if __name__ == "__main__":
     plt.ylabel("y [m]")
     # plt.gca().set_aspect("equal")
     plt.colorbar()
-    plt.savefig("plots/ptsrc_concentration_xy_slice_at_z0.png")
+    plt.savefig("plots/examples_low_level_ptsrc_concentration_xy_slice_at_z0.png")
 
     plt.figure()
     plt.pcolormesh(X[0, :, :], Y[0, :, :], flx[0, :, :])
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     plt.ylabel("y [m]")
     # plt.gca().set_aspect("equal")
     plt.colorbar()
-    plt.savefig("plots/ptsrc_flux_xy_slice_at_z0.png")
+    plt.savefig("plots/examples_low_level_ptsrc_flux_xy_slice_at_z0.png")
 
     plt.figure()
     plt.pcolormesh(X[-1, :, :], Y[-1, :, :], conc[-1, :, :])
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     plt.ylabel("y [m]")
     # plt.gca().set_aspect("equal")
     plt.colorbar()
-    plt.savefig("plots/ptsrc_concentration_xy_slice_at_zmx.png")
+    plt.savefig("plots/examples_low_level_ptsrc_concentration_xy_slice_at_zmx.png")
 
     plt.figure()
     plt.pcolormesh(X[:, nxy[1] // 2, :], Z[:, nxy[1] // 2, :], conc[:, nxy[1] // 2, :])
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")
     plt.colorbar()
-    plt.savefig("plots/ptsrc_concentration_xz_slice.png")
+    plt.savefig("plots/examples_low_level_ptsrc_concentration_xz_slice.png")
 
     plt.figure()
     plt.pcolormesh(X[:, nxy[1] // 2, :], Z[:, nxy[1] // 2, :], flx[:, nxy[1] // 2, :])
@@ -84,7 +84,7 @@ if __name__ == "__main__":
     plt.xlabel("x [m]")
     plt.ylabel("z [m]")
     plt.colorbar()
-    plt.savefig("plots/ptsrc_flux_xz_slice.png")
+    plt.savefig("plots/examples_low_level_ptsrc_flux_xz_slice.png")
 
     plt.figure()
     plt.pcolormesh(
@@ -94,4 +94,4 @@ if __name__ == "__main__":
     plt.xlabel("y [m]")
     plt.ylabel("z [m]")
     plt.colorbar()
-    plt.savefig("plots/ptsrc_concentration_yz_slice.png")
+    plt.savefig("plots/examples_low_level_ptsrc_concentration_yz_slice.png")

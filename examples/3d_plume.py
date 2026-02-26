@@ -2,7 +2,7 @@
 3D point-source plume example using the config-driven workflow.
 
 Computes a 3D concentration and flux field from a point source and
-plots horizontal and vertical slices.
+plots horizontal and vertical slices of both fields.
 
 Usage:
     python examples/3d_plume.py
@@ -33,30 +33,60 @@ if __name__ == "__main__":
     X, Y, Z = result["grid"]
     conc = result["conc"]
     flx = result["flx"]
+    ny = conc.shape[1]
+    nx = conc.shape[2]
 
-    # Horizontal slice at z=0 (ground level)
-    fig, ax = plt.subplots()
+    # Horizontal slice at z=0 (ground level): concentration and flux
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     plot_vertical_slice(
-        conc, result["grid"], "z", 0, ax=ax, title="Concentration at z0 (horizontal)"
+        conc, result["grid"], "z", 0, ax=axes[0], title="Concentration at z0"
     )
-    fig.savefig(
-        "plots/ptsrc_concentration_xy_slice_at_z0.png", dpi=150, bbox_inches="tight"
-    )
+    plot_vertical_slice(flx, result["grid"], "z", 0, ax=axes[1], title="Flux at z0")
+    fig.savefig("plots/examples_ptsrc_xy_slice_at_z0.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 
-    # Vertical slice through the plume centerline (xz plane)
-    ny = conc.shape[1]
-    fig, ax = plt.subplots()
+    # Vertical xz slice through the plume centerline
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
     plot_vertical_slice(
         conc,
         result["grid"],
         "y",
         ny // 2,
-        ax=ax,
-        title="Concentration (vertical xz slice)",
+        ax=axes[0],
+        title="Concentration (xz slice)",
     )
-    fig.savefig("plots/ptsrc_concentration_xz_slice.png", dpi=150, bbox_inches="tight")
+    plot_vertical_slice(
+        flx,
+        result["grid"],
+        "y",
+        ny // 2,
+        ax=axes[1],
+        title="Flux (xz slice)",
+    )
+    fig.savefig("plots/examples_ptsrc_xz_slice.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 
-    print("Saved plots/ptsrc_concentration_xy_slice_at_z0.png")
-    print("Saved plots/ptsrc_concentration_xz_slice.png")
+    # Vertical yz slice through the source location
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    plot_vertical_slice(
+        conc,
+        result["grid"],
+        "x",
+        nx // 2,
+        ax=axes[0],
+        title="Concentration (yz slice)",
+    )
+    plot_vertical_slice(
+        flx,
+        result["grid"],
+        "x",
+        nx // 2,
+        ax=axes[1],
+        title="Flux (yz slice)",
+    )
+    fig.savefig("plots/examples_ptsrc_yz_slice.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+    print("Saved plots/examples_ptsrc_xy_slice_at_z0.png")
+    print("Saved plots/examples_ptsrc_xz_slice.png")
+    print("Saved plots/examples_ptsrc_yz_slice.png")

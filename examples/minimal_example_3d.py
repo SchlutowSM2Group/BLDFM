@@ -44,7 +44,9 @@ if __name__ == "__main__":
         ax=ax,
         title="Vertical slice of concentration",
     )
-    fig.savefig("plots/concentration_vertical_slice.png", dpi=150, bbox_inches="tight")
+    fig.savefig(
+        "plots/examples_concentration_vertical_slice.png", dpi=150, bbox_inches="tight"
+    )
     plt.close(fig)
 
     fig, ax = plt.subplots()
@@ -56,8 +58,8 @@ if __name__ == "__main__":
         ax=ax,
         title="Vertical slice of kinematic flux",
     )
-    fig.savefig("plots/flux_vertical_slice.png", dpi=150, bbox_inches="tight")
+    fig.savefig("plots/examples_flux_vertical_slice.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
 
-    print("Saved plots/concentration_vertical_slice.png")
-    print("Saved plots/flux_vertical_slice.png")
+    print("Saved plots/examples_concentration_vertical_slice.png")
+    print("Saved plots/examples_flux_vertical_slice.png")

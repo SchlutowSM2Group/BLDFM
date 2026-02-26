@@ -101,7 +101,10 @@ def test_netcdf_met_values_match(multitower_results_session):
 
         print(
             f"\nIO met_values: "
-            + " ".join(f"{v}={ds[v].values.tolist()}" for v in ("ustar", "mol", "wind_speed", "wind_dir"))
+            + " ".join(
+                f"{v}={ds[v].values.tolist()}"
+                for v in ("ustar", "mol", "wind_speed", "wind_dir")
+            )
         )
         ds.close()
 
@@ -184,8 +187,7 @@ def test_netcdf_timeseries_timestamps(multitower_results_session):
             assert len(set(values)) > 1, f"{var} is constant across timesteps"
 
         print(
-            f"\nIO timestamps: {list(ds['time'].values)} "
-            f"n_time={ds.sizes['time']}"
+            f"\nIO timestamps: {list(ds['time'].values)} " f"n_time={ds.sizes['time']}"
         )
         ds.close()
 

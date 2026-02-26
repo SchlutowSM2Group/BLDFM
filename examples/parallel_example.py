@@ -41,7 +41,9 @@ if __name__ == "__main__":
         ax=ax,
         title="Concentration at meas_height (parallel)",
     )
-    fig.savefig("plots/concentration_at_meas_height.png", dpi=150, bbox_inches="tight")
+    fig.savefig(
+        "plots/examples_concentration_at_meas_height.png", dpi=150, bbox_inches="tight"
+    )
     plt.close(fig)
 
-    print("Saved plots/concentration_at_meas_height.png")
+    print("Saved plots/examples_concentration_at_meas_height.png")

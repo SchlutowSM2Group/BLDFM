@@ -16,6 +16,7 @@ YAML file in `configs/`.
 | `minimal_example_3d.py` | 3D output with vertical slices |
 | `3d_plume.py` | Point-source plume with horizontal and vertical slices |
 | `footprint_example.py` | Flux footprint with percentile contours |
+| `timeseries_example.py` | Single-tower timeseries: footprint climatology workflow |
 | `parallel_example.py` | High-resolution solve with multi-threaded FFT |
 | `multitower_example.py` | Multiple towers over a synthetic timeseries |
 | `visualization_example.py` | Optional-dependency features: map tiles, land cover, wind rose, interactive plots |

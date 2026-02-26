@@ -39,4 +39,4 @@ if __name__ == "__main__":
     plt.ylabel("y [m]")
     cbar = plt.colorbar()
     cbar.set_label("$m^{-2}$")
-    plt.savefig("plots/flux_footprint.png")
+    plt.savefig("plots/examples_low_level_flux_footprint.png")

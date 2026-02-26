@@ -43,4 +43,4 @@ if __name__ == "__main__":
     axs[1].set_xlabel("K [m2 s-1]")
     fig.suptitle("Profiles for MOST")
 
-    plt.savefig("plots/most_profiles.png")
+    plt.savefig("plots/examples_low_level_most_profiles.png")

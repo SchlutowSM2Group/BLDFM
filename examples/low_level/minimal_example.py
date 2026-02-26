@@ -37,7 +37,7 @@ if __name__ == "__main__":
     plt.ylabel("y [m]")
     plt.gca().set_aspect("equal")
     plt.colorbar()
-    plt.savefig("plots/concentration_at_meas_height.png")
+    plt.savefig("plots/examples_low_level_concentration_at_meas_height.png")
 
     plt.figure()
     plt.pcolormesh(X, Y, flx)
@@ -46,4 +46,4 @@ if __name__ == "__main__":
     plt.ylabel("y [m]")
     plt.gca().set_aspect("equal")
     plt.colorbar()
-    plt.savefig("plots/kinematic_flux_at_meas_height.png")
+    plt.savefig("plots/examples_low_level_kinematic_flux_at_meas_height.png")
