@@ -25,7 +25,7 @@ met:
   ustar: 0.4
   mol: -100.0
   wind_speed: 5.0
-  wind_dir: 180.0
+  wind_dir: 0.0          # from north
 
 solver:
   closure: MOST

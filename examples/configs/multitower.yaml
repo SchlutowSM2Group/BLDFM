@@ -32,7 +32,7 @@ met:
   ustar: 1.064           # friction velocity [m/s]
   mol: -10.0             # Monin-Obukhov length [m] (negative=unstable, ~1e9=neutral, positive=stable)
   wind_speed: 5.0        # horizontal wind speed [m/s]
-  wind_dir: 180.0        # wind direction [degrees]; 0=N, 90=E, 180=S, 270=W
+  wind_dir: 0.0          # wind direction [degrees] (from north); 0=from N, 90=from E, 180=from S, 270=from W
 
 solver:
   closure: MOST           # PBL closure: "MOST" | "MOSTM" | "CONSTANT" | "OAAHOC"

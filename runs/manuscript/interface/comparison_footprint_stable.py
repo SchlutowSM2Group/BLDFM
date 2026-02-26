@@ -38,7 +38,7 @@ if __name__ == "__main__":
     mol = 10.0
     sigma_v = 0.04
     wind_speed = 5.0
-    wind_dir = 180.0  # from south: (u, v) = (0, -5)
+    wind_dir = 0.0  # from north: (u, v) = (0, -5)
 
     # --- Build config ---
     initialize()
