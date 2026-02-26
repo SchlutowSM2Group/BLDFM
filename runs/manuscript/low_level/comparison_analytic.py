@@ -103,4 +103,4 @@ if __name__ == "__main__":
     axs[0, 0].scatter(src_pt[0], src_pt[1], zorder=5, marker="*", color="red", s=100)
     axs[0, 1].scatter(src_pt[0], src_pt[1], zorder=5, marker="*", color="red", s=100)
 
-    plt.savefig("plots/comparison_analytic.png", dpi=300)
+    plt.savefig("plots/manuscript_low_level_comparison_analytic.png", dpi=300)

@@ -98,4 +98,4 @@ if __name__ == "__main__":
     plt.ylabel("Relative RMSE")
     plt.legend()
     plt.loglog()
-    plt.savefig("plots/error_convergence_numeric.png", dpi=300)
+    plt.savefig("plots/manuscript_low_level_error_convergence_numeric.png", dpi=300)

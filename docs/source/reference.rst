@@ -54,6 +54,30 @@ The simplest way to run BLDFM is via a YAML configuration file.
     result = run_bldfm_single(config, config.towers[0])
     plot_footprint_field(result["flx"], result["grid"], contour_pcts=[0.5, 0.8])
 
+Single-tower timeseries
+-----------------------
+
+The primary use case: one eddy-covariance tower with half-hourly forcing to
+build a footprint climatology.
+
+.. code-block:: python
+
+    from bldfm import load_config, run_bldfm_timeseries
+    from bldfm.plotting import plot_footprint_field, plot_footprint_timeseries
+    import numpy as np
+
+    config = load_config("examples/configs/timeseries.yaml")
+    tower = config.towers[0]
+    results = run_bldfm_timeseries(config, tower)
+
+    # Time-averaged footprint
+    mean_flx = np.mean([r["flx"] for r in results], axis=0)
+    grid = results[0]["grid"]
+    plot_footprint_field(mean_flx, grid, contour_pcts=[0.5, 0.7, 0.9])
+
+    # Temporal evolution of source area
+    plot_footprint_timeseries(results, grid, pcts=[0.5, 0.8])
+
 Multi-tower timeseries
 ----------------------
 
@@ -120,7 +144,7 @@ Generate reproducible test data without real observations:
 Low-level workflow
 ------------------
 
-For full control, you can call the solver steps directly (as in the ``runs/low_level/minimal_example.py`` script):
+For full control, you can call the solver steps directly (as in the ``examples/low_level/minimal_example.py`` script):
 
 .. code-block:: python
 
