@@ -67,9 +67,9 @@ def plot_convergence(
 def plot_vertical_profiles(
     z_list, profiles_list, labels, meas_height=None, figsize=None, title=None
 ):
-    """Multi-panel (1x2) profile plot: wind speed and diffusivity vs height.
+    r"""Multi-panel (1x2) profile plot: wind speed and diffusivity vs height.
 
-    Left panel: wind speed |U| = sqrt(u² + v²) vs z.
+    Left panel: wind speed \|U\| = sqrt(u² + v²) vs z.
     Right panel: Kz vs z.
 
     Parameters

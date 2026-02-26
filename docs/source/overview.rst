@@ -80,12 +80,12 @@ you call each stage individually.
                             ▼
                        BLDFMConfig
                             │
-            ┌───────────────┼───────────────┐
+            ┌───────────────┼────────────────┐
             │          High-level            │
             │   run_bldfm_single/timeseries  │
             │   run_bldfm_multitower         │
             │   run_bldfm_parallel           │
-            └───────────────┬───────────────┘
+            └───────────────┬────────────────┘
                             │  internally calls ▼
               ┌─────────────┼─────────────────┐
               │                               │
@@ -97,7 +97,7 @@ you call each stage individually.
               │                               │
               ▼                               │
      ideal_source()         [utils]           │
-              │             (if no flux given) │
+              │             (if no flux given)│
               ▼                               │
      steady_state_transport_solver()  [solver]│
               │                               │
