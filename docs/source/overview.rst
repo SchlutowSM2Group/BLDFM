@@ -64,14 +64,81 @@ Plotting
 10. :py:mod:`bldfm.plotting`
      Visualisation functions for footprint fields, geospatial map overlays, wind roses, and temporal footprint evolution.
 
-Module interactions
--------------------
+Pipeline architecture
+---------------------
 
-- :py:mod:`bldfm.pbl_model` provides the vertical profiles required by :py:mod:`bldfm.solver`.
-- :py:mod:`bldfm.interface` orchestrates the full pipeline (wind fields, profiles, solver) driven by :py:mod:`bldfm.config_parser`.
-- :py:mod:`bldfm.cache` accelerates repeated solves by caching Green's functions.
-- :py:mod:`bldfm.io` saves and loads multi-tower, multi-timestep results.
-- :py:mod:`bldfm.plotting` visualises solver outputs.
+The solver pipeline proceeds in four stages. The high-level interface
+(:py:mod:`bldfm.interface`) runs all four automatically; the low-level API lets
+you call each stage individually.
+
+.. code-block:: text
+
+                      YAML file / dict
+                            │
+                   load_config / parse_config_dict
+                            │
+                            ▼
+                       BLDFMConfig
+                            │
+            ┌───────────────┼───────────────┐
+            │          High-level            │
+            │   run_bldfm_single/timeseries  │
+            │   run_bldfm_multitower         │
+            │   run_bldfm_parallel           │
+            └───────────────┬───────────────┘
+                            │  internally calls ▼
+              ┌─────────────┼─────────────────┐
+              │                               │
+              ▼                               │
+     compute_wind_fields()  [utils]           │
+              │                               │
+              ▼                               │
+     vertical_profiles()    [pbl_model]       │
+              │                               │
+              ▼                               │
+     ideal_source()         [utils]           │
+              │             (if no flux given) │
+              ▼                               │
+     steady_state_transport_solver()  [solver]│
+              │                               │
+              └───────────────┬───────────────┘
+                              ▼
+                   result dict {grid, conc, flx, …}
+                              │
+                ┌─────────────┼─────────────┐
+                │             │             │
+                ▼             ▼             ▼
+        GreensFunctionCache  save to     plot_*()
+            [cache]         NetCDF     [plotting]
+                            [io]
+
+Design philosophy: high-level vs. low-level API
+------------------------------------------------
+
+BLDFM exposes two tiers of API, each targeting a different use case.
+
+**High-level API** — :py:mod:`bldfm.interface`
+    The four ``run_bldfm_*`` functions accept a :py:class:`~bldfm.config_parser.BLDFMConfig`
+    object and return result dictionaries. Configuration objects carry every
+    parameter (domain, towers, meteorology, solver options), making runs
+    reproducible from a single YAML file. Use this tier for production science
+    workflows, batch runs, and the CLI.
+
+**Low-level API** — individual modules
+    The core functions :py:func:`~bldfm.pbl_model.vertical_profiles`,
+    :py:func:`~bldfm.solver.steady_state_transport_solver`,
+    :py:func:`~bldfm.utils.compute_wind_fields`, and
+    :py:func:`~bldfm.utils.ideal_source` can be called directly with plain
+    NumPy arrays and scalars. This gives full control over intermediate results
+    and is suited for custom parameter sweeps, debugging, or building new
+    wrappers. Note that :py:func:`~bldfm.pbl_model.vertical_profiles` is
+    intentionally not re-exported in the top-level ``__all__``; import it
+    explicitly from :py:mod:`bldfm.pbl_model` when working at this level.
+
+**Choosing a tier.** Start with the high-level API. Drop to the low-level API
+when you need to inspect or modify intermediate quantities (e.g. vertical
+profiles), run the solver with non-standard inputs, or integrate BLDFM into a
+larger modelling framework.
 
 API reference
 -------------
