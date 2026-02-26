@@ -98,6 +98,8 @@ if __name__ == "__main__":
         grids=[(X, Y), (X, Y), (grid_x, grid_y)],
         labels=["BLDFM", "BLDFM-SP", "KM01"],
         meas_pt=meas_pt,
+        vmin=1e-5,
+        vmax=np.max(result_most["flx"]),
     )
 
     fig.savefig("plots/manuscript_comparison_footprint_neutral.png", dpi=300)

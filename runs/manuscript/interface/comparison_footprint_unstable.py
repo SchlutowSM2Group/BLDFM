@@ -101,6 +101,7 @@ if __name__ == "__main__":
         labels=["BLDFM", "BLDFM-SP", "KM01"],
         meas_pt=meas_pt,
         vmin=2e-6,
+        vmax=np.max(result_most["flx"]),
     )
 
     fig.savefig("plots/manuscript_comparison_footprint_unstable.png", dpi=300)

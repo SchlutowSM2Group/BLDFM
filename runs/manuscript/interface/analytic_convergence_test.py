@@ -44,7 +44,7 @@ if __name__ == "__main__":
     # Original wind = (4.0, 2.0); convert to speed/dir for config
     wind_u, wind_v = 4.0, 2.0
     wind_speed = np.sqrt(wind_u**2 + wind_v**2)
-    wind_dir = np.degrees(np.arctan2(wind_u, wind_v))
+    wind_dir = np.degrees(np.arctan2(-wind_u, -wind_v)) % 360.0
 
     nxy = (512, 256)
     domain_ext = (200.0, 100.0)
