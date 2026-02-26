@@ -79,7 +79,7 @@ def test_integration():
     axes[1].set_title("Numerical")
     fig.suptitle("Flux: analytical vs numerical")
     fig.savefig(
-        "plots/test_numerical_vs_analytical.png", dpi=150, bbox_inches="tight"
+        "plots/test_integration_integration.png", dpi=150, bbox_inches="tight"
     )
     plt.close("all")
 
@@ -151,11 +151,11 @@ def test_convergence_trend():
         print(f"  modes={res['modes']} nz={res['nz']} rmse={err:.6e}")
 
     from bldfm.plotting import plot_convergence
-    grid_sizes = np.array([r["modes"][0] for r in resolutions], dtype=float)
+    grid_spacings = np.array([domain[0] / r["modes"][0] for r in resolutions])
     ax = plot_convergence(
-        grid_sizes, np.array(errors), title="Convergence trend (test)"
+        grid_spacings, np.array(errors), title="Convergence trend (test)"
     )
-    ax.figure.savefig("plots/test_convergence.png", dpi=150, bbox_inches="tight")
+    ax.figure.savefig("plots/test_integration_convergence_trend.png", dpi=150, bbox_inches="tight")
     plt.close("all")
 
 
@@ -234,6 +234,57 @@ def test_solver_non_footprint_shift():
     assert conc.shape == flx.shape
     assert np.isfinite(conc).all()
     print(f"\nINTEGRATION solver_non_footprint_shift: shape={conc.shape} all_finite=True")
+
+
+def test_3d_plume_structure(plume_3d_result_session):
+    """Test 3D plume solver output: shapes, finite values, plume structure."""
+    r = plume_3d_result_session
+    X, Y, Z = r["grid"]
+    conc, flx = r["conc"], r["flx"]
+    levels = r["levels"]
+    nlvls = len(levels)
+
+    # 3D shapes: (nlvls, ny, nx)
+    assert conc.ndim == 3
+    assert conc.shape == (nlvls, 32, 64)
+    assert flx.shape == conc.shape
+    assert X.shape == conc.shape
+
+    # Finite values
+    assert np.isfinite(conc).all()
+    assert np.isfinite(flx).all()
+
+    # Non-trivial: concentration should have positive values (dispersion mode)
+    assert conc.max() > 0, "Concentration field is all non-positive"
+
+    print(
+        f"\nINTEGRATION 3d_plume: shape={conc.shape} levels={list(levels)} "
+        f"conc_range=[{conc.min():.4e}, {conc.max():.4e}] "
+        f"flx_range=[{flx.min():.4e}, {flx.max():.4e}]"
+    )
+
+    # Plot: y-slice through domain centre showing vertical plume structure
+    mid_y = conc.shape[1] // 2
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+    for ax, field, label in [
+        (axes[0], conc, "Concentration"),
+        (axes[1], flx, "Flux"),
+    ]:
+        pm = ax.pcolormesh(
+            X[:, mid_y, :], Z[:, mid_y, :], field[:, mid_y, :],
+            cmap="viridis", shading="auto",
+        )
+        fig.colorbar(pm, ax=ax, label=label)
+        ax.set_xlabel("x [m]")
+        ax.set_ylabel("z [m]")
+        ax.set_title(f"{label} (y-slice at mid-domain)")
+
+    fig.suptitle("3D plume vertical cross-section")
+    fig.savefig(
+        "plots/test_integration_3d_plume.png", dpi=150, bbox_inches="tight"
+    )
+    plt.close("all")
 
 
 if __name__ == "__main__":
