@@ -1,75 +1,144 @@
 Package overview
 ================
-This package provides a modular framework for modeling atmospheric dispersion processes, focusing on the planetary boundary layer (PBL) and scalar transport. It includes three core modules in `src` for computing vertical profiles, solving advection-diffusion equations, and providing utility functions for diagnostics and input generation. Example run scripts and a test suite are also included to demonstrate usage and ensure reliability.
 
-Core modules in the ``src`` subpackage
---------------------------------------
+BLDFM provides a modular framework for modelling atmospheric dispersion and flux footprints in the planetary boundary layer (PBL). It numerically solves the three-dimensional steady-state advection-diffusion equation and computes Green's function footprints for flux tower networks.
 
-1. :py:mod:`src.pbl_model`
-    Computes vertical profiles of horizontal wind and eddy diffusivity in the planetary boundary layer using Monin-Obukhov Similarity Theory (MOST).
+Core modules
+------------
 
-    **Features:**
-        - Implements surface-layer closure via stability corrections.
-        - Supports parameterizations of ``u_h(z)``, ``K_h(z)``, and ``K_z(z)``.
-        - Easy to extend with more sophisticated turbulence closures.
+1. :py:mod:`bldfm.pbl_model`
+    Computes vertical profiles of horizontal wind and eddy diffusivity using Monin-Obukhov Similarity Theory (MOST).
 
     **Key functions:**
-        - :py:func:`src.pbl_model.vertical_profiles`
-        - :py:func:`src.pbl_model.psi`
-        - :py:func:`src.pbl_model.phi`
+        - :py:func:`bldfm.pbl_model.vertical_profiles`
+        - :py:func:`bldfm.pbl_model.psi`
+        - :py:func:`bldfm.pbl_model.phi`
 
-2. :py:mod:`src.solver`
-    Solves the steady-state advection-diffusion equation for scalar concentration fields using FFT-based methods and numerical integration schemes.
-
-    **Features:**
-       - Supports Fourier-transformed formulation for horizontal advection-diffusion.
-       - Uses linear shooting for boundary value problems in the vertical.
-       - Implements Green's function solver for footprint modeling.
+2. :py:mod:`bldfm.solver`
+    Solves the steady-state advection-diffusion equation using FFT-based methods with linear shooting for the vertical boundary value problem.
 
     **Key functions:**
-       - :py:func:`src.solver.steady_state_transport_solver`
-       - :py:func:`src.solver.ivp_solver`
+        - :py:func:`bldfm.solver.steady_state_transport_solver`
+        - :py:func:`bldfm.solver.ivp_solver`
 
-3. :py:mod:`src.utils`
-    Provides utility functions for preprocessing, synthetic input generation, and diagnostics.
-
-    **Features:**
-       - Source field generation (e.g., circular/point sources).
-       - Wind field constructors and FFT utilities.
-       - Pointwise convolution for footprint validation.
+3. :py:mod:`bldfm.utils`
+    Utility functions for wind field construction, source generation, and diagnostics.
 
     **Key functions:**
-       - :py:func:`src.utils.compute_wind_fields`
-       - :py:func:`src.utils.point_source`
-       - :py:func:`src.utils.ideal_source`
-       - :py:func:`src.utils.point_measurement`
+        - :py:func:`bldfm.utils.compute_wind_fields`
+        - :py:func:`bldfm.utils.ideal_source`
+        - :py:func:`bldfm.utils.point_measurement`
 
-Additional subpackages
-----------------------
+Configuration and interface
+---------------------------
 
-1.  :ref:`runs <runs>`
-    provides example workflows and pre-configured scripts to demonstrate the usage of the package. These scripts showcase how to combine the core modules (:py:mod:`src.pbl_model`, :py:mod:`src.solver`, and :py:mod:`src.utils`) for practical applications, such as footprint modeling or dispersion analysis.
+4. :py:mod:`bldfm.config_parser`
+    YAML-based configuration with dataclass schema. Defines ``BLDFMConfig``, ``TowerConfig``, ``DomainConfig``, ``MetConfig``, and related classes.
 
-    **Features:**
-       - Example configurations for common use cases.
-       - Demonstrates integration of vertical profiles, transport solvers, and diagnostics.
+5. :py:mod:`bldfm.interface`
+    High-level functions that encapsulate the full workflow:
 
-2.  :ref:`tests <tests>`
-    contains the test suite for validating the functionality and accuracy of the package. The tests ensure that the core modules (:py:mod:`src.pbl_model`, :py:mod:`src.solver`, and :py:mod:`src.utils`) work as expected and provide a framework for extending test coverage.
+    - :py:func:`~bldfm.interface.run_bldfm_single` -- single tower, single timestep
+    - :py:func:`~bldfm.interface.run_bldfm_timeseries` -- single tower, all timesteps
+    - :py:func:`~bldfm.interface.run_bldfm_multitower` -- all towers, all timesteps
+    - :py:func:`~bldfm.interface.run_bldfm_parallel` -- parallel execution over towers, time, or both
 
-    **Features:**
-       - Unit tests for individual functions.
-       - Integration tests for workflows combining multiple modules.
-       - Easy-to-run test scripts for contributors.
+6. :py:mod:`bldfm.cli`
+    Command-line interface: ``bldfm run config.yaml [--dry-run]``.
 
-Module interactions
--------------------
+Data and I/O
+------------
 
-- :py:mod:`src.pbl_model` provides the vertical profiles required by the :py:mod:`src.solver` module.
-- :py:mod:`src.solver` handles the core transport computation, optionally using Green's functions for convolution with surface fluxes.
-- :py:mod:`src.utils` supports both :py:mod:`src.pbl_model` and :py:mod:`src.solver` with reusable tools for test generation and output diagnostics.
-- :ref:`runs <runs>` contains examples and user-defined run scripts that utilize the core modules.
-- :ref:`tests <tests>` ensures the reliability and correctness of the package.
+7. :py:mod:`bldfm.synthetic`
+    Generates synthetic meteorological timeseries and tower configurations for testing and prototyping.
+
+8. :py:mod:`bldfm.io`
+    NetCDF export and import of footprint results using xarray with CF-1.8 metadata.
+
+9. :py:mod:`bldfm.cache`
+    Disk-based cache for Green's function results using SHA-256 keyed ``.npz`` files.
+
+Plotting
+--------
+
+10. :py:mod:`bldfm.plotting`
+     Visualisation functions for footprint fields, geospatial map overlays, wind roses, and temporal footprint evolution.
+
+Pipeline architecture
+---------------------
+
+The solver pipeline proceeds in four stages. The high-level interface
+(:py:mod:`bldfm.interface`) runs all four automatically; the low-level API lets
+you call each stage individually.
+
+.. code-block:: text
+
+                      YAML file / dict
+                            │
+                   load_config / parse_config_dict
+                            │
+                            ▼
+                       BLDFMConfig
+                            │
+            ┌───────────────┼────────────────┐
+            │          High-level            │
+            │   run_bldfm_single/timeseries  │
+            │   run_bldfm_multitower         │
+            │   run_bldfm_parallel           │
+            └───────────────┬────────────────┘
+                            │  internally calls ▼
+              ┌─────────────┼─────────────────┐
+              │                               │
+              ▼                               │
+     compute_wind_fields()  [utils]           │
+              │                               │
+              ▼                               │
+     vertical_profiles()    [pbl_model]       │
+              │                               │
+              ▼                               │
+     ideal_source()         [utils]           │
+              │             (if no flux given)│
+              ▼                               │
+     steady_state_transport_solver()  [solver]│
+              │                               │
+              └───────────────┬───────────────┘
+                              ▼
+                   result dict {grid, conc, flx, …}
+                              │
+                ┌─────────────┼─────────────┐
+                │             │             │
+                ▼             ▼             ▼
+        GreensFunctionCache  save to     plot_*()
+            [cache]         NetCDF     [plotting]
+                            [io]
+
+Design philosophy: high-level vs. low-level API
+------------------------------------------------
+
+BLDFM exposes two tiers of API, each targeting a different use case.
+
+**High-level API** — :py:mod:`bldfm.interface`
+    The four ``run_bldfm_*`` functions accept a :py:class:`~bldfm.config_parser.BLDFMConfig`
+    object and return result dictionaries. Configuration objects carry every
+    parameter (domain, towers, meteorology, solver options), making runs
+    reproducible from a single YAML file. Use this tier for production science
+    workflows, batch runs, and the CLI.
+
+**Low-level API** — individual modules
+    The core functions :py:func:`~bldfm.pbl_model.vertical_profiles`,
+    :py:func:`~bldfm.solver.steady_state_transport_solver`,
+    :py:func:`~bldfm.utils.compute_wind_fields`, and
+    :py:func:`~bldfm.utils.ideal_source` can be called directly with plain
+    NumPy arrays and scalars. This gives full control over intermediate results
+    and is suited for custom parameter sweeps, debugging, or building new
+    wrappers. Note that :py:func:`~bldfm.pbl_model.vertical_profiles` is
+    intentionally not re-exported in the top-level ``__all__``; import it
+    explicitly from :py:mod:`bldfm.pbl_model` when working at this level.
+
+**Choosing a tier.** Start with the high-level API. Drop to the low-level API
+when you need to inspect or modify intermediate quantities (e.g. vertical
+profiles), run the solver with non-standard inputs, or integrate BLDFM into a
+larger modelling framework.
 
 API reference
 -------------

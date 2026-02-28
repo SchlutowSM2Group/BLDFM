@@ -1,0 +1,30 @@
+# BLDFM Minimal Example Configuration
+# =====================================
+# Neutral boundary layer with basic dispersion (concentration field).
+# Equivalent to: examples/low_level/minimal_example.py
+# Run with: bldfm run examples/configs/minimal.yaml
+
+domain:
+  nx: 512                # grid points in x (cross-wind)
+  ny: 256                # grid points in y (along-wind)
+  nz: 16                 # vertical levels
+  xmax: 2000.0           # domain extent in x [m]
+  ymax: 1000.0           # domain extent in y [m]
+  ref_lat: 0.0           # reference origin latitude [decimal degrees]
+  ref_lon: 0.0           # reference origin longitude [decimal degrees]
+
+towers:
+  - name: tower_1
+    lat: 0.0             # tower at domain origin
+    lon: 0.0
+    z_m: 10.0            # measurement height [m]
+
+met:
+  ustar: 0.4             # friction velocity [m/s]
+  wind_speed: 4.123      # horizontal wind speed [m/s] (from sqrt(4^2 + 1^2))
+  wind_dir: 256.0        # wind direction [degrees] (from WSW; wind=(4, 1))
+  mol: 1.0e+9            # Monin-Obukhov length [m] (neutral)
+
+solver:
+  closure: MOST           # PBL closure scheme
+  footprint: false        # dispersion (concentration) mode

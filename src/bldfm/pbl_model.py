@@ -57,16 +57,6 @@ def vertical_profiles(
 
     zm, (um, vm) = meas_height, wind
 
-    # make function dimension-agnostic
-    # here, we create (Nts x Nz arrays)
-    # um = np.array(um)
-    # vm = np.array(vm)
-    # zm = np.array(zm)
-
-    # um = um[..., np.newaxis]
-    # vm = vm[..., np.newaxis]
-    # zm = zm[..., np.newaxis]
-
     kap = 0.4  # Karman constant
 
     # absolute wind at zm
@@ -96,7 +86,7 @@ def vertical_profiles(
 
         # compute tke from mol by tke balance equation
         if tke is None:
-            logging.warning("No tke provided. Setting TKE to 1.0.")
+            logger.warning("No tke provided. Setting TKE to 1.0.")
             tke = 1.0
         tke = np.array(tke)[..., np.newaxis]
 
@@ -130,7 +120,11 @@ def vertical_profiles(
 
     dzeta = zm / n
 
-    zeta = np.arange(0.0, zetamx + dzeta, dzeta)
+    # np.arange requires a scalar stop argument; numpy 2.x removed the
+    # implicit array-to-scalar coercion that was deprecated in numpy 1.25.
+    # Use np.squeeze().item() to handle both 0-d and shaped arrays from
+    # OAAHOC path where z0/aa/bb may have extra dimensions from tke broadcast.
+    zeta = np.arange(0.0, np.squeeze(zetamx).item() + dzeta, dzeta)
 
     z = -h * np.log(-(zeta - aa) / bb)
 

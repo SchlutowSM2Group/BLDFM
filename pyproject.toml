@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "BLDFM"
-version = "0.9.0"
+version = "1.2.0-dev"
 description = "Boundary Layer Footprint Dispersion Model"
 authors = [
     { name = "Mark Schlutow", email = "mschlutow@bgc-jena.mpg.de" },
@@ -18,12 +18,36 @@ dependencies = [
     "matplotlib",
     "scipy",
     "numba",
-    "pyfftw"
+    "pyfftw",
+    "pyyaml",
+    "xarray",
+    "netcdf4",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest",  # For testing
-    "sphinx",  # For documentation
-    "black",  # Optional: for code formatting
+    "pytest",
+    "pytest-cov",
+    "sphinx",
+    "black",
+    "psutil",
+]
+plotting = [
+    "contextily",
+    "windrose",
+    "plotly",
+    "owslib",
+]
+
+[project.scripts]
+bldfm = "bldfm.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "unit: Fast tests that do not run the solver",
+    "integration: Tests that run the solver (single, timeseries, multitower, I/O)",
+    "parallel: Tests that use ProcessPoolExecutor",
+    "plotting: Tests for matplotlib/plotly plotting functions",
+    "memory: Tests that measure memory usage and detect regressions",
 ]
