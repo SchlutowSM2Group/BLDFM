@@ -2,7 +2,6 @@ import pyfftw
 import pyfftw.interfaces.numpy_fft as pyfftw_fft
 import pyfftw.interfaces.cache
 import pickle
-import gc
 import atexit
 from pathlib import Path
 from .utils import get_logger
@@ -25,6 +24,7 @@ class FFTManager:
         self, wisdom_file="fftw_wisdom.pkl", num_threads=1, cache_keepalive=30
     ):
         self.wisdom_file = Path(wisdom_file)
+        self.num_threads = num_threads
 
         # Configure threading
         pyfftw.config.NUM_THREADS = num_threads
@@ -71,9 +71,9 @@ class FFTManager:
             wisdom = pyfftw.export_wisdom()
             with open(self.wisdom_file, "wb") as f:
                 pickle.dump(wisdom, f)
-            print(f"FFTManager: Wisdom saved to {self.wisdom_file}")
+            logger.debug(f"Wisdom saved to {self.wisdom_file}")
         except Exception as e:
-            print(f"FFTManager: Failed to save wisdom: {e}")
+            logger.warning(f"Failed to save wisdom: {e}")
 
     def fft2(self, input_data, norm="backward"):
         """
@@ -105,14 +105,13 @@ class FFTManager:
         """Clear pyfftw cache."""
         pyfftw.interfaces.cache.disable()
         pyfftw.interfaces.cache.enable()
-        print("FFTManager: PyFFTW cache cleared")
+        logger.debug("PyFFTW cache cleared")
 
     def _cleanup(self):
         """Cleanup function called on exit."""
         self._save_wisdom()
         self.clear_cache()
-        print("FFTManager: cleanup completed")
-        gc.collect()
+        logger.debug("FFTManager cleanup completed")
 
 
 # Global FFT manager instance
@@ -120,13 +119,30 @@ _fft_manager = None
 
 
 def get_fft_manager(num_threads=1, cache_keepalive=30):
-    """Get or create the global FFT manager instance."""
+    """Get or create the global FFT manager instance.
+
+    If the manager already exists with different num_threads, it is
+    re-initialised with the new thread count.
+    """
     global _fft_manager
+    if _fft_manager is not None and _fft_manager.num_threads != num_threads:
+        logger.info(
+            "Re-initializing FFTManager: num_threads %d -> %d",
+            _fft_manager.num_threads,
+            num_threads,
+        )
+        _fft_manager = None
     if _fft_manager is None:
         _fft_manager = FFTManager(
             num_threads=num_threads, cache_keepalive=cache_keepalive
         )
     return _fft_manager
+
+
+def reset_fft_manager():
+    """Reset FFTManager singleton (call in forked worker processes)."""
+    global _fft_manager
+    _fft_manager = None
 
 
 def fft2(input_data, norm="backward"):

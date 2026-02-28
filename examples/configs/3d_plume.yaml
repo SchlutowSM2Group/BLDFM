@@ -1,0 +1,39 @@
+# BLDFM 3D Plume Example Configuration
+# =====================================
+# Point-source 3D plume dispersion with output on multiple vertical levels.
+# Equivalent to: examples/low_level/3d_plume.py
+# Run with: bldfm run examples/configs/3d_plume.yaml
+
+domain:
+  nx: 512                # grid points in x (cross-wind)
+  ny: 256                # grid points in y (along-wind)
+  nz: 64                 # vertical levels
+  xmax: 800.0            # domain extent in x [m]
+  ymax: 100.0            # domain extent in y [m]
+  modes: [512, 512]      # Fourier modes [kx, ky]
+  ref_lat: 0.0           # reference origin latitude [decimal degrees]
+  ref_lon: 0.0           # reference origin longitude [decimal degrees]
+  output_levels:          # every 2nd level from 0 to 64
+    [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30,
+     32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64]
+
+towers:
+  - name: tower_1
+    lat: 0.0             # tower at domain origin
+    lon: 0.0
+    z_m: 10.0            # measurement height [m]
+
+met:
+  ustar: 0.4             # friction velocity [m/s]
+  wind_speed: 6.0         # horizontal wind speed [m/s]
+  wind_dir: 270.0         # wind direction [degrees] (from west; wind=(6, 0))
+  mol: 1.0e+9            # Monin-Obukhov length [m] (neutral)
+
+solver:
+  closure: MOST           # PBL closure scheme
+  footprint: false        # dispersion (concentration) mode
+  surface_flux_shape: point  # point source
+  src_loc: [200.0, 50.0]    # source location [x, y] in meters
+
+parallel:
+  num_threads: 12         # BLAS/numba threads per worker

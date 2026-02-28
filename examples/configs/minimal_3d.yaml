@@ -1,0 +1,34 @@
+# BLDFM Minimal 3D Example Configuration
+# =======================================
+# Basic 3D output on all vertical levels with diamond source.
+# Equivalent to: examples/low_level/minimal_example_3d.py
+# Run with: bldfm run examples/configs/minimal_3d.yaml
+
+domain:
+  nx: 512                # grid points in x (cross-wind)
+  ny: 256                # grid points in y (along-wind)
+  nz: 64                 # vertical levels
+  xmax: 2000.0           # domain extent in x [m]
+  ymax: 1000.0           # domain extent in y [m]
+  ref_lat: 0.0           # reference origin latitude [decimal degrees]
+  ref_lon: 0.0           # reference origin longitude [decimal degrees]
+  full_output: true       # output on all vertical levels (0 to nz)
+
+towers:
+  - name: tower_1
+    lat: 0.0             # tower at domain origin
+    lon: 0.0
+    z_m: 10.0            # measurement height [m]
+
+met:
+  ustar: 0.5             # friction velocity [m/s]
+  wind_speed: 6.0         # horizontal wind speed [m/s]
+  wind_dir: 270.0         # wind direction [degrees] (from west; wind=(6, 0))
+  mol: 1.0e+9            # Monin-Obukhov length [m] (neutral)
+
+solver:
+  closure: MOST           # PBL closure scheme
+  footprint: false        # dispersion (concentration) mode
+
+parallel:
+  num_threads: 16         # BLAS/numba threads per worker

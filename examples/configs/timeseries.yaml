@@ -1,0 +1,44 @@
+# BLDFM Timeseries Example Configuration
+# =======================================
+# Single tower with 8 half-hourly timesteps -- the primary use case for
+# footprint climatology studies.  Met values trace a midday arc of
+# increasing then decreasing instability (ustar~0.5, L~-100 m, ws~6 m/s).
+#
+# Run with:  python examples/timeseries_example.py
+
+domain:
+  nx: 64                 # grid points in x (cross-wind)
+  ny: 128                # grid points in y (along-wind)
+  xmax: 100.0            # domain extent in x [m]
+  ymax: 700.0            # domain extent in y [m]
+  nz: 16                 # vertical levels
+  modes: [64, 128]       # Fourier modes [kx, ky]
+  ref_lat: 50.9500       # reference origin latitude
+  ref_lon: 11.5860       # reference origin longitude
+
+towers:
+  - name: tower_A
+    lat: 50.9500
+    lon: 11.58671
+    z_m: 10.0             # measurement height [m]
+
+# Meteorological forcing.  Lists of equal length define a timeseries;
+# each index corresponds to one half-hourly averaging interval.
+met:
+  ustar:      [0.45, 0.50, 0.55, 0.60, 0.55, 0.50, 0.45, 0.40]
+  mol:        [-80.0, -100.0, -150.0, -200.0, -150.0, -100.0, -80.0, -50.0]
+  wind_speed: [5.5, 6.0, 6.5, 7.0, 6.5, 6.0, 5.5, 5.0]
+  wind_dir:   [350.0, 355.0, 0.0, 5.0, 10.0, 5.0, 0.0, 355.0]
+  timestamps:
+    - "2024-07-15T10:00"
+    - "2024-07-15T10:30"
+    - "2024-07-15T11:00"
+    - "2024-07-15T11:30"
+    - "2024-07-15T12:00"
+    - "2024-07-15T12:30"
+    - "2024-07-15T13:00"
+    - "2024-07-15T13:30"
+
+solver:
+  closure: MOST
+  footprint: true

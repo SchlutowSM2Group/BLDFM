@@ -1,0 +1,32 @@
+# BLDFM Visualization Showcase Configuration
+# ============================================
+# Demonstrates optional-dep plotting features: map overlay, land cover,
+# wind rose, and interactive (Plotly) plots.
+# Run with: python examples/visualization_example.py
+
+domain:
+  nx: 128
+  ny: 384
+  xmax: 500.0
+  ymax: 500.0
+  nz: 64
+  modes: [256, 256]
+  halo: 400.0
+  ref_lat: 50.9497       # Jena, Germany — tower at ~(250, 50) in local grid
+  ref_lon: 11.5828
+
+towers:
+  - name: tower_A
+    lat: 50.95018
+    lon: 11.58636
+    z_m: 10.0
+
+met:
+  ustar: 0.4
+  mol: -100.0
+  wind_speed: 5.0
+  wind_dir: 0.0          # from north
+
+solver:
+  closure: MOST
+  footprint: true

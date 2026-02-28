@@ -1,0 +1,30 @@
+# BLDFM Footprint Example Configuration
+# ======================================
+# Flux footprint calculation for a single tower.
+# Equivalent to: examples/low_level/footprint_example.py
+# Run with: bldfm run examples/configs/footprint.yaml
+
+domain:
+  nx: 512                # grid points in x (cross-wind)
+  ny: 256                # grid points in y (along-wind)
+  nz: 32                 # vertical levels
+  xmax: 100.0            # domain extent in x [m]
+  ymax: 700.0            # domain extent in y [m]
+  ref_lat: 0.0           # reference origin latitude [decimal degrees]
+  ref_lon: 0.0           # reference origin longitude [decimal degrees]
+
+towers:
+  - name: tower_1
+    lat: 0.0             # y = 0 m from ref
+    lon: 0.000449        # x ~ 50 m from ref (at equator, 1 deg lon ~ 111320 m)
+    z_m: 10.0            # measurement height [m]
+
+met:
+  ustar: 0.5             # friction velocity [m/s]
+  wind_speed: 6.0         # horizontal wind speed [m/s]
+  wind_dir: 0.0           # wind direction [degrees] (from north; wind=(0, -6))
+  mol: 1.0e+9            # Monin-Obukhov length [m] (neutral)
+
+solver:
+  closure: MOST           # PBL closure scheme
+  footprint: true         # footprint mode
