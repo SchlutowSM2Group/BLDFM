@@ -11,7 +11,7 @@ import hashlib
 import numpy as np
 from pathlib import Path
 
-from .utils import get_logger
+from abltk.logging import get_logger
 
 logger = get_logger("cache")
 

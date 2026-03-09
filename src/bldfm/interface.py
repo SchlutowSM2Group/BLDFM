@@ -13,7 +13,8 @@ from concurrent.futures import ProcessPoolExecutor
 from .config_parser import BLDFMConfig, TowerConfig
 from .pbl_model import vertical_profiles
 from .solver import steady_state_transport_solver
-from .utils import compute_wind_fields, ideal_source, get_logger
+from .utils import compute_wind_fields, ideal_source
+from abltk.logging import get_logger
 
 logger = get_logger("interface")
 

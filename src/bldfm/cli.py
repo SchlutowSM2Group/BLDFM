@@ -14,7 +14,7 @@ import sys
 from . import initialize
 from .config_parser import load_config
 from .interface import run_bldfm_single
-from .utils import get_logger
+from abltk.logging import get_logger
 
 
 def cmd_run(args):
@@ -67,7 +67,7 @@ def _save_plots(results, logger):
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from .plotting import plot_footprint_field
+    from abltk.plotting import plot_footprint_field
 
     os.makedirs("plots", exist_ok=True)
 

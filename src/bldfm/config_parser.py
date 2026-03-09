@@ -11,7 +11,8 @@ Defines the configuration hierarchy:
     └── ParallelConfig
 """
 
-import math
+import warnings
+
 import yaml
 import numpy as np
 from dataclasses import dataclass, field
@@ -21,36 +22,22 @@ from typing import List, Optional, Tuple, Union
 
 # --- Coordinate utilities ---
 
-# Earth radius in meters (WGS-84 mean)
-_EARTH_RADIUS = 6_371_000.0
-
 
 def latlon_to_xy(lat, lon, ref_lat, ref_lon):
     """Convert lat/lon to local x/y (meters) relative to a reference point.
 
-    Uses an equirectangular (flat-Earth) approximation, which is accurate
-    to <0.1% for domains up to ~100 km at mid-latitudes.
-
-    Parameters
-    ----------
-    lat, lon : float
-        Point coordinates in decimal degrees.
-    ref_lat, ref_lon : float
-        Reference origin coordinates in decimal degrees.
-
-    Returns
-    -------
-    x, y : float
-        Easting and northing in meters relative to (ref_lat, ref_lon).
+    .. deprecated::
+        Use ``abltk.plotting.geo.latlon_to_xy`` instead.
     """
-    lat_r = math.radians(lat)
-    lon_r = math.radians(lon)
-    ref_lat_r = math.radians(ref_lat)
-    ref_lon_r = math.radians(ref_lon)
+    warnings.warn(
+        "bldfm.config_parser.latlon_to_xy is deprecated, "
+        "use abltk.plotting.geo.latlon_to_xy",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    from abltk.plotting.geo import latlon_to_xy as _new
 
-    x = _EARTH_RADIUS * (lon_r - ref_lon_r) * math.cos(ref_lat_r)
-    y = _EARTH_RADIUS * (lat_r - ref_lat_r)
-    return x, y
+    return _new(lat, lon, ref_lat, ref_lon)
 
 
 # --- Dataclasses ---
@@ -71,7 +58,9 @@ class TowerConfig:
 
     def compute_local_xy(self, ref_lat: float, ref_lon: float):
         """Compute local x/y from lat/lon and reference origin."""
-        self.x, self.y = latlon_to_xy(self.lat, self.lon, ref_lat, ref_lon)
+        from abltk.plotting.geo import latlon_to_xy as _latlon_to_xy
+
+        self.x, self.y = _latlon_to_xy(self.lat, self.lon, ref_lat, ref_lon)
 
 
 @dataclass

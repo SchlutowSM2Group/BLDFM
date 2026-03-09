@@ -14,6 +14,7 @@ authors = [
 ]
 license = { text = "MIT" }
 dependencies = [
+    "abl-tk",
     "numpy",
     "matplotlib",
     "scipy",
