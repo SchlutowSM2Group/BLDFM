@@ -1,68 +1,68 @@
-"""Shared plotting utilities used across submodules."""
+"""Shared plotting utilities used across submodules.
 
-import importlib
+.. deprecated::
+    All functions have moved to ``abltk.plotting.axes`` and
+    ``abltk.plotting.helpers``. These wrappers will be removed in a future release.
+"""
 
-import matplotlib.pyplot as plt
-
-from ..utils import get_logger
-
-logger = get_logger("plotting")
+import warnings
 
 
 def ensure_ax(ax=None, **subplots_kw):
-    """Return existing axes or create new figure + axes."""
-    if ax is None:
-        _, ax = plt.subplots(**subplots_kw)
-    return ax
+    warnings.warn(
+        "bldfm.plotting._common.ensure_ax is deprecated, "
+        "use abltk.plotting.axes.ensure_ax",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    from abltk.plotting.axes import ensure_ax as _new
+
+    return _new(ax, **subplots_kw)
 
 
 def unpack_grid_2d(grid):
-    """Extract X, Y from a (X, Y, Z) grid tuple."""
-    X, Y, _ = grid
-    return X, Y
+    warnings.warn(
+        "bldfm.plotting._common.unpack_grid_2d is deprecated, "
+        "use abltk.plotting.helpers.unpack_grid_2d",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    from abltk.plotting.helpers import unpack_grid_2d as _new
+
+    return _new(grid)
 
 
 def format_colorbar_scientific(cbar, label=None):
-    """Apply scientific notation formatting to a colorbar."""
-    cbar.formatter.set_powerlimits((0, 0))
-    cbar.formatter.set_useMathText(True)
-    if label:
-        cbar.set_label(label)
+    warnings.warn(
+        "bldfm.plotting._common.format_colorbar_scientific is deprecated, "
+        "use abltk.plotting.axes.format_colorbar_scientific",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    from abltk.plotting.axes import format_colorbar_scientific as _new
+
+    return _new(cbar, label)
 
 
 def optional_import(module_name, package_hint):
-    """Import an optional dependency, raising a helpful error if missing."""
-    try:
-        return importlib.import_module(module_name)
-    except ImportError:
-        raise ImportError(
-            f"{module_name} is required for this feature. "
-            f"Install it with: pip install {package_hint}"
-        )
+    warnings.warn(
+        "bldfm.plotting._common.optional_import is deprecated, "
+        "use abltk.plotting.helpers.optional_import",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    from abltk.plotting.helpers import optional_import as _new
+
+    return _new(module_name, package_hint)
 
 
 def _maybe_slice_level(field, grid, level=0):
-    """If field is 3D (nz, ny, nx), extract a single z-level. Pass through 2D unchanged.
+    warnings.warn(
+        "bldfm.plotting._common._maybe_slice_level is deprecated, "
+        "use abltk.plotting.helpers._maybe_slice_level",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    from abltk.plotting.helpers import _maybe_slice_level as _new
 
-    Parameters
-    ----------
-    field : ndarray
-        2D (ny, nx) or 3D (nz, ny, nx) array.
-    grid : tuple (X, Y, Z)
-        Coordinate arrays from the solver.
-    level : int
-        Z-index to extract when field is 3D. Default 0 (surface).
-
-    Returns
-    -------
-    field : ndarray (ny, nx)
-        Sliced (or original 2D) field.
-    grid : tuple
-        Sliced (or original) grid.
-    """
-    if field.ndim == 3:
-        field = field[level]
-        X, Y, Z = grid
-        if X.ndim == 3:
-            grid = (X[level], Y[level], Z[level])
-    return field, grid
+    return _new(field, grid, level)

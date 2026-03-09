@@ -189,7 +189,7 @@ def plot_footprint_on_map(
         _, ax = plt.subplots(figsize=(10, 8))
 
     if contour_pcts is None:
-        contour_pcts = [0.5, 0.8]
+        contour_pcts = [0.25, 0.5, 0.75]
 
     # Filled contour of the footprint
     levels_fill = []
