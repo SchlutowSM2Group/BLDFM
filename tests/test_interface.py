@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 from bldfm.config_parser import parse_config_dict
 from bldfm.interface import run_bldfm_single, run_bldfm_multitower
-from bldfm.plotting import plot_footprint_field
+from abltk.plotting import plot_footprint_field
 from bldfm.synthetic import generate_synthetic_timeseries, generate_towers_grid
 
 
@@ -220,7 +220,7 @@ def test_timeseries_footprints_evolve(
 
 def test_timeseries_aggregated_footprint(timeseries_results_session):
     """Test aggregated mean footprint with 50% and 70% flux contribution contours."""
-    from bldfm.plotting import extract_percentile_contour
+    from abltk.plotting import extract_percentile_contour
 
     results = timeseries_results_session
     grid = results[0]["grid"]

@@ -16,8 +16,8 @@ from bldfm.config_parser import (
     ParallelConfig,
     load_config,
     parse_config_dict,
-    latlon_to_xy,
 )
+from abltk.plotting.geo import latlon_to_xy
 
 
 # --- latlon_to_xy ---

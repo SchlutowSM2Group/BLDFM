@@ -9,7 +9,7 @@ import matplotlib
 matplotlib.use("Agg")  # non-interactive backend for CI
 import matplotlib.pyplot as plt
 
-from bldfm.plotting import (
+from abltk.plotting import (
     extract_percentile_contour,
     plot_footprint_field,
     plot_footprint_timeseries,
@@ -107,7 +107,7 @@ def test_plot_footprint_timeseries(timeseries_results_session):
 
 def test_plot_footprint_on_map_import_error(footprint_result_session):
     """Should raise ImportError with helpful message if contextily missing."""
-    from bldfm.plotting import plot_footprint_on_map
+    from abltk.plotting import plot_footprint_on_map
 
     result, config = footprint_result_session
     try:
@@ -116,12 +116,18 @@ def test_plot_footprint_on_map_import_error(footprint_result_session):
         pytest.skip("contextily is installed")
     except ImportError:
         with pytest.raises(ImportError, match="contextily"):
-            plot_footprint_on_map(result["flx"], result["grid"], config)
+            plot_footprint_on_map(
+                result["flx"],
+                result["grid"],
+                ref_lat=config.domain.ref_lat,
+                ref_lon=config.domain.ref_lon,
+                towers=config.towers,
+            )
 
 
 def test_plot_footprint_on_map_happy_path(footprint_result_session):
     """Test map plot with contextily tiles (requires network + contextily)."""
-    from bldfm.plotting import plot_footprint_on_map
+    from abltk.plotting import plot_footprint_on_map
 
     try:
         import contextily
@@ -133,7 +139,9 @@ def test_plot_footprint_on_map_happy_path(footprint_result_session):
         ax = plot_footprint_on_map(
             result["flx"],
             result["grid"],
-            config,
+            ref_lat=config.domain.ref_lat,
+            ref_lon=config.domain.ref_lon,
+            towers=config.towers,
             contour_pcts=[0.5, 0.8],
             title="Map plot (test)",
         )
@@ -155,7 +163,7 @@ def test_plot_footprint_on_map_happy_path(footprint_result_session):
 
 def test_plot_wind_rose_import_error():
     """Should raise ImportError with helpful message if windrose missing."""
-    from bldfm.plotting import plot_wind_rose
+    from abltk.plotting import plot_wind_rose
 
     try:
         import windrose
@@ -168,7 +176,7 @@ def test_plot_wind_rose_import_error():
 
 def test_plot_wind_rose_happy_path():
     """Test wind rose plot with synthetic data (requires windrose)."""
-    from bldfm.plotting import plot_wind_rose
+    from abltk.plotting import plot_wind_rose
 
     try:
         import windrose
@@ -191,7 +199,7 @@ def test_plot_wind_rose_happy_path():
 
 
 def test_plot_footprint_interactive(footprint_result_session):
-    from bldfm.plotting import plot_footprint_interactive
+    from abltk.plotting import plot_footprint_interactive
 
     result, _ = footprint_result_session
     try:
@@ -212,7 +220,7 @@ def test_plot_footprint_interactive(footprint_result_session):
 
 def test_plot_footprint_on_map_land_cover_import_error(footprint_result_session):
     """Should raise ImportError with helpful message if owslib missing."""
-    from bldfm.plotting import plot_footprint_on_map
+    from abltk.plotting import plot_footprint_on_map
 
     result, config = footprint_result_session
     try:
@@ -222,13 +230,18 @@ def test_plot_footprint_on_map_land_cover_import_error(footprint_result_session)
     except ImportError:
         with pytest.raises(ImportError, match="owslib"):
             plot_footprint_on_map(
-                result["flx"], result["grid"], config, land_cover=True
+                result["flx"],
+                result["grid"],
+                ref_lat=config.domain.ref_lat,
+                ref_lon=config.domain.ref_lon,
+                towers=config.towers,
+                land_cover=True,
             )
 
 
 def test_plot_footprint_on_map_land_cover(footprint_result_session):
     """Test land cover overlay using the real ESA Terrascope WMS."""
-    from bldfm.plotting import plot_footprint_on_map
+    from abltk.plotting import plot_footprint_on_map
 
     result, config = footprint_result_session
 
@@ -236,7 +249,9 @@ def test_plot_footprint_on_map_land_cover(footprint_result_session):
         ax = plot_footprint_on_map(
             result["flx"],
             result["grid"],
-            config,
+            ref_lat=config.domain.ref_lat,
+            ref_lon=config.domain.ref_lon,
+            towers=config.towers,
             land_cover=True,
             title="Land cover test",
         )
@@ -408,7 +423,7 @@ def test_plot_vertical_slice(plume_3d_result_session):
 
 def test_get_source_area_basic():
     """Test that get_source_area returns correct shape and value range."""
-    from bldfm.utils import get_source_area
+    from abltk.plotting.source_area import get_source_area
 
     rng = np.random.default_rng(42)
     f = rng.random((32, 64))
@@ -422,7 +437,7 @@ def test_get_source_area_basic():
 
 def test_get_source_area_monotone():
     """Test that higher g values map to lower rescaled values."""
-    from bldfm.utils import get_source_area
+    from abltk.plotting.source_area import get_source_area
 
     f = np.array([[0.1, 0.2], [0.3, 0.4]])
     rescaled = get_source_area(f, f)
@@ -435,7 +450,7 @@ def test_get_source_area_monotone():
 
 def test_source_area_base_functions_shapes(source_area_result_session):
     """Test that all 5 base function constructors return correct shapes."""
-    from bldfm.utils import (
+    from abltk.plotting.source_area import (
         source_area_contribution,
         source_area_circular,
         source_area_upwind,
@@ -464,8 +479,8 @@ def test_source_area_base_functions_shapes(source_area_result_session):
 
 def test_plot_source_area_contours(source_area_result_session):
     """Test source area contour plotting returns axes."""
-    from bldfm.utils import get_source_area
-    from bldfm.plotting import plot_source_area_contours
+    from abltk.plotting.source_area import get_source_area
+    from abltk.plotting import plot_source_area_contours
 
     r = source_area_result_session
     rescaled = get_source_area(r["flx"], r["flx"])
@@ -479,8 +494,8 @@ def test_plot_source_area_contours(source_area_result_session):
 
 def test_plot_source_area_contours_custom_ax(source_area_result_session):
     """Test source area contour plotting on provided axes."""
-    from bldfm.utils import get_source_area
-    from bldfm.plotting import plot_source_area_contours
+    from abltk.plotting.source_area import get_source_area
+    from abltk.plotting import plot_source_area_contours
 
     r = source_area_result_session
     fig, ax = plt.subplots()
@@ -504,7 +519,7 @@ def test_plot_source_area_gallery(source_area_result_session):
     Uses an elongated domain (100x700m) matching the high-res example
     in runs/low_level/source_area_example.py but at 128x64 resolution.
     """
-    from bldfm.plotting import plot_source_area_gallery
+    from abltk.plotting import plot_source_area_gallery
 
     r = source_area_result_session
     fig, axes = plot_source_area_gallery(
@@ -525,7 +540,7 @@ def test_plot_source_area_gallery(source_area_result_session):
 
 def test_maybe_slice_level_2d_passthrough():
     """2D field and grid pass through unchanged."""
-    from bldfm.plotting._common import _maybe_slice_level
+    from abltk.plotting.helpers import _maybe_slice_level
 
     field = np.random.rand(32, 64)
     X, Y = np.meshgrid(np.arange(64), np.arange(32))
@@ -538,7 +553,7 @@ def test_maybe_slice_level_2d_passthrough():
 
 def test_maybe_slice_level_3d_slicing():
     """3D field is sliced correctly at the given level."""
-    from bldfm.plotting._common import _maybe_slice_level
+    from abltk.plotting.helpers import _maybe_slice_level
 
     nz, ny, nx = 4, 8, 16
     field = np.random.rand(nz, ny, nx)

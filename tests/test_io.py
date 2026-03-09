@@ -6,7 +6,7 @@ import pytest
 
 pytestmark = pytest.mark.integration
 
-from bldfm.io import save_footprints_to_netcdf, load_footprints_from_netcdf
+from abltk.io.netcdf import save_footprints_to_netcdf, load_footprints_from_netcdf
 
 
 def test_netcdf_roundtrip_and_values(multitower_results_session):
