@@ -60,7 +60,8 @@ Compute a footprint and visualise it with 50 % and 80 % cumulative contours:
 
 .. code-block:: python
 
-    from bldfm import run_bldfm_single, plot_footprint_field
+    from bldfm import run_bldfm_single
+    from abltk.plotting import plot_footprint_field
     import matplotlib
     matplotlib.use("Agg")          # use "TkAgg" or remove for interactive display
     import matplotlib.pyplot as plt
@@ -100,7 +101,19 @@ The same workflow is available from the shell via the ``bldfm`` CLI:
     $ bldfm run examples/configs/footprint.yaml --plot
 
 The ``--dry-run`` flag prints the parsed configuration and exits.  The
-``--plot`` flag saves a footprint PNG for each tower and timestep to ``plots/``.
+``--plot`` flag saves default plots for each tower and timestep to ``plots/``:
+both concentration and flux/footprint fields (or vertical slices for 3D runs).
+
+.. note::
+
+   ``--plot`` is intended for **quick inspection** with default settings.  For
+   full control over figure layout, colormaps, contour levels, and overlays,
+   run the example scripts directly::
+
+       $ python examples/footprint_example.py
+       $ python examples/visualization_example.py
+
+   See `Example Workflows <runs.html>`_ for the complete list.
 
 
 Next steps
