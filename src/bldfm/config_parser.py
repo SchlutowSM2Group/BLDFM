@@ -11,33 +11,11 @@ Defines the configuration hierarchy:
     └── ParallelConfig
 """
 
-import warnings
-
 import yaml
 import numpy as np
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
-
-
-# --- Coordinate utilities ---
-
-
-def latlon_to_xy(lat, lon, ref_lat, ref_lon):
-    """Convert lat/lon to local x/y (meters) relative to a reference point.
-
-    .. deprecated::
-        Use ``abltk.plotting.geo.latlon_to_xy`` instead.
-    """
-    warnings.warn(
-        "bldfm.config_parser.latlon_to_xy is deprecated, "
-        "use abltk.plotting.geo.latlon_to_xy",
-        DeprecationWarning,
-        stacklevel=2,
-    )
-    from abltk.plotting.geo import latlon_to_xy as _new
-
-    return _new(lat, lon, ref_lat, ref_lon)
 
 
 # --- Dataclasses ---
