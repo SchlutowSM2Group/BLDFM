@@ -40,6 +40,9 @@ jobs:
         with:
           python-version: "3.9"
 
+      - name: Install abl-tk (private dependency)
+        run: pip install git+https://x-access-token:${{ secrets.ABL_TK_PAT }}@github.com/SchlutowSM2Group/abl-tk.git
+
       - name: Install Dependencies
         run: pip install -e '.[dev]'
 
@@ -63,6 +66,9 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: "3.9"
+
+      - name: Install abl-tk (private dependency)
+        run: pip install git+https://x-access-token:${{ secrets.ABL_TK_PAT }}@github.com/SchlutowSM2Group/abl-tk.git
 
       - name: Install Dependencies
         run: pip install -e '.[dev]'
