@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from bldfm.utils import get_logger
+from abltk.logging import get_logger
 from bldfm.pbl_model import vertical_profiles
 
 logger = get_logger("plot_profiles")

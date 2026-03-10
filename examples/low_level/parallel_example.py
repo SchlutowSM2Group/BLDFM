@@ -5,7 +5,8 @@ Example module showcasing BLDFM in parallelized mode.
 import matplotlib.pyplot as plt
 
 from bldfm.pbl_model import vertical_profiles
-from bldfm.utils import ideal_source, get_logger
+from bldfm.utils import ideal_source
+from abltk.logging import get_logger
 from bldfm.solver import steady_state_transport_solver
 from bldfm import config
 
