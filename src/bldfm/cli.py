@@ -58,45 +58,117 @@ def cmd_run(args):
     logger.info("All runs complete.")
 
     if args.plot:
-        _save_plots(results, logger)
+        _save_plots(results, config, logger)
 
 
-def _save_plots(results, logger):
-    """Save a footprint PNG for each result."""
+def _save_plots(results, config, logger):
+    """Save concentration and flux/footprint PNGs for each result."""
     import matplotlib
 
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from abltk.plotting import plot_footprint_field
 
     os.makedirs("plots", exist_ok=True)
+    is_footprint = config.solver.footprint
 
     for result in results:
         name = result["tower_name"]
         ts = result["timestamp"]
-        fname = f"plots/footprint_{name}_t{ts}.png"
-
-        fig, ax = plt.subplots()
-        plot_footprint_field(
-            result["flx"],
-            result["grid"],
-            ax=ax,
-            contour_pcts=[0.5, 0.8],
-            title=f"{name} (t={ts})",
-        )
+        conc = result["conc"]
+        flx = result["flx"]
+        grid = result["grid"]
         tx, ty = result["tower_xy"]
-        ax.plot(
-            tx,
-            ty,
-            "k^",
-            markersize=10,
-            markeredgecolor="white",
-            markeredgewidth=1.5,
-            zorder=5,
-        )
-        fig.savefig(fname, dpi=150, bbox_inches="tight")
-        plt.close(fig)
-        logger.info(f"  Saved {fname}")
+        is_3d = conc.ndim == 3
+
+        if is_3d:
+            _save_3d_plots(plt, conc, flx, grid, name, ts, logger)
+        else:
+            _save_2d_plots(plt, conc, flx, grid, tx, ty, name, ts, is_footprint, logger)
+
+
+def _save_2d_plots(plt, conc, flx, grid, tx, ty, name, ts, is_footprint, logger):
+    """Save 2D concentration and flux plots."""
+    from abltk.plotting import plot_footprint_field
+
+    # Concentration
+    fname = f"plots/concentration_{name}_t{ts}.png"
+    fig, ax = plt.subplots()
+    plot_footprint_field(conc, grid, ax=ax, title=f"Concentration — {name} (t={ts})")
+    ax.plot(
+        tx,
+        ty,
+        "r*",
+        markersize=12,
+        markeredgecolor="black",
+        markeredgewidth=0.8,
+        zorder=5,
+    )
+    fig.savefig(fname, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"  Saved {fname}")
+
+    # Flux / footprint
+    flx_label = "Footprint" if is_footprint else "Kinematic flux"
+    fname = f"plots/flux_{name}_t{ts}.png"
+    fig, ax = plt.subplots()
+    plot_footprint_field(
+        flx,
+        grid,
+        ax=ax,
+        contour_pcts=[0.5, 0.8] if is_footprint else None,
+        title=f"{flx_label} — {name} (t={ts})",
+    )
+    ax.plot(
+        tx,
+        ty,
+        "r*",
+        markersize=12,
+        markeredgecolor="black",
+        markeredgewidth=0.8,
+        zorder=5,
+    )
+    fig.savefig(fname, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"  Saved {fname}")
+
+
+def _save_3d_plots(plt, conc, flx, grid, name, ts, logger):
+    """Save horizontal and vertical slice plots for 3D results."""
+    from abltk.plotting import plot_vertical_slice
+
+    ny = conc.shape[1]
+    nx = conc.shape[2]
+
+    # Horizontal slice at z=0
+    fname = f"plots/{name}_t{ts}_xy_slice_z0.png"
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    plot_vertical_slice(conc, grid, "z", 0, ax=axes[0], title="Concentration at z0")
+    plot_vertical_slice(flx, grid, "z", 0, ax=axes[1], title="Flux at z0")
+    fig.savefig(fname, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"  Saved {fname}")
+
+    # Vertical xz slice at y midpoint
+    fname = f"plots/{name}_t{ts}_xz_slice.png"
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    plot_vertical_slice(
+        conc, grid, "y", ny // 2, ax=axes[0], title="Concentration (xz slice)"
+    )
+    plot_vertical_slice(flx, grid, "y", ny // 2, ax=axes[1], title="Flux (xz slice)")
+    fig.savefig(fname, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"  Saved {fname}")
+
+    # Vertical yz slice at x midpoint
+    fname = f"plots/{name}_t{ts}_yz_slice.png"
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+    plot_vertical_slice(
+        conc, grid, "x", nx // 2, ax=axes[0], title="Concentration (yz slice)"
+    )
+    plot_vertical_slice(flx, grid, "x", nx // 2, ax=axes[1], title="Flux (yz slice)")
+    fig.savefig(fname, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    logger.info(f"  Saved {fname}")
 
 
 def main():
