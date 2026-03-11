@@ -1,5 +1,5 @@
 import numpy as np
-from .utils import get_logger
+from abltk.logging import get_logger
 
 logger = get_logger(__name__.split("bldfm.")[-1])
 logger.info("Loaded PBL model module.")

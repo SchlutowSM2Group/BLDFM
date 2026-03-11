@@ -3,7 +3,7 @@
 The ``bldfm`` package
 =====================
 
-This package contains the BLDFM model. It includes core modules for the PBL model, spectral solver, and utility functions, as well as higher-level modules for configuration, interface, I/O, caching, plotting, and synthetic data generation.
+This package contains the BLDFM model. It includes core modules for the PBL model, spectral solver, and utility functions, as well as higher-level modules for configuration, interface, caching, and synthetic data generation.  Plotting and I/O are provided by ``abltk``.
 
 Core modules
 ------------
@@ -78,14 +78,6 @@ bldfm.synthetic module
    :undoc-members:
    :show-inheritance:
 
-bldfm.io module
-^^^^^^^^^^^^^^^
-
-.. automodule:: bldfm.io
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 bldfm.cache module
 ^^^^^^^^^^^^^^^^^^
 
@@ -97,66 +89,8 @@ bldfm.cache module
 Plotting
 --------
 
-bldfm.plotting package
-^^^^^^^^^^^^^^^^^^^^^^
+Plotting functions have moved to ``abltk.plotting``.  See the
+`abl-tk documentation <https://github.com/SchlutowSM2Group/abl-tk>`_ for the
+full API reference.  Common imports::
 
-.. automodule:: bldfm.plotting
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bldfm.plotting.footprint module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: bldfm.plotting.footprint
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bldfm.plotting.comparison module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: bldfm.plotting.comparison
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bldfm.plotting.diagnostics module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: bldfm.plotting.diagnostics
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bldfm.plotting.timeseries module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: bldfm.plotting.timeseries
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bldfm.plotting.interactive module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: bldfm.plotting.interactive
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bldfm.plotting.meteorology module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: bldfm.plotting.meteorology
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-bldfm.plotting.contours module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-.. automodule:: bldfm.plotting.contours
-   :members:
-   :undoc-members:
-   :show-inheritance:
+    from abltk.plotting import plot_footprint_field, plot_footprint_on_map

@@ -16,7 +16,7 @@ import numpy as np
 
 from bldfm.pbl_model import vertical_profiles
 from bldfm.solver import steady_state_transport_solver
-from bldfm.plotting import plot_source_area_gallery
+from abltk.plotting import plot_source_area_gallery
 
 if __name__ == "__main__":
     nx, ny, nz = 512, 256, 32

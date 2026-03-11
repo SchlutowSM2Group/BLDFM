@@ -21,8 +21,8 @@ from bldfm.config_parser import (
     MetConfig,
     SolverConfig,
 )
-from bldfm.plotting import plot_field_comparison
-from bldfm.utils import get_logger
+from abltk.plotting import plot_field_comparison
+from abltk.logging import get_logger
 
 logger = get_logger("comparison_analytic")
 

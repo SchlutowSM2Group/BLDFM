@@ -19,7 +19,7 @@ Key Features
 - **Config-driven Workflows**: YAML configuration files and a CLI (``bldfm run config.yaml``) for reproducible simulations.
 - **Multi-tower & Timeseries**: Run footprints for multiple towers across time-varying meteorology, with parallel execution support.
 - **NetCDF I/O**: Save and load multi-tower results in CF-1.8 compliant NetCDF format via xarray.
-- **Plotting**: Footprint fields with percentile contours, geospatial map overlays (contextily), wind roses, and interactive Plotly plots.
+- **Plotting**: Footprint fields with percentile contours, geospatial map overlays (contextily), wind roses, and interactive Plotly plots — powered by `abl-tk <https://github.com/SchlutowSM2Group/abl-tk>`_.
 - **Caching**: Disk-based caching of Green's function results to avoid redundant solves.
 - **Validation**: Tested against analytical solutions and benchmark models, ensuring accuracy and reliability.
 
@@ -30,7 +30,9 @@ Getting Started
 To begin using BLDFM, follow these steps in the root directory of the repository:
 
 1. **Installation**:
-   Install the package using pip:
+   Install the package using pip (this also installs
+   `abl-tk <https://github.com/SchlutowSM2Group/abl-tk>`_, the shared infrastructure
+   library):
 
    .. code-block:: bash
 
