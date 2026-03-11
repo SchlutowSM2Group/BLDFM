@@ -81,6 +81,12 @@ bldfm.synthetic module
 bldfm.io module
 ^^^^^^^^^^^^^^^
 
+.. deprecated::
+   ``bldfm.io`` is a thin wrapper around :py:mod:`abltk.io.netcdf`.  New code
+   should import directly from ``abltk``::
+
+       from abltk.io.netcdf import save_netcdf, load_netcdf
+
 .. automodule:: bldfm.io
    :members:
    :undoc-members:
@@ -96,6 +102,12 @@ bldfm.cache module
 
 Plotting
 --------
+
+.. deprecated::
+   ``bldfm.plotting`` submodules are thin wrappers around
+   :py:mod:`abltk.plotting`.  New code should import directly from ``abltk``::
+
+       from abltk.plotting import plot_footprint_field, plot_footprint_on_map
 
 bldfm.plotting package
 ^^^^^^^^^^^^^^^^^^^^^^

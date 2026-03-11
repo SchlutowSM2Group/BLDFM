@@ -54,6 +54,7 @@ Data and I/O
 
 8. :py:mod:`bldfm.io`
     NetCDF export and import of footprint results using xarray with CF-1.8 metadata.
+    Delegates to ``abltk.io.netcdf`` (see *Shared infrastructure* below).
 
 9. :py:mod:`bldfm.cache`
     Disk-based cache for Green's function results using SHA-256 keyed ``.npz`` files.
@@ -63,6 +64,7 @@ Plotting
 
 10. :py:mod:`bldfm.plotting`
      Visualisation functions for footprint fields, geospatial map overlays, wind roses, and temporal footprint evolution.
+     These are thin wrappers around ``abltk.plotting`` (see *Shared infrastructure* below).
 
 Pipeline architecture
 ---------------------
@@ -139,6 +141,30 @@ BLDFM exposes two tiers of API, each targeting a different use case.
 when you need to inspect or modify intermediate quantities (e.g. vertical
 profiles), run the solver with non-standard inputs, or integrate BLDFM into a
 larger modelling framework.
+
+Shared infrastructure (abl-tk)
+------------------------------
+
+BLDFM shares I/O, plotting, logging, and configuration utilities with
+`abl-tk <https://github.com/SchlutowSM2Group/abl-tk>`_, a companion library that
+avoids code duplication across the framework.  ``abl-tk`` is installed
+automatically as a dependency of BLDFM.
+
+The following BLDFM modules are **deprecation wrappers** that delegate to
+their ``abltk`` counterparts:
+
+- ``bldfm.io`` → ``abltk.io.netcdf``
+- ``bldfm.plotting.*`` → ``abltk.plotting.*``
+
+Existing imports (e.g. ``from bldfm import plot_footprint_field``) continue
+to work, but new code should import directly from ``abltk``::
+
+    # Preferred
+    from abltk.plotting import plot_footprint_field
+
+    # Still works (deprecated)
+    from bldfm import plot_footprint_field
+
 
 API reference
 -------------

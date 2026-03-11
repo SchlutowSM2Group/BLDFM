@@ -1,6 +1,13 @@
 Quick reference
 ===============
 
+.. note::
+
+   Plotting and I/O functions have been migrated to
+   `abl-tk <https://github.com/SchlutowSM2Group/abl-tk>`_.  Imports like
+   ``from bldfm import plot_footprint_field`` still work, but new code should
+   use ``from abltk.plotting import plot_footprint_field`` instead.
+
 Concise code snippets for the most common BLDFM workflows.  For step-by-step
 tutorials, see the `Quickstart Tutorial <tutorial_quickstart.html>`_ and
 `Full Tutorial <tutorial_full.html>`_.

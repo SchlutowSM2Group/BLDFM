@@ -518,6 +518,14 @@ automatically:
     # Run and save footprint plots to plots/
     $ bldfm run examples/configs/multitower.yaml --plot
 
+.. note::
+
+   ``--plot`` generates quick-inspection plots with default settings
+   (concentration + flux/footprint fields, or vertical slices for 3D runs).
+   For publication-quality figures with full control over layout and styling,
+   run the example scripts in ``examples/`` directly.  See
+   `Example Workflows <runs.html>`_ for the complete list.
+
 
 Further resources
 -----------------

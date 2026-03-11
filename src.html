@@ -7,10 +7,11 @@
 
     <title>The bldfm package &#8212; BLDFM 1.0.0-dev documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=89e598d8" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=df3fedd5" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=5ab75ac9" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=56c4699f" />
     <script src="_static/documentation_options.js?v=8313637b"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -46,7 +47,16 @@
 
 
 
-<ul class="current">
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Home</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_quickstart.html">Quickstart tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial_full.html">Full tutorial</a></li>
@@ -80,16 +90,6 @@
   </ul></li>
 </ul>
 </div>
-<search id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</search>
-<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -294,34 +294,6 @@ direction the wind is coming FROM, clockwise from north).
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="bldfm.utils.get_logger">
-<span class="sig-prename descclassname"><span class="pre">bldfm.utils.</span></span><span class="sig-name descname"><span class="pre">get_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/utils.html#get_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.utils.get_logger" title="Link to this definition">¶</a></dt>
-<dd><p>Get a logger instance for the given module.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.utils.get_source_area">
-<span class="sig-prename descclassname"><span class="pre">bldfm.utils.</span></span><span class="sig-name descname"><span class="pre">get_source_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">g</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/utils.html#get_source_area"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.utils.get_source_area" title="Link to this definition">¶</a></dt>
-<dd><p>Rescale g so contour levels represent cumulative contribution of f.</p>
-<p>For the transformed field, the contour at level R encloses the region
-where sum(f) = R.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>f</strong> (<em>ndarray</em>) – Function values (e.g., flux footprint).</p></li>
-<li><p><strong>g</strong> (<em>ndarray</em>) – Function defining level sets (often same as f).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>g_rescaled</strong> – Transformed field where contour values equal cumulative contribution.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="bldfm.utils.ideal_source">
 <span class="sig-prename descclassname"><span class="pre">bldfm.utils.</span></span><span class="sig-name descname"><span class="pre">ideal_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nxy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'diamond'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/utils.html#ideal_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.utils.ideal_source" title="Link to this definition">¶</a></dt>
 <dd><p>Creates a synthetic source field in the shape of a circle or diamond.
@@ -364,135 +336,6 @@ Useful for testing purposes.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.utils.setup_logging">
-<span class="sig-prename descclassname"><span class="pre">bldfm.utils.</span></span><span class="sig-name descname"><span class="pre">setup_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_string</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'logs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/utils.html#setup_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.utils.setup_logging" title="Link to this definition">¶</a></dt>
-<dd><p>Set up logging configuration with customizable options.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)</p></li>
-<li><p><strong>format_string</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Custom format string for log messages</p></li>
-<li><p><strong>log_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Optional specific log file name (overrides auto_file)</p></li>
-<li><p><strong>log_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Directory to store log files</p></li>
-<li><p><strong>auto_file</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If True, automatically generate timestamped filename</p></li>
-<li><p><strong>run_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Optional run name to include in log filename</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.utils.source_area_circular">
-<span class="sig-prename descclassname"><span class="pre">bldfm.utils.</span></span><span class="sig-name descname"><span class="pre">source_area_circular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_pt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/utils.html#source_area_circular"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.utils.source_area_circular" title="Link to this definition">¶</a></dt>
-<dd><p>Base function for circular contours centered at measurement point.</p>
-<p>g = -(r^2), so contours are concentric circles.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Coordinate grids.</p></li>
-<li><p><strong>Y</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Coordinate grids.</p></li>
-<li><p><strong>meas_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>xm</em><em>, </em><em>ym</em><em>)</em>) – Measurement (tower) location.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>g</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray (ny, nx)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.utils.source_area_contribution">
-<span class="sig-prename descclassname"><span class="pre">bldfm.utils.</span></span><span class="sig-name descname"><span class="pre">source_area_contribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/utils.html#source_area_contribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.utils.source_area_contribution" title="Link to this definition">¶</a></dt>
-<dd><p>Base function for contribution (isopleth) contours: g = flx.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Footprint field.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>g</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray (ny, nx)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.utils.source_area_crosswind">
-<span class="sig-prename descclassname"><span class="pre">bldfm.utils.</span></span><span class="sig-name descname"><span class="pre">source_area_crosswind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_pt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/utils.html#source_area_crosswind"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.utils.source_area_crosswind" title="Link to this definition">¶</a></dt>
-<dd><p>Base function for crosswind ridge contours.</p>
-<p>g = -(perpendicular distance from wind axis)^2.
-Contours are symmetric ridges parallel to the wind direction.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Coordinate grids.</p></li>
-<li><p><strong>Y</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Coordinate grids.</p></li>
-<li><p><strong>meas_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>xm</em><em>, </em><em>ym</em><em>)</em>) – Measurement (tower) location.</p></li>
-<li><p><strong>wind</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>u</em><em>, </em><em>v</em><em>)</em>) – Wind components (m/s).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>g</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray (ny, nx)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.utils.source_area_sector">
-<span class="sig-prename descclassname"><span class="pre">bldfm.utils.</span></span><span class="sig-name descname"><span class="pre">source_area_sector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_pt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/utils.html#source_area_sector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.utils.source_area_sector" title="Link to this definition">¶</a></dt>
-<dd><p>Base function for angular sector contours from upwind axis.</p>
-<p>g = -abs(theta), where theta is angular deviation from upwind direction.
-Contours form pie-slice sectors centered on the upwind direction.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Coordinate grids.</p></li>
-<li><p><strong>Y</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Coordinate grids.</p></li>
-<li><p><strong>meas_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>xm</em><em>, </em><em>ym</em><em>)</em>) – Measurement (tower) location.</p></li>
-<li><p><strong>wind</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>u</em><em>, </em><em>v</em><em>)</em>) – Wind components (m/s).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>g</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray (ny, nx)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.utils.source_area_upwind">
-<span class="sig-prename descclassname"><span class="pre">bldfm.utils.</span></span><span class="sig-name descname"><span class="pre">source_area_upwind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_pt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/utils.html#source_area_upwind"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.utils.source_area_upwind" title="Link to this definition">¶</a></dt>
-<dd><p>Base function for upwind distance-band contours.</p>
-<p>g = dot(wind_hat, r), where r is displacement from tower.
-Contours are lines perpendicular to the wind direction.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>X</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Coordinate grids.</p></li>
-<li><p><strong>Y</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Coordinate grids.</p></li>
-<li><p><strong>meas_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>xm</em><em>, </em><em>ym</em><em>)</em>) – Measurement (tower) location.</p></li>
-<li><p><strong>wind</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>u</em><em>, </em><em>v</em><em>)</em>) – Wind components (m/s).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>g</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ndarray (ny, nx)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -874,30 +717,6 @@ re-initialised with the new thread count.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="bldfm.config_parser.latlon_to_xy">
-<span class="sig-prename descclassname"><span class="pre">bldfm.config_parser.</span></span><span class="sig-name descname"><span class="pre">latlon_to_xy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_lon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/config_parser.html#latlon_to_xy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.config_parser.latlon_to_xy" title="Link to this definition">¶</a></dt>
-<dd><p>Convert lat/lon to local x/y (meters) relative to a reference point.</p>
-<p>Uses an equirectangular (flat-Earth) approximation, which is accurate
-to &lt;0.1% for domains up to ~100 km at mid-latitudes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>lat</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Point coordinates in decimal degrees.</p></li>
-<li><p><strong>lon</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Point coordinates in decimal degrees.</p></li>
-<li><p><strong>ref_lat</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Reference origin coordinates in decimal degrees.</p></li>
-<li><p><strong>ref_lon</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Reference origin coordinates in decimal degrees.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>x, y</strong> – Easting and northing in meters relative to (ref_lat, ref_lon).</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="bldfm.config_parser.load_config">
 <span class="sig-prename descclassname"><span class="pre">bldfm.config_parser.</span></span><span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#bldfm.config_parser.BLDFMConfig" title="bldfm.config_parser.BLDFMConfig"><span class="pre">BLDFMConfig</span></a></span></span><a class="reference internal" href="_modules/bldfm/config_parser.html#load_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.config_parser.load_config" title="Link to this definition">¶</a></dt>
 <dd><p>Load a BLDFM configuration from a YAML file.</p>
@@ -1132,43 +951,15 @@ ustar, mol, wind_speed, wind_dir, timestamps (all lists).</p>
 </dd></dl>
 
 </section>
-<section id="module-bldfm.io">
-<span id="bldfm-io-module"></span><h3>bldfm.io module<a class="headerlink" href="#module-bldfm.io" title="Link to this heading">¶</a></h3>
-<p>NetCDF I/O for BLDFM footprint results.</p>
-<p>Saves and loads multi-tower, multi-timestep footprint fields as CF-1.8
-compliant xarray Datasets with zlib compression.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.io.load_footprints_from_netcdf">
-<span class="sig-prename descclassname"><span class="pre">bldfm.io.</span></span><span class="sig-name descname"><span class="pre">load_footprints_from_netcdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/io.html#load_footprints_from_netcdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.io.load_footprints_from_netcdf" title="Link to this definition">¶</a></dt>
-<dd><p>Load footprint results from a NetCDF file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the NetCDF file.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dataset with footprint, concentration, and metadata.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>xr.Dataset</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.io.save_footprints_to_netcdf">
-<span class="sig-prename descclassname"><span class="pre">bldfm.io.</span></span><span class="sig-name descname"><span class="pre">save_footprints_to_netcdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/io.html#save_footprints_to_netcdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.io.save_footprints_to_netcdf" title="Link to this definition">¶</a></dt>
-<dd><p>Save multitower results to a CF-compliant NetCDF file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>results</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Output of run_bldfm_multitower: {tower_name: [result_dict, …]}.</p></li>
-<li><p><strong>config</strong> (<a class="reference internal" href="#bldfm.config_parser.BLDFMConfig" title="bldfm.config_parser.BLDFMConfig"><em>BLDFMConfig</em></a>) – Configuration used for the run.</p></li>
-<li><p><strong>filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em> or </em><em>Path</em>) – Output file path.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="bldfm-io-module">
+<h3>bldfm.io module<a class="headerlink" href="#bldfm-io-module" title="Link to this heading">¶</a></h3>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version ``bldfm.io``: </span>is a thin wrapper around <code class="xref py py-mod docutils literal notranslate"><span class="pre">abltk.io.netcdf</span></code>.  New code
+should import directly from <code class="docutils literal notranslate"><span class="pre">abltk</span></code>::</p>
+<blockquote>
+<div><p>from abltk.io.netcdf import save_netcdf, load_netcdf</p>
+</div></blockquote>
+</div>
 </section>
 <section id="module-bldfm.cache">
 <span id="bldfm-cache-module"></span><h3>bldfm.cache module<a class="headerlink" href="#module-bldfm.cache" title="Link to this heading">¶</a></h3>
@@ -1222,775 +1013,36 @@ point, halo, and precision.</p>
 </section>
 <section id="plotting">
 <h2>Plotting<a class="headerlink" href="#plotting" title="Link to this heading">¶</a></h2>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version ``bldfm.plotting``: </span>submodules are thin wrappers around
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">abltk.plotting</span></code>.  New code should import directly from <code class="docutils literal notranslate"><span class="pre">abltk</span></code>::</p>
+<blockquote>
+<div><p>from abltk.plotting import plot_footprint_field, plot_footprint_on_map</p>
+</div></blockquote>
+</div>
 <section id="module-bldfm.plotting">
 <span id="bldfm-plotting-package"></span><h3>bldfm.plotting package<a class="headerlink" href="#module-bldfm.plotting" title="Link to this heading">¶</a></h3>
-<p>Plotting package for BLDFM footprint visualisation.</p>
-<p>All matplotlib-based functions accept an optional <code class="docutils literal notranslate"><span class="pre">ax</span></code> parameter for
-composability.  Optional dependencies (contextily, windrose, plotly) are
-imported lazily and raise helpful messages when missing.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.extract_percentile_contour">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">extract_percentile_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/footprint.html#extract_percentile_contour"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.extract_percentile_contour" title="Link to this definition">¶</a></dt>
-<dd><p>Find the contour level that encloses <em>pct</em> of the cumulative footprint.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – 2-D footprint field (non-negative). If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – Coordinate arrays from the solver.</p></li>
-<li><p><strong>pct</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Fraction of the total footprint to enclose (0-1).</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when <em>flx</em> is 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>level</strong> (<em>float</em>) – Contour level value.</p></li>
-<li><p><strong>area</strong> (<em>float</em>) – Approximate area [m^2] enclosed by that contour.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_convergence">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_convergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'o'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$h$</span> <span class="pre">[m]'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Relative</span> <span class="pre">RMSE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/diagnostics.html#plot_convergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_convergence" title="Link to this definition">¶</a></dt>
-<dd><p>Log-log convergence plot.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>grid_sizes</strong> (<em>array-like</em>) – Effective grid spacings (h).</p></li>
-<li><p><strong>errors</strong> (<em>array-like</em>) – Error values (e.g., RMSE).</p></li>
-<li><p><strong>fits</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>(</em><em>func</em><em>, </em><em>params</em><em>, </em><em>label</em><em>)</em><em>, </em><em>optional</em>) – Curve fits to overlay. Each element is a tuple:
-(function, parameter_dict, label_string).
-Example: (lambda h, a, b: a * h**b, {“a”: 0.1, “b”: 2.0}, “$O(h^2)$”)</p></li>
-<li><p><strong>marker</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Marker style for data points (default “o”).</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>xlabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – X-axis label (default “$h$ [m]”).</p></li>
-<li><p><strong>ylabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Y-axis label (default “Relative RMSE”).</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_field_comparison">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_field_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_pt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'turbo'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/comparison.html#plot_field_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_field_comparison" title="Link to this definition">¶</a></dt>
-<dd><p>2x2 panel comparison: conc, flux, and relative differences.</p>
-<p>Top-left: concentration, top-right: flux.
-Bottom-left: relative difference concentration, bottom-right: relative difference flux.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Must contain keys: “conc”, “flx”, “conc_ref”, “flx_ref”.
-Values may be 2-D or 3-D arrays. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>xmax</em><em>, </em><em>ymax</em><em>)</em>) – Domain extents for imshow.</p></li>
-<li><p><strong>src_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>x</em><em>, </em><em>y</em><em>)</em><em>, </em><em>optional</em>) – Source point coordinates to mark with a red star on top panels.</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colormap name (default “turbo”).</p></li>
-<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – Figure size (width, height). Default (10, 6).</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when fields are 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>fig</strong> (<em>matplotlib Figure</em>)</p></li>
-<li><p><strong>axes</strong> (<em>ndarray of Axes (2x2)</em>)</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_footprint_comparison">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_footprint_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_pt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'turbo'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/comparison.html#plot_footprint_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_footprint_comparison" title="Link to this definition">¶</a></dt>
-<dd><p>Multi-panel contour plot comparing footprint models side-by-side.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>ndarray</em>) – List of 2-D (or 3-D) footprint fields to compare. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a>) – List of (X, Y) or (X, Y, Z) coordinate arrays (one per field).</p></li>
-<li><p><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Subplot titles.</p></li>
-<li><p><strong>meas_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>x</em><em>, </em><em>y</em><em>)</em><em>, </em><em>optional</em>) – Measurement point coordinates to mark with a red star on each panel.</p></li>
-<li><p><strong>n_levels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of contour levels (default 6).</p></li>
-<li><p><strong>vmin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Minimum contour level. If None, uses 5% of vmax.</p></li>
-<li><p><strong>vmax</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Maximum contour level. If None, uses max across all fields.</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colormap name (default “turbo”).</p></li>
-<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – Figure size (width, height).</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Overall figure title.</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when fields are 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>fig</strong> (<em>matplotlib Figure</em>)</p></li>
-<li><p><strong>axes</strong> (<em>ndarray of Axes</em>)</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_footprint_field">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_footprint_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour_pcts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RdYlBu_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">pcolormesh_kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/footprint.html#plot_footprint_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_footprint_field" title="Link to this definition">¶</a></dt>
-<dd><p>Plot a 2-D footprint field with optional percentile contours.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Footprint (or concentration) field. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – Coordinate arrays from the solver.</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>contour_pcts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Percentile fractions to overlay as contours (e.g. [0.5, 0.8]).</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colourmap name.</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when <em>flx</em> is 3D. Default 0 (surface).</p></li>
-<li><p><strong>**pcolormesh_kw</strong> – Forwarded to <code class="docutils literal notranslate"><span class="pre">ax.pcolormesh</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_footprint_interactive">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_footprint_interactive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/interactive.html#plot_footprint_interactive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_footprint_interactive" title="Link to this definition">¶</a></dt>
-<dd><p>Create an interactive Plotly heatmap of the footprint.</p>
-<p>Requires the optional <code class="docutils literal notranslate"><span class="pre">plotly</span></code> package.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Footprint field. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – Coordinate arrays.</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>xlim</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – (xmin, xmax) axis range.  Useful for excluding halo padding.</p></li>
-<li><p><strong>ylim</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – (ymin, ymax) axis range.</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when <em>flx</em> is 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>fig</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>plotly.graph_objects.Figure</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_footprint_on_map">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_footprint_on_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour_pcts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">land_cover</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">land_cover_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(512,</span> <span class="pre">512)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RdYlBu_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/footprint.html#plot_footprint_on_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_footprint_on_map" title="Link to this definition">¶</a></dt>
-<dd><p>Overlay footprint contours and tower marker(s) on map tiles.</p>
-<p>Requires <code class="docutils literal notranslate"><span class="pre">contextily</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">owslib</span></code> (when <em>land_cover=True</em>).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Footprint field. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – Coordinate arrays (local metres).</p></li>
-<li><p><strong>config</strong> (<a class="reference internal" href="#bldfm.config_parser.BLDFMConfig" title="bldfm.config_parser.BLDFMConfig"><em>BLDFMConfig</em></a>) – Configuration (for ref_lat/ref_lon and tower metadata).</p></li>
-<li><p><strong>tower</strong> (<a class="reference internal" href="#bldfm.config_parser.TowerConfig" title="bldfm.config_parser.TowerConfig"><em>TowerConfig</em></a><em>, </em><em>optional</em>) – Specific tower to highlight.  If None, all towers are plotted.</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>contour_pcts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Percentile contours to draw (default [0.5, 0.8]).</p></li>
-<li><p><strong>tile_source</strong> (<em>contextily tile source</em><em>, </em><em>optional</em>) – Defaults to OpenStreetMap.  Ignored when <em>land_cover=True</em> unless
-explicitly provided (in which case both layers are rendered).</p></li>
-<li><p><strong>land_cover</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If True, use ESA WorldCover 2021 as the basemap instead of OSM
-tiles.  Requires the optional <code class="docutils literal notranslate"><span class="pre">owslib</span></code> package.</p></li>
-<li><p><strong>land_cover_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Pixel dimensions (width, height) for the WMS request (default
-(512, 512)).  Increase for higher resolution.</p></li>
-<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Transparency for footprint fill.</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colourmap for the footprint fill.</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when <em>flx</em> is 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_footprint_timeseries">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_footprint_timeseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pcts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/timeseries.html#plot_footprint_timeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_footprint_timeseries" title="Link to this definition">¶</a></dt>
-<dd><p>Plot temporal evolution of footprint extent.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>results</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Output of run_bldfm_timeseries (list of result dicts for one tower).</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – Coordinate arrays (from first result, assumed constant).</p></li>
-<li><p><strong>pcts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Percentile fractions to track (default [0.5, 0.8]).</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when footprint fields are 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_source_area_contours">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_source_area_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_area_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RdYlBu_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">pcolormesh_kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/contours.html#plot_source_area_contours"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_source_area_contours" title="Link to this definition">¶</a></dt>
-<dd><p>Plot footprint field with source area contour overlay.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">source_area_field</span></code> should be the output of
-<code class="docutils literal notranslate"><span class="pre">get_source_area(flx,</span> <span class="pre">g)</span></code> for some base function <code class="docutils literal notranslate"><span class="pre">g</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Original footprint field (plotted as pcolormesh background).
-If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>) or </em><em>(</em><em>X</em><em>, </em><em>Y</em><em>)</em>) – Coordinate arrays from the solver.</p></li>
-<li><p><strong>source_area_field</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Rescaled field from <code class="docutils literal notranslate"><span class="pre">get_source_area()</span></code>, where contour levels
-represent cumulative contribution fractions.
-If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>levels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Contribution fraction levels (default [0.25, 0.5, 0.75]).</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>contour_colors</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Colors for contour lines (default [‘white’, ‘magenta’, ‘cyan’]).</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colourmap for background pcolormesh.</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when fields are 3D. Default 0 (surface).</p></li>
-<li><p><strong>colorbar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Whether to add a colorbar. Default True.</p></li>
-<li><p><strong>**pcolormesh_kw</strong> – Forwarded to <code class="docutils literal notranslate"><span class="pre">ax.pcolormesh</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_source_area_gallery">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_source_area_gallery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_pt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RdYlBu_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/contours.html#plot_source_area_gallery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_source_area_gallery" title="Link to this definition">¶</a></dt>
-<dd><p>Multi-panel plot showing all 5 source area contour types.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Footprint field. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>) or </em><em>(</em><em>X</em><em>, </em><em>Y</em><em>)</em>) – Coordinate arrays from the solver.</p></li>
-<li><p><strong>meas_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>xm</em><em>, </em><em>ym</em><em>)</em>) – Measurement point.</p></li>
-<li><p><strong>wind</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>u</em><em>, </em><em>v</em><em>)</em>) – Wind components (m/s).</p></li>
-<li><p><strong>levels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Contribution fraction levels (default [0.25, 0.5, 0.75]).</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colourmap for background.</p></li>
-<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – Figure size (default (18, 10)).</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when <em>flx</em> is 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>fig</strong> (<em>matplotlib Figure</em>)</p></li>
-<li><p><strong>axes</strong> (<em>ndarray of Axes (2, 3)</em>)</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_vertical_profiles">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_vertical_profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profiles_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/diagnostics.html#plot_vertical_profiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_vertical_profiles" title="Link to this definition">¶</a></dt>
-<dd><p>Multi-panel (1x2) profile plot: wind speed and diffusivity vs height.</p>
-<p>Left panel: wind speed |U| = sqrt(u² + v²) vs z.
-Right panel: Kz vs z.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>z_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>array-like</em>) – List of z arrays (one per stability condition).</p></li>
-<li><p><strong>profiles_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a>) – List of profile tuples (u, v, Kx, Ky, Kz), one per stability condition.</p></li>
-<li><p><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Legend labels for each profile (e.g., “L = -10 m”).</p></li>
-<li><p><strong>meas_height</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Measurement height to mark with a horizontal dashed line.</p></li>
-<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – Figure size (width, height). Default (10, 5).</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Overall figure title.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>fig</strong> (<em>matplotlib Figure</em>)</p></li>
-<li><p><strong>axes</strong> (<em>ndarray of Axes (1x2)</em>)</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_vertical_slice">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_vertical_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/diagnostics.html#plot_vertical_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_vertical_slice" title="Link to this definition">¶</a></dt>
-<dd><p>2D slice from a 3D field.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>field</strong> (<em>ndarray</em><em> (</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – 3-D field to slice.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – 3-D coordinate arrays from the solver.</p></li>
-<li><p><strong>slice_axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Axis to slice along: “x”, “y”, or “z”.</p></li>
-<li><p><strong>slice_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Index along the slice axis.</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colormap name (default “viridis”).</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>xlabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – X-axis label (auto-generated if None).</p></li>
-<li><p><strong>ylabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Y-axis label (auto-generated if None).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.plot_wind_rose">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_wind_rose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wind_speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/meteorology.html#plot_wind_rose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.plot_wind_rose" title="Link to this definition">¶</a></dt>
-<dd><p>Plot a wind rose from meteorological data.</p>
-<p>Requires the optional <code class="docutils literal notranslate"><span class="pre">windrose</span></code> package.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>wind_speed</strong> (<em>array-like</em>) – Wind speed values.</p></li>
-<li><p><strong>wind_dir</strong> (<em>array-like</em>) – Wind direction values (degrees, meteorological convention).</p></li>
-<li><p><strong>ax</strong> (<em>WindroseAxes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>bins</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Speed bins.</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>WindroseAxes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<section id="module-bldfm.plotting.footprint">
-<span id="bldfm-plotting-footprint-module"></span><h4>bldfm.plotting.footprint module<a class="headerlink" href="#module-bldfm.plotting.footprint" title="Link to this heading">¶</a></h4>
-<p>Core footprint plots and percentile contour computation.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.footprint.extract_percentile_contour">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.footprint.</span></span><span class="sig-name descname"><span class="pre">extract_percentile_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/footprint.html#extract_percentile_contour"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.footprint.extract_percentile_contour" title="Link to this definition">¶</a></dt>
-<dd><p>Find the contour level that encloses <em>pct</em> of the cumulative footprint.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – 2-D footprint field (non-negative). If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – Coordinate arrays from the solver.</p></li>
-<li><p><strong>pct</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Fraction of the total footprint to enclose (0-1).</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when <em>flx</em> is 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>level</strong> (<em>float</em>) – Contour level value.</p></li>
-<li><p><strong>area</strong> (<em>float</em>) – Approximate area [m^2] enclosed by that contour.</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.footprint.plot_footprint_field">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.footprint.</span></span><span class="sig-name descname"><span class="pre">plot_footprint_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour_pcts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RdYlBu_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">pcolormesh_kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/footprint.html#plot_footprint_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.footprint.plot_footprint_field" title="Link to this definition">¶</a></dt>
-<dd><p>Plot a 2-D footprint field with optional percentile contours.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Footprint (or concentration) field. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – Coordinate arrays from the solver.</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>contour_pcts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Percentile fractions to overlay as contours (e.g. [0.5, 0.8]).</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colourmap name.</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when <em>flx</em> is 3D. Default 0 (surface).</p></li>
-<li><p><strong>**pcolormesh_kw</strong> – Forwarded to <code class="docutils literal notranslate"><span class="pre">ax.pcolormesh</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.footprint.plot_footprint_on_map">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.footprint.</span></span><span class="sig-name descname"><span class="pre">plot_footprint_on_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour_pcts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tile_source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">land_cover</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">land_cover_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(512,</span> <span class="pre">512)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RdYlBu_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/footprint.html#plot_footprint_on_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.footprint.plot_footprint_on_map" title="Link to this definition">¶</a></dt>
-<dd><p>Overlay footprint contours and tower marker(s) on map tiles.</p>
-<p>Requires <code class="docutils literal notranslate"><span class="pre">contextily</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">owslib</span></code> (when <em>land_cover=True</em>).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Footprint field. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – Coordinate arrays (local metres).</p></li>
-<li><p><strong>config</strong> (<a class="reference internal" href="#bldfm.config_parser.BLDFMConfig" title="bldfm.config_parser.BLDFMConfig"><em>BLDFMConfig</em></a>) – Configuration (for ref_lat/ref_lon and tower metadata).</p></li>
-<li><p><strong>tower</strong> (<a class="reference internal" href="#bldfm.config_parser.TowerConfig" title="bldfm.config_parser.TowerConfig"><em>TowerConfig</em></a><em>, </em><em>optional</em>) – Specific tower to highlight.  If None, all towers are plotted.</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>contour_pcts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Percentile contours to draw (default [0.5, 0.8]).</p></li>
-<li><p><strong>tile_source</strong> (<em>contextily tile source</em><em>, </em><em>optional</em>) – Defaults to OpenStreetMap.  Ignored when <em>land_cover=True</em> unless
-explicitly provided (in which case both layers are rendered).</p></li>
-<li><p><strong>land_cover</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – If True, use ESA WorldCover 2021 as the basemap instead of OSM
-tiles.  Requires the optional <code class="docutils literal notranslate"><span class="pre">owslib</span></code> package.</p></li>
-<li><p><strong>land_cover_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Pixel dimensions (width, height) for the WMS request (default
-(512, 512)).  Increase for higher resolution.</p></li>
-<li><p><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a>) – Transparency for footprint fill.</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colourmap for the footprint fill.</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when <em>flx</em> is 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
+<p>Plotting has moved to abltk.plotting. This package is kept as an empty namespace.</p>
+<section id="bldfm-plotting-footprint-module">
+<h4>bldfm.plotting.footprint module<a class="headerlink" href="#bldfm-plotting-footprint-module" title="Link to this heading">¶</a></h4>
 </section>
-<section id="module-bldfm.plotting.comparison">
-<span id="bldfm-plotting-comparison-module"></span><h4>bldfm.plotting.comparison module<a class="headerlink" href="#module-bldfm.plotting.comparison" title="Link to this heading">¶</a></h4>
-<p>Multi-panel comparison plots.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.comparison.plot_field_comparison">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.comparison.</span></span><span class="sig-name descname"><span class="pre">plot_field_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">domain</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_pt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'turbo'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/comparison.html#plot_field_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.comparison.plot_field_comparison" title="Link to this definition">¶</a></dt>
-<dd><p>2x2 panel comparison: conc, flux, and relative differences.</p>
-<p>Top-left: concentration, top-right: flux.
-Bottom-left: relative difference concentration, bottom-right: relative difference flux.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Must contain keys: “conc”, “flx”, “conc_ref”, “flx_ref”.
-Values may be 2-D or 3-D arrays. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>domain</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>xmax</em><em>, </em><em>ymax</em><em>)</em>) – Domain extents for imshow.</p></li>
-<li><p><strong>src_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>x</em><em>, </em><em>y</em><em>)</em><em>, </em><em>optional</em>) – Source point coordinates to mark with a red star on top panels.</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colormap name (default “turbo”).</p></li>
-<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – Figure size (width, height). Default (10, 6).</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when fields are 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>fig</strong> (<em>matplotlib Figure</em>)</p></li>
-<li><p><strong>axes</strong> (<em>ndarray of Axes (2x2)</em>)</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.comparison.plot_footprint_comparison">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.comparison.</span></span><span class="sig-name descname"><span class="pre">plot_footprint_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fields</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grids</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_pt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'turbo'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/comparison.html#plot_footprint_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.comparison.plot_footprint_comparison" title="Link to this definition">¶</a></dt>
-<dd><p>Multi-panel contour plot comparing footprint models side-by-side.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>fields</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>ndarray</em>) – List of 2-D (or 3-D) footprint fields to compare. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a>) – List of (X, Y) or (X, Y, Z) coordinate arrays (one per field).</p></li>
-<li><p><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Subplot titles.</p></li>
-<li><p><strong>meas_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>x</em><em>, </em><em>y</em><em>)</em><em>, </em><em>optional</em>) – Measurement point coordinates to mark with a red star on each panel.</p></li>
-<li><p><strong>n_levels</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Number of contour levels (default 6).</p></li>
-<li><p><strong>vmin</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Minimum contour level. If None, uses 5% of vmax.</p></li>
-<li><p><strong>vmax</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Maximum contour level. If None, uses max across all fields.</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colormap name (default “turbo”).</p></li>
-<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – Figure size (width, height).</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Overall figure title.</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when fields are 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>fig</strong> (<em>matplotlib Figure</em>)</p></li>
-<li><p><strong>axes</strong> (<em>ndarray of Axes</em>)</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="bldfm-plotting-comparison-module">
+<h4>bldfm.plotting.comparison module<a class="headerlink" href="#bldfm-plotting-comparison-module" title="Link to this heading">¶</a></h4>
 </section>
-<section id="module-bldfm.plotting.diagnostics">
-<span id="bldfm-plotting-diagnostics-module"></span><h4>bldfm.plotting.diagnostics module<a class="headerlink" href="#module-bldfm.plotting.diagnostics" title="Link to this heading">¶</a></h4>
-<p>Diagnostic and analysis plots: convergence, vertical profiles, vertical slices.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.diagnostics.plot_convergence">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.diagnostics.</span></span><span class="sig-name descname"><span class="pre">plot_convergence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid_sizes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">errors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'o'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'$h$</span> <span class="pre">[m]'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Relative</span> <span class="pre">RMSE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/diagnostics.html#plot_convergence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.diagnostics.plot_convergence" title="Link to this definition">¶</a></dt>
-<dd><p>Log-log convergence plot.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>grid_sizes</strong> (<em>array-like</em>) – Effective grid spacings (h).</p></li>
-<li><p><strong>errors</strong> (<em>array-like</em>) – Error values (e.g., RMSE).</p></li>
-<li><p><strong>fits</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>(</em><em>func</em><em>, </em><em>params</em><em>, </em><em>label</em><em>)</em><em>, </em><em>optional</em>) – Curve fits to overlay. Each element is a tuple:
-(function, parameter_dict, label_string).
-Example: (lambda h, a, b: a * h**b, {“a”: 0.1, “b”: 2.0}, “$O(h^2)$”)</p></li>
-<li><p><strong>marker</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Marker style for data points (default “o”).</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>xlabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – X-axis label (default “$h$ [m]”).</p></li>
-<li><p><strong>ylabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Y-axis label (default “Relative RMSE”).</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.diagnostics.plot_vertical_profiles">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.diagnostics.</span></span><span class="sig-name descname"><span class="pre">plot_vertical_profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profiles_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/diagnostics.html#plot_vertical_profiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.diagnostics.plot_vertical_profiles" title="Link to this definition">¶</a></dt>
-<dd><p>Multi-panel (1x2) profile plot: wind speed and diffusivity vs height.</p>
-<p>Left panel: wind speed |U| = sqrt(u² + v²) vs z.
-Right panel: Kz vs z.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>z_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><em>array-like</em>) – List of z arrays (one per stability condition).</p></li>
-<li><p><strong>profiles_list</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a>) – List of profile tuples (u, v, Kx, Ky, Kz), one per stability condition.</p></li>
-<li><p><strong>labels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Legend labels for each profile (e.g., “L = -10 m”).</p></li>
-<li><p><strong>meas_height</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Measurement height to mark with a horizontal dashed line.</p></li>
-<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – Figure size (width, height). Default (10, 5).</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Overall figure title.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>fig</strong> (<em>matplotlib Figure</em>)</p></li>
-<li><p><strong>axes</strong> (<em>ndarray of Axes (1x2)</em>)</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.diagnostics.plot_vertical_slice">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.diagnostics.</span></span><span class="sig-name descname"><span class="pre">plot_vertical_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">slice_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'viridis'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/diagnostics.html#plot_vertical_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.diagnostics.plot_vertical_slice" title="Link to this definition">¶</a></dt>
-<dd><p>2D slice from a 3D field.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>field</strong> (<em>ndarray</em><em> (</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – 3-D field to slice.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – 3-D coordinate arrays from the solver.</p></li>
-<li><p><strong>slice_axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Axis to slice along: “x”, “y”, or “z”.</p></li>
-<li><p><strong>slice_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Index along the slice axis.</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colormap name (default “viridis”).</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>xlabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – X-axis label (auto-generated if None).</p></li>
-<li><p><strong>ylabel</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Y-axis label (auto-generated if None).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="bldfm-plotting-diagnostics-module">
+<h4>bldfm.plotting.diagnostics module<a class="headerlink" href="#bldfm-plotting-diagnostics-module" title="Link to this heading">¶</a></h4>
 </section>
-<section id="module-bldfm.plotting.timeseries">
-<span id="bldfm-plotting-timeseries-module"></span><h4>bldfm.plotting.timeseries module<a class="headerlink" href="#module-bldfm.plotting.timeseries" title="Link to this heading">¶</a></h4>
-<p>Temporal footprint evolution plots.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.timeseries.plot_footprint_timeseries">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.timeseries.</span></span><span class="sig-name descname"><span class="pre">plot_footprint_timeseries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pcts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/timeseries.html#plot_footprint_timeseries"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.timeseries.plot_footprint_timeseries" title="Link to this definition">¶</a></dt>
-<dd><p>Plot temporal evolution of footprint extent.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>results</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Output of run_bldfm_timeseries (list of result dicts for one tower).</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – Coordinate arrays (from first result, assumed constant).</p></li>
-<li><p><strong>pcts</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Percentile fractions to track (default [0.5, 0.8]).</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when footprint fields are 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="bldfm-plotting-timeseries-module">
+<h4>bldfm.plotting.timeseries module<a class="headerlink" href="#bldfm-plotting-timeseries-module" title="Link to this heading">¶</a></h4>
 </section>
-<section id="module-bldfm.plotting.interactive">
-<span id="bldfm-plotting-interactive-module"></span><h4>bldfm.plotting.interactive module<a class="headerlink" href="#module-bldfm.plotting.interactive" title="Link to this heading">¶</a></h4>
-<p>Interactive (non-matplotlib) plotting backends.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.interactive.plot_footprint_interactive">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.interactive.</span></span><span class="sig-name descname"><span class="pre">plot_footprint_interactive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/interactive.html#plot_footprint_interactive"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.interactive.plot_footprint_interactive" title="Link to this definition">¶</a></dt>
-<dd><p>Create an interactive Plotly heatmap of the footprint.</p>
-<p>Requires the optional <code class="docutils literal notranslate"><span class="pre">plotly</span></code> package.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Footprint field. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>)</em>) – Coordinate arrays.</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>xlim</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – (xmin, xmax) axis range.  Useful for excluding halo padding.</p></li>
-<li><p><strong>ylim</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – (ymin, ymax) axis range.</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when <em>flx</em> is 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>fig</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>plotly.graph_objects.Figure</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="bldfm-plotting-interactive-module">
+<h4>bldfm.plotting.interactive module<a class="headerlink" href="#bldfm-plotting-interactive-module" title="Link to this heading">¶</a></h4>
 </section>
-<section id="module-bldfm.plotting.meteorology">
-<span id="bldfm-plotting-meteorology-module"></span><h4>bldfm.plotting.meteorology module<a class="headerlink" href="#module-bldfm.plotting.meteorology" title="Link to this heading">¶</a></h4>
-<p>Meteorological data visualizations.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.meteorology.plot_wind_rose">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.meteorology.</span></span><span class="sig-name descname"><span class="pre">plot_wind_rose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wind_speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/meteorology.html#plot_wind_rose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.meteorology.plot_wind_rose" title="Link to this definition">¶</a></dt>
-<dd><p>Plot a wind rose from meteorological data.</p>
-<p>Requires the optional <code class="docutils literal notranslate"><span class="pre">windrose</span></code> package.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>wind_speed</strong> (<em>array-like</em>) – Wind speed values.</p></li>
-<li><p><strong>wind_dir</strong> (<em>array-like</em>) – Wind direction values (degrees, meteorological convention).</p></li>
-<li><p><strong>ax</strong> (<em>WindroseAxes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>bins</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Speed bins.</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>WindroseAxes</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="bldfm-plotting-meteorology-module">
+<h4>bldfm.plotting.meteorology module<a class="headerlink" href="#bldfm-plotting-meteorology-module" title="Link to this heading">¶</a></h4>
 </section>
-<section id="module-bldfm.plotting.contours">
-<span id="bldfm-plotting-contours-module"></span><h4>bldfm.plotting.contours module<a class="headerlink" href="#module-bldfm.plotting.contours" title="Link to this heading">¶</a></h4>
-<p>Source area contour visualization functions.</p>
-<p>These functions combine the output of <code class="docutils literal notranslate"><span class="pre">bldfm.utils.get_source_area()</span></code>
-with matplotlib contour overlays.  The <code class="docutils literal notranslate"><span class="pre">get_source_area</span></code> computation
-itself lives in <code class="docutils literal notranslate"><span class="pre">bldfm.utils</span></code> – this module handles only visualization.</p>
-<p>Source area contours represent the spatial region that contributes a given
-fraction of the measured flux.  Different “base functions” produce different
-contour geometries:</p>
-<ul class="simple">
-<li><p><strong>Contribution contours</strong> (g = f): standard isopleth contours</p></li>
-<li><p><strong>Circular contours</strong> (g = -(r^2)): concentric circles from tower</p></li>
-<li><p><strong>Upwind contours</strong> (g = dot(wind_hat, r)): upwind distance bands</p></li>
-<li><p><strong>Crosswind contours</strong> (g = -(perp distance)^2): crosswind ridges</p></li>
-<li><p><strong>Sector contours</strong> (g = -abs(theta)): angular sectors from upwind axis</p></li>
-</ul>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#bldfm.utils.get_source_area" title="bldfm.utils.get_source_area"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bldfm.utils.get_source_area</span></code></a></dt><dd><p>Rescale a field so contour levels represent cumulative contribution fractions.</p>
-</dd>
-</dl>
-</div>
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.contours.plot_source_area_contours">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.contours.</span></span><span class="sig-name descname"><span class="pre">plot_source_area_contours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_area_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contour_colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RdYlBu_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">pcolormesh_kw</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/contours.html#plot_source_area_contours"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.contours.plot_source_area_contours" title="Link to this definition">¶</a></dt>
-<dd><p>Plot footprint field with source area contour overlay.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">source_area_field</span></code> should be the output of
-<code class="docutils literal notranslate"><span class="pre">get_source_area(flx,</span> <span class="pre">g)</span></code> for some base function <code class="docutils literal notranslate"><span class="pre">g</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Original footprint field (plotted as pcolormesh background).
-If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>) or </em><em>(</em><em>X</em><em>, </em><em>Y</em><em>)</em>) – Coordinate arrays from the solver.</p></li>
-<li><p><strong>source_area_field</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Rescaled field from <code class="docutils literal notranslate"><span class="pre">get_source_area()</span></code>, where contour levels
-represent cumulative contribution fractions.
-If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>levels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Contribution fraction levels (default [0.25, 0.5, 0.75]).</p></li>
-<li><p><strong>ax</strong> (<em>matplotlib Axes</em><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>contour_colors</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>) – Colors for contour lines (default [‘white’, ‘magenta’, ‘cyan’]).</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colourmap for background pcolormesh.</p></li>
-<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>, </em><em>optional</em>)</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when fields are 3D. Default 0 (surface).</p></li>
-<li><p><strong>colorbar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Whether to add a colorbar. Default True.</p></li>
-<li><p><strong>**pcolormesh_kw</strong> – Forwarded to <code class="docutils literal notranslate"><span class="pre">ax.pcolormesh</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ax</strong></p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>matplotlib Axes</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="bldfm.plotting.contours.plot_source_area_gallery">
-<span class="sig-prename descclassname"><span class="pre">bldfm.plotting.contours.</span></span><span class="sig-name descname"><span class="pre">plot_source_area_gallery</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas_pt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">levels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RdYlBu_r'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/bldfm/plotting/contours.html#plot_source_area_gallery"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#bldfm.plotting.contours.plot_source_area_gallery" title="Link to this definition">¶</a></dt>
-<dd><p>Multi-panel plot showing all 5 source area contour types.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>flx</strong> (<em>ndarray</em><em> (</em><em>ny</em><em>, </em><em>nx</em><em>) or </em><em>(</em><em>nz</em><em>, </em><em>ny</em><em>, </em><em>nx</em><em>)</em>) – Footprint field. If 3D, sliced at <em>level</em>.</p></li>
-<li><p><strong>grid</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>X</em><em>, </em><em>Y</em><em>, </em><em>Z</em><em>) or </em><em>(</em><em>X</em><em>, </em><em>Y</em><em>)</em>) – Coordinate arrays from the solver.</p></li>
-<li><p><strong>meas_pt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>xm</em><em>, </em><em>ym</em><em>)</em>) – Measurement point.</p></li>
-<li><p><strong>wind</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em> (</em><em>u</em><em>, </em><em>v</em><em>)</em>) – Wind components (m/s).</p></li>
-<li><p><strong>levels</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>, </em><em>optional</em>) – Contribution fraction levels (default [0.25, 0.5, 0.75]).</p></li>
-<li><p><strong>cmap</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Colourmap for background.</p></li>
-<li><p><strong>figsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a><em>, </em><em>optional</em>) – Figure size (default (18, 10)).</p></li>
-<li><p><strong>level</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Z-index to use when <em>flx</em> is 3D. Default 0 (surface).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>fig</strong> (<em>matplotlib Figure</em>)</p></li>
-<li><p><strong>axes</strong> (<em>ndarray of Axes (2, 3)</em>)</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="bldfm-plotting-contours-module">
+<h4>bldfm.plotting.contours module<a class="headerlink" href="#bldfm-plotting-contours-module" title="Link to this heading">¶</a></h4>
 </section>
 </section>
 </section>
@@ -2022,8 +1074,8 @@ If 3D, sliced at <em>level</em>.</p></li>
       &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
       
       |
-      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>
-      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/src.rst.txt"
