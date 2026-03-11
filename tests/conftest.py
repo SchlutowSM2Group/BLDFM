@@ -20,6 +20,7 @@ def pytest_addoption(parser):
 def update_references(request):
     return request.config.getoption("--update-references")
 
+
 from bldfm.config_parser import parse_config_dict
 from bldfm.interface import run_bldfm_single, run_bldfm_timeseries, run_bldfm_multitower
 from bldfm.pbl_model import vertical_profiles

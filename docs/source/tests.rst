@@ -9,8 +9,7 @@ All tests can be run with:
 
    $ pytest -v tests/
 
-Tests are organised into four categories using pytest marks.  Each category
-runs as a separate CI job:
+Tests are organised into five categories using pytest marks:
 
 .. code-block:: bash
 
@@ -18,6 +17,7 @@ runs as a separate CI job:
    $ pytest -v -m integration tests/   # solver-dependent
    $ pytest -v -m parallel tests/      # multiprocessing
    $ pytest -v -m plotting tests/      # matplotlib / plotly
+   $ pytest -v -m regression tests/    # compare against saved references
 
 Unit tests (``unit``)
 ---------------------
@@ -99,6 +99,38 @@ tests.test\_plotting module
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: tests.test_plotting
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Regression tests (``regression``)
+----------------------------------
+
+Regression tests compare solver outputs against saved ``.npz`` reference files
+in ``tests/references/``.  They catch silent numerical drift that property-based
+tests (positivity, mass conservation) would miss.
+
+Five scenarios are checked: ``single_footprint``, ``source_area``, ``plume_3d``,
+``timeseries_step0``, and ``timeseries_step2``.  All use tolerances of
+``atol=1e-6``, ``rtol=1e-5`` (MOST closure).
+
+To regenerate baselines after intentional solver changes:
+
+.. code-block:: bash
+
+   $ pytest --update-references tests/test_regression.py \
+         tests/test_integration.py tests/test_interface.py
+   $ git add tests/references/
+
+.. note::
+
+   The integration and interface test files must be included so that the
+   session-scoped solver fixtures are triggered.
+
+tests.test\_regression module
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: tests.test_regression
    :members:
    :undoc-members:
    :show-inheritance:
