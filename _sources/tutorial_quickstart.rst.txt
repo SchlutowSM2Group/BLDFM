@@ -60,7 +60,8 @@ Compute a footprint and visualise it with 50 % and 80 % cumulative contours:
 
 .. code-block:: python
 
-    from bldfm import run_bldfm_single, plot_footprint_field
+    from bldfm import run_bldfm_single
+    from abltk.plotting import plot_footprint_field
     import matplotlib
     matplotlib.use("Agg")          # use "TkAgg" or remove for interactive display
     import matplotlib.pyplot as plt

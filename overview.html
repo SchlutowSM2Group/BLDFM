@@ -206,12 +206,6 @@
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.io</span></code></dt><dd><p>NetCDF export and import of footprint results using xarray with CF-1.8 metadata.
-Delegates to <code class="docutils literal notranslate"><span class="pre">abltk.io.netcdf</span></code> (see <em>Shared infrastructure</em> below).</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
 <dt><a class="reference internal" href="src.html#module-bldfm.cache" title="bldfm.cache"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.cache</span></code></a></dt><dd><p>Disk-based cache for Green’s function results using SHA-256 keyed <code class="docutils literal notranslate"><span class="pre">.npz</span></code> files.</p>
 </dd>
 </dl>
@@ -220,13 +214,11 @@ Delegates to <code class="docutils literal notranslate"><span class="pre">abltk.
 </section>
 <section id="plotting">
 <h2>Plotting<a class="headerlink" href="#plotting" title="Link to this heading">¶</a></h2>
-<ol class="arabic simple" start="10">
-<li><dl class="simple">
-<dt><a class="reference internal" href="src.html#module-bldfm.plotting" title="bldfm.plotting"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bldfm.plotting</span></code></a></dt><dd><p>Visualisation functions for footprint fields, geospatial map overlays, wind roses, and temporal footprint evolution.
-These are thin wrappers around <code class="docutils literal notranslate"><span class="pre">abltk.plotting</span></code> (see <em>Shared infrastructure</em> below).</p>
-</dd>
-</dl>
-</li>
+<ol class="arabic simple" start="9">
+<li><p>Plotting functions (footprint fields, geospatial map overlays, wind roses,
+temporal footprint evolution) are provided by
+<a class="reference external" href="https://github.com/SchlutowSM2Group/abl-tk">abl-tk</a>.  Import them from
+<code class="docutils literal notranslate"><span class="pre">abltk.plotting</span></code> (see <em>Shared infrastructure</em> below).</p></li>
 </ol>
 </section>
 <section id="pipeline-architecture">
@@ -266,12 +258,11 @@ steady_state_transport_solver()  [solver]│
                          ▼
               result dict {grid, conc, flx, …}
                          │
-           ┌─────────────┼─────────────┐
-           │             │             │
-           ▼             ▼             ▼
-   GreensFunctionCache  save to     plot_*()
-       [cache]         NetCDF     [plotting]
-                       [io]
+           ┌─────────────┼──────────────────┐
+           │             │                  │
+           ▼             ▼                  ▼
+   GreensFunctionCache  save_netcdf()     plot_*()
+       [cache]         [abltk.io]       [abltk.plotting]
 </pre></div>
 </div>
 </section>
@@ -307,19 +298,10 @@ larger modelling framework.</p>
 <a class="reference external" href="https://github.com/SchlutowSM2Group/abl-tk">abl-tk</a>, a companion library that
 avoids code duplication across the framework.  <code class="docutils literal notranslate"><span class="pre">abl-tk</span></code> is installed
 automatically as a dependency of BLDFM.</p>
-<p>The following BLDFM modules are <strong>deprecation wrappers</strong> that delegate to
-their <code class="docutils literal notranslate"><span class="pre">abltk</span></code> counterparts:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">bldfm.io</span></code> → <code class="docutils literal notranslate"><span class="pre">abltk.io.netcdf</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">bldfm.plotting.*</span></code> → <code class="docutils literal notranslate"><span class="pre">abltk.plotting.*</span></code></p></li>
-</ul>
-<p>Existing imports (e.g. <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">bldfm</span> <span class="pre">import</span> <span class="pre">plot_footprint_field</span></code>) continue
-to work, but new code should import directly from <code class="docutils literal notranslate"><span class="pre">abltk</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Preferred</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">abltk.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span>
-
-<span class="c1"># Still works (deprecated)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span>
+<p>Plotting and I/O functions that were previously available in <code class="docutils literal notranslate"><span class="pre">bldfm.plotting</span></code>
+and <code class="docutils literal notranslate"><span class="pre">bldfm.io</span></code> have been moved to <code class="docutils literal notranslate"><span class="pre">abltk</span></code>.  Import them directly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abltk.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span><span class="p">,</span> <span class="n">plot_footprint_on_map</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abltk.io.netcdf</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_netcdf</span><span class="p">,</span> <span class="n">load_netcdf</span>
 </pre></div>
 </div>
 </section>

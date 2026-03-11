@@ -123,7 +123,7 @@
             
   <section id="the-bldfm-package">
 <span id="src"></span><h1>The <code class="docutils literal notranslate"><span class="pre">bldfm</span></code> package<a class="headerlink" href="#the-bldfm-package" title="Link to this heading">¶</a></h1>
-<p>This package contains the BLDFM model. It includes core modules for the PBL model, spectral solver, and utility functions, as well as higher-level modules for configuration, interface, I/O, caching, plotting, and synthetic data generation.</p>
+<p>This package contains the BLDFM model. It includes core modules for the PBL model, spectral solver, and utility functions, as well as higher-level modules for configuration, interface, caching, and synthetic data generation.  Plotting and I/O are provided by <code class="docutils literal notranslate"><span class="pre">abltk</span></code>.</p>
 <section id="core-modules">
 <h2>Core modules<a class="headerlink" href="#core-modules" title="Link to this heading">¶</a></h2>
 <section id="module-bldfm.pbl_model">
@@ -951,16 +951,6 @@ ustar, mol, wind_speed, wind_dir, timestamps (all lists).</p>
 </dd></dl>
 
 </section>
-<section id="bldfm-io-module">
-<h3>bldfm.io module<a class="headerlink" href="#bldfm-io-module" title="Link to this heading">¶</a></h3>
-<div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version ``bldfm.io``: </span>is a thin wrapper around <code class="xref py py-mod docutils literal notranslate"><span class="pre">abltk.io.netcdf</span></code>.  New code
-should import directly from <code class="docutils literal notranslate"><span class="pre">abltk</span></code>::</p>
-<blockquote>
-<div><p>from abltk.io.netcdf import save_netcdf, load_netcdf</p>
-</div></blockquote>
-</div>
-</section>
 <section id="module-bldfm.cache">
 <span id="bldfm-cache-module"></span><h3>bldfm.cache module<a class="headerlink" href="#module-bldfm.cache" title="Link to this heading">¶</a></h3>
 <p>Disk cache for Green’s function results.</p>
@@ -1013,38 +1003,12 @@ point, halo, and precision.</p>
 </section>
 <section id="plotting">
 <h2>Plotting<a class="headerlink" href="#plotting" title="Link to this heading">¶</a></h2>
-<div class="deprecated">
-<p><span class="versionmodified deprecated">Deprecated since version ``bldfm.plotting``: </span>submodules are thin wrappers around
-<code class="xref py py-mod docutils literal notranslate"><span class="pre">abltk.plotting</span></code>.  New code should import directly from <code class="docutils literal notranslate"><span class="pre">abltk</span></code>::</p>
-<blockquote>
-<div><p>from abltk.plotting import plot_footprint_field, plot_footprint_on_map</p>
-</div></blockquote>
+<p>Plotting functions have moved to <code class="docutils literal notranslate"><span class="pre">abltk.plotting</span></code>.  See the
+<a class="reference external" href="https://github.com/SchlutowSM2Group/abl-tk">abl-tk documentation</a> for the
+full API reference.  Common imports:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abltk.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span><span class="p">,</span> <span class="n">plot_footprint_on_map</span>
+</pre></div>
 </div>
-<section id="module-bldfm.plotting">
-<span id="bldfm-plotting-package"></span><h3>bldfm.plotting package<a class="headerlink" href="#module-bldfm.plotting" title="Link to this heading">¶</a></h3>
-<p>Plotting has moved to abltk.plotting. This package is kept as an empty namespace.</p>
-<section id="bldfm-plotting-footprint-module">
-<h4>bldfm.plotting.footprint module<a class="headerlink" href="#bldfm-plotting-footprint-module" title="Link to this heading">¶</a></h4>
-</section>
-<section id="bldfm-plotting-comparison-module">
-<h4>bldfm.plotting.comparison module<a class="headerlink" href="#bldfm-plotting-comparison-module" title="Link to this heading">¶</a></h4>
-</section>
-<section id="bldfm-plotting-diagnostics-module">
-<h4>bldfm.plotting.diagnostics module<a class="headerlink" href="#bldfm-plotting-diagnostics-module" title="Link to this heading">¶</a></h4>
-</section>
-<section id="bldfm-plotting-timeseries-module">
-<h4>bldfm.plotting.timeseries module<a class="headerlink" href="#bldfm-plotting-timeseries-module" title="Link to this heading">¶</a></h4>
-</section>
-<section id="bldfm-plotting-interactive-module">
-<h4>bldfm.plotting.interactive module<a class="headerlink" href="#bldfm-plotting-interactive-module" title="Link to this heading">¶</a></h4>
-</section>
-<section id="bldfm-plotting-meteorology-module">
-<h4>bldfm.plotting.meteorology module<a class="headerlink" href="#bldfm-plotting-meteorology-module" title="Link to this heading">¶</a></h4>
-</section>
-<section id="bldfm-plotting-contours-module">
-<h4>bldfm.plotting.contours module<a class="headerlink" href="#bldfm-plotting-contours-module" title="Link to this heading">¶</a></h4>
-</section>
-</section>
 </section>
 </section>
 

@@ -3,10 +3,9 @@ Quick reference
 
 .. note::
 
-   Plotting and I/O functions have been migrated to
-   `abl-tk <https://github.com/SchlutowSM2Group/abl-tk>`_.  Imports like
-   ``from bldfm import plot_footprint_field`` still work, but new code should
-   use ``from abltk.plotting import plot_footprint_field`` instead.
+   Plotting and I/O functions have moved to
+   `abl-tk <https://github.com/SchlutowSM2Group/abl-tk>`_.  Import them from
+   ``abltk.plotting`` and ``abltk.io.netcdf``.
 
 Concise code snippets for the most common BLDFM workflows.  For step-by-step
 tutorials, see the `Quickstart Tutorial <tutorial_quickstart.html>`_ and
@@ -55,7 +54,8 @@ The simplest way to run BLDFM is via a YAML configuration file.
 
 .. code-block:: python
 
-    from bldfm import load_config, run_bldfm_single, plot_footprint_field
+    from bldfm import load_config, run_bldfm_single
+    from abltk.plotting import plot_footprint_field
 
     config = load_config("my_config.yaml")
     result = run_bldfm_single(config, config.towers[0])
@@ -70,7 +70,7 @@ build a footprint climatology.
 .. code-block:: python
 
     from bldfm import load_config, run_bldfm_timeseries
-    from bldfm.plotting import plot_footprint_field, plot_footprint_timeseries
+    from abltk.plotting import plot_footprint_field, plot_footprint_timeseries
     import numpy as np
 
     config = load_config("examples/configs/timeseries.yaml")
@@ -92,16 +92,15 @@ For multiple towers and time-varying meteorology:
 
 .. code-block:: python
 
-    from bldfm import (
-        load_config, run_bldfm_multitower,
-        save_footprints_to_netcdf, plot_footprint_field,
-    )
+    from bldfm import load_config, run_bldfm_multitower
+    from abltk.plotting import plot_footprint_field
+    from abltk.io.netcdf import save_netcdf
 
     config = load_config("my_config.yaml")
     results = run_bldfm_multitower(config)
 
     # Save to NetCDF
-    save_footprints_to_netcdf(results, config, "output/footprints.nc")
+    save_netcdf(results, config, "output/footprints.nc")
 
     # Plot first tower, first timestep
     tower_name = config.towers[0].name
@@ -175,30 +174,7 @@ For full control, you can call the solver steps directly (as in the ``examples/l
 Source area contours
 --------------------
 
-Visualize which spatial regions contribute a given fraction of the measured flux
-using different contour geometries:
-
-.. code-block:: python
-
-    from bldfm import (
-        get_source_area, source_area_circular, source_area_sector,
-    )
-    from bldfm.plotting import plot_source_area_contours, plot_source_area_gallery
-
-    # After running the solver to get flx, grid, meas_pt, wind:
-
-    # Single contour type
-    g = source_area_circular(X, Y, meas_pt)
-    rescaled = get_source_area(flx, g)
-    plot_source_area_contours(flx, grid, rescaled, title="Circular contours")
-
-    # Gallery of all 5 types
-    fig, axes = plot_source_area_gallery(flx, grid, meas_pt, wind)
-
-Five base functions are available: ``source_area_contribution`` (isopleth),
-``source_area_circular`` (concentric circles), ``source_area_upwind`` (distance bands),
-``source_area_crosswind`` (ridges), and ``source_area_sector`` (angular sectors).
-
+Source area analysis and plotting functions are available in ``abltk``.
 See ``runs/low_level/source_area_example.py`` for a complete working example.
 
 Reproducing manuscript figures

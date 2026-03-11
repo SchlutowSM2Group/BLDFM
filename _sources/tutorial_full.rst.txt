@@ -232,77 +232,8 @@ Working with results
 Solver results are plain Python dictionaries containing NumPy arrays.  This
 section covers common post-processing tasks.
 
-Percentile contours
-^^^^^^^^^^^^^^^^^^^
-
-``extract_percentile_contour()`` computes the contour level that encloses a
-given fraction of the cumulative footprint, along with the corresponding
-area in square metres.  This is useful for quantifying the spatial extent of
-the source area (e.g., "the 80 % source area covers 5000 m\ :sup:`2`\ "):
-
-.. code-block:: python
-
-    from bldfm import extract_percentile_contour
-
-    level_50, area_50 = extract_percentile_contour(result["flx"], result["grid"], pct=0.5)
-    level_80, area_80 = extract_percentile_contour(result["flx"], result["grid"], pct=0.8)
-
-    print(f"50% contour: level={level_50:.6f}, area={area_50:.0f} m^2")
-    print(f"80% contour: level={level_80:.6f}, area={area_80:.0f} m^2")
-
-The 80 % area will always be larger than the 50 % area (it encloses more of
-the footprint), while the 50 % contour level will be higher (it represents a
-more concentrated core).
-
-Source area analysis
-^^^^^^^^^^^^^^^^^^^^
-
-BLDFM provides five base functions for characterizing which spatial regions
-contribute to the measured flux.  Each constructs a weighting surface ``g``
-that, combined with the footprint via ``get_source_area(flx, g)``, produces
-contours of a specific geometric type:
-
-- ``source_area_contribution``: isopleth contours (standard footprint levels)
-- ``source_area_circular``: concentric circles centred on the tower
-- ``source_area_upwind``: upwind distance bands
-- ``source_area_crosswind``: crosswind ridge contours
-- ``source_area_sector``: angular sectors from the upwind axis
-
-.. code-block:: python
-
-    from bldfm import get_source_area, source_area_circular
-
-    X, Y, Z = result["grid"]
-    meas_pt = (config.towers[0].x, config.towers[0].y)
-
-    g = source_area_circular(X, Y, meas_pt)
-    rescaled = get_source_area(result["flx"], g)
-
-See ``runs/low_level/source_area_example.py`` for a complete working example
-with all five contour types.
-
-
-I/O and caching
----------------
-
-NetCDF export and import
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Save multi-tower results to CF-1.8 compliant NetCDF files and load them back
-as an ``xr.Dataset``.  The file includes footprint and concentration fields,
-meteorological metadata, tower coordinates, and global attributes:
-
-.. code-block:: python
-
-    from bldfm import save_footprints_to_netcdf, load_footprints_from_netcdf
-
-    save_footprints_to_netcdf(all_results, config_mt, "output/footprints.nc")
-
-    ds = load_footprints_from_netcdf("output/footprints.nc")
-    print(f"Dimensions: {dict(ds.sizes)}")
-    print(f"Variables: {list(ds.data_vars)}")
-    print(f"CF Convention: {ds.attrs['Conventions']}")
-    ds.close()
+Caching
+-------
 
 Green's function caching
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -330,9 +261,8 @@ YAML config.
 Visualization
 -------------
 
-BLDFM includes plotting functions for footprint fields, geospatial overlays,
-wind roses, time series, source area contours, diagnostics, and interactive
-HTML plots.  Core plots require only matplotlib; optional dependencies are
+Plotting functions are provided by ``abltk.plotting``.  Core plots require
+only matplotlib; optional dependencies (contextily, windrose, plotly) are
 imported lazily and produce helpful messages when missing.
 
 .. code-block:: python
@@ -349,7 +279,7 @@ contour overlays.  It works for both footprint and concentration fields:
 
 .. code-block:: python
 
-    from bldfm import plot_footprint_field
+    from abltk.plotting import plot_footprint_field
 
     ax = plot_footprint_field(
         result["flx"], result["grid"],
@@ -369,7 +299,7 @@ street maps (requires owslib):
 .. code-block:: python
 
     try:
-        from bldfm import plot_footprint_on_map
+        from abltk.plotting import plot_footprint_on_map
 
         ax = plot_footprint_on_map(
             result["flx"], result["grid"], config,
@@ -390,7 +320,7 @@ arrays:
 .. code-block:: python
 
     try:
-        from bldfm import plot_wind_rose
+        from abltk.plotting import plot_wind_rose
 
         ax = plot_wind_rose(
             met["wind_speed"], met["wind_dir"],
@@ -409,7 +339,7 @@ percentiles) changes across timesteps:
 
 .. code-block:: python
 
-    from bldfm import plot_footprint_timeseries
+    from abltk.plotting import plot_footprint_timeseries
 
     ax = plot_footprint_timeseries(
         results, results[0]["grid"],
@@ -418,24 +348,6 @@ percentiles) changes across timesteps:
     )
     plt.savefig("plots/tutorial_timeseries.png", dpi=150, bbox_inches="tight")
     plt.close()
-
-Source area contour plots
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-``plot_source_area_gallery()`` produces a multi-panel figure showing all five
-source area base function types side by side:
-
-.. code-block:: python
-
-    from bldfm.plotting import plot_source_area_gallery
-    from bldfm import compute_wind_fields
-
-    meas_pt = (config.towers[0].x, config.towers[0].y)
-    wind = compute_wind_fields(5.0, 270.0)
-
-    fig, axes = plot_source_area_gallery(result["flx"], result["grid"], meas_pt, wind)
-    fig.savefig("plots/tutorial_source_gallery.png", dpi=150, bbox_inches="tight")
-    plt.close(fig)
 
 Interactive plot (requires plotly)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -446,7 +358,7 @@ HTML for exploration in a browser:
 .. code-block:: python
 
     try:
-        from bldfm import plot_footprint_interactive
+        from abltk.plotting import plot_footprint_interactive
 
         fig = plot_footprint_interactive(result["flx"], result["grid"])
         fig.write_html("plots/tutorial_interactive.html")
@@ -456,9 +368,10 @@ HTML for exploration in a browser:
 Diagnostic plots
 ^^^^^^^^^^^^^^^^
 
-Three functions are available for inspecting solver behaviour and vertical
-structure: ``plot_convergence()``, ``plot_vertical_profiles()``, and
-``plot_vertical_slice()``.  See the `API Reference <src.html>`_ for full
+Functions for inspecting solver behaviour and vertical structure
+(``plot_convergence()``, ``plot_vertical_profiles()``, ``plot_vertical_slice()``)
+are available in ``abltk.plotting``.  See the
+`abl-tk documentation <https://github.com/SchlutowSM2Group/abl-tk>`_ for full
 signatures and usage.
 
 

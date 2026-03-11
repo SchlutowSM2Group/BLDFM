@@ -130,10 +130,9 @@
 <h1>Quick reference<a class="headerlink" href="#quick-reference" title="Link to this heading">¶</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Plotting and I/O functions have been migrated to
-<a class="reference external" href="https://github.com/SchlutowSM2Group/abl-tk">abl-tk</a>.  Imports like
-<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">bldfm</span> <span class="pre">import</span> <span class="pre">plot_footprint_field</span></code> still work, but new code should
-use <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">abltk.plotting</span> <span class="pre">import</span> <span class="pre">plot_footprint_field</span></code> instead.</p>
+<p>Plotting and I/O functions have moved to
+<a class="reference external" href="https://github.com/SchlutowSM2Group/abl-tk">abl-tk</a>.  Import them from
+<code class="docutils literal notranslate"><span class="pre">abltk.plotting</span></code> and <code class="docutils literal notranslate"><span class="pre">abltk.io.netcdf</span></code>.</p>
 </div>
 <p>Concise code snippets for the most common BLDFM workflows.  For step-by-step
 tutorials, see the <a class="reference external" href="tutorial_quickstart.html">Quickstart Tutorial</a> and
@@ -172,7 +171,8 @@ $<span class="w"> </span>bldfm<span class="w"> </span>run<span class="w"> </span
 </pre></div>
 </div>
 <p><strong>3. Or run from Python:</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span><span class="p">,</span> <span class="n">run_bldfm_single</span><span class="p">,</span> <span class="n">plot_footprint_field</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span><span class="p">,</span> <span class="n">run_bldfm_single</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abltk.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span>
 
 <span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">run_bldfm_single</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -185,7 +185,7 @@ $<span class="w"> </span>bldfm<span class="w"> </span>run<span class="w"> </span
 <p>The primary use case: one eddy-covariance tower with half-hourly forcing to
 build a footprint climatology.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span><span class="p">,</span> <span class="n">run_bldfm_timeseries</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span><span class="p">,</span> <span class="n">plot_footprint_timeseries</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abltk.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span><span class="p">,</span> <span class="n">plot_footprint_timeseries</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;examples/configs/timeseries.yaml&quot;</span><span class="p">)</span>
@@ -205,16 +205,15 @@ build a footprint climatology.</p>
 <section id="multi-tower-timeseries">
 <h2>Multi-tower timeseries<a class="headerlink" href="#multi-tower-timeseries" title="Link to this heading">¶</a></h2>
 <p>For multiple towers and time-varying meteorology:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">load_config</span><span class="p">,</span> <span class="n">run_bldfm_multitower</span><span class="p">,</span>
-    <span class="n">save_footprints_to_netcdf</span><span class="p">,</span> <span class="n">plot_footprint_field</span><span class="p">,</span>
-<span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span><span class="p">,</span> <span class="n">run_bldfm_multitower</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abltk.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abltk.io.netcdf</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_netcdf</span>
 
 <span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;my_config.yaml&quot;</span><span class="p">)</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">run_bldfm_multitower</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 
 <span class="c1"># Save to NetCDF</span>
-<span class="n">save_footprints_to_netcdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="s2">&quot;output/footprints.nc&quot;</span><span class="p">)</span>
+<span class="n">save_netcdf</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="s2">&quot;output/footprints.nc&quot;</span><span class="p">)</span>
 
 <span class="c1"># Plot first tower, first timestep</span>
 <span class="n">tower_name</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">towers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
@@ -283,28 +282,8 @@ build a footprint climatology.</p>
 </section>
 <section id="source-area-contours">
 <h2>Source area contours<a class="headerlink" href="#source-area-contours" title="Link to this heading">¶</a></h2>
-<p>Visualize which spatial regions contribute a given fraction of the measured flux
-using different contour geometries:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">get_source_area</span><span class="p">,</span> <span class="n">source_area_circular</span><span class="p">,</span> <span class="n">source_area_sector</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">bldfm.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_source_area_contours</span><span class="p">,</span> <span class="n">plot_source_area_gallery</span>
-
-<span class="c1"># After running the solver to get flx, grid, meas_pt, wind:</span>
-
-<span class="c1"># Single contour type</span>
-<span class="n">g</span> <span class="o">=</span> <span class="n">source_area_circular</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">)</span>
-<span class="n">rescaled</span> <span class="o">=</span> <span class="n">get_source_area</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
-<span class="n">plot_source_area_contours</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">rescaled</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Circular contours&quot;</span><span class="p">)</span>
-
-<span class="c1"># Gallery of all 5 types</span>
-<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plot_source_area_gallery</span><span class="p">(</span><span class="n">flx</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">meas_pt</span><span class="p">,</span> <span class="n">wind</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Five base functions are available: <code class="docutils literal notranslate"><span class="pre">source_area_contribution</span></code> (isopleth),
-<code class="docutils literal notranslate"><span class="pre">source_area_circular</span></code> (concentric circles), <code class="docutils literal notranslate"><span class="pre">source_area_upwind</span></code> (distance bands),
-<code class="docutils literal notranslate"><span class="pre">source_area_crosswind</span></code> (ridges), and <code class="docutils literal notranslate"><span class="pre">source_area_sector</span></code> (angular sectors).</p>
-<p>See <code class="docutils literal notranslate"><span class="pre">runs/low_level/source_area_example.py</span></code> for a complete working example.</p>
+<p>Source area analysis and plotting functions are available in <code class="docutils literal notranslate"><span class="pre">abltk</span></code>.
+See <code class="docutils literal notranslate"><span class="pre">runs/low_level/source_area_example.py</span></code> for a complete working example.</p>
 </section>
 <section id="reproducing-manuscript-figures">
 <h2>Reproducing manuscript figures<a class="headerlink" href="#reproducing-manuscript-figures" title="Link to this heading">¶</a></h2>

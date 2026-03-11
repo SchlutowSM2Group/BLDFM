@@ -52,19 +52,16 @@ Data and I/O
 7. :py:mod:`bldfm.synthetic`
     Generates synthetic meteorological timeseries and tower configurations for testing and prototyping.
 
-8. :py:mod:`bldfm.io`
-    NetCDF export and import of footprint results using xarray with CF-1.8 metadata.
-    Delegates to ``abltk.io.netcdf`` (see *Shared infrastructure* below).
-
-9. :py:mod:`bldfm.cache`
+8. :py:mod:`bldfm.cache`
     Disk-based cache for Green's function results using SHA-256 keyed ``.npz`` files.
 
 Plotting
 --------
 
-10. :py:mod:`bldfm.plotting`
-     Visualisation functions for footprint fields, geospatial map overlays, wind roses, and temporal footprint evolution.
-     These are thin wrappers around ``abltk.plotting`` (see *Shared infrastructure* below).
+9. Plotting functions (footprint fields, geospatial map overlays, wind roses,
+   temporal footprint evolution) are provided by
+   `abl-tk <https://github.com/SchlutowSM2Group/abl-tk>`_.  Import them from
+   ``abltk.plotting`` (see *Shared infrastructure* below).
 
 Pipeline architecture
 ---------------------
@@ -107,12 +104,11 @@ you call each stage individually.
                               ▼
                    result dict {grid, conc, flx, …}
                               │
-                ┌─────────────┼─────────────┐
-                │             │             │
-                ▼             ▼             ▼
-        GreensFunctionCache  save to     plot_*()
-            [cache]         NetCDF     [plotting]
-                            [io]
+                ┌─────────────┼──────────────────┐
+                │             │                  │
+                ▼             ▼                  ▼
+        GreensFunctionCache  save_netcdf()     plot_*()
+            [cache]         [abltk.io]       [abltk.plotting]
 
 Design philosophy: high-level vs. low-level API
 ------------------------------------------------
@@ -150,20 +146,11 @@ BLDFM shares I/O, plotting, logging, and configuration utilities with
 avoids code duplication across the framework.  ``abl-tk`` is installed
 automatically as a dependency of BLDFM.
 
-The following BLDFM modules are **deprecation wrappers** that delegate to
-their ``abltk`` counterparts:
+Plotting and I/O functions that were previously available in ``bldfm.plotting``
+and ``bldfm.io`` have been moved to ``abltk``.  Import them directly::
 
-- ``bldfm.io`` → ``abltk.io.netcdf``
-- ``bldfm.plotting.*`` → ``abltk.plotting.*``
-
-Existing imports (e.g. ``from bldfm import plot_footprint_field``) continue
-to work, but new code should import directly from ``abltk``::
-
-    # Preferred
-    from abltk.plotting import plot_footprint_field
-
-    # Still works (deprecated)
-    from bldfm import plot_footprint_field
+    from abltk.plotting import plot_footprint_field, plot_footprint_on_map
+    from abltk.io.netcdf import save_netcdf, load_netcdf
 
 
 API reference

@@ -169,7 +169,8 @@ configures logging.  It only runs once – subsequent calls are no-ops.</p>
 <section id="step-3-run-the-solver-and-plot">
 <h2>Step 3: Run the solver and plot<a class="headerlink" href="#step-3-run-the-solver-and-plot" title="Link to this heading">¶</a></h2>
 <p>Compute a footprint and visualise it with 50 % and 80 % cumulative contours:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_bldfm_single</span><span class="p">,</span> <span class="n">plot_footprint_field</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bldfm</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_bldfm_single</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abltk.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_footprint_field</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span>
 <span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s2">&quot;Agg&quot;</span><span class="p">)</span>          <span class="c1"># use &quot;TkAgg&quot; or remove for interactive display</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
