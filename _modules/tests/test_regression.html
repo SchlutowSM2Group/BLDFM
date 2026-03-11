@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tests.test_regression &#8212; BLDFM 1.0.0-dev documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=df3fedd5" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=5ab75ac9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=56c4699f" />
+    <script src="../../_static/documentation_options.js?v=8313637b"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../../index.html">
+    <img class="logo" src="../../_static/logo.png" alt="Logo" />
+    
+    <h1 class="logo logo-name">BLDFM</h1>
+    
+  </a>
+</p>
+
+
+
+<p class="blurb">A Python dispersion and footprint model</p>
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_quickstart.html">Quickstart tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial_full.html">Full tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Quick reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Package overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../src.html">API reference</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/SchlutowSM2Group/BLDFM">GitHub repository</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../runs.html">Example scripts and workflows</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tests.html">The <code class="docutils literal notranslate"><span class="pre">tests</span></code> subpackage</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../acknowledgments.html">Acknowledgments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Glossary Index</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../py-modindex.html">Module Index</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+              <div class="related top">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for tests.test_regression</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Regression tests: compare solver outputs against saved reference data.</span>
+
+<span class="sd">Run with:</span>
+<span class="sd">    pytest -m regression                          # check against references</span>
+<span class="sd">    pytest --update-references -m regression      # regenerate references</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+
+<span class="n">pytestmark</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">regression</span>
+
+<span class="n">REF_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;references&quot;</span>
+
+<span class="c1"># Per-scenario tolerances (MOST closure, deterministic on same platform).</span>
+<span class="n">SCENARIOS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;single_footprint&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;atol&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="s2">&quot;rtol&quot;</span><span class="p">:</span> <span class="mf">1e-5</span><span class="p">},</span>
+    <span class="s2">&quot;source_area&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;atol&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="s2">&quot;rtol&quot;</span><span class="p">:</span> <span class="mf">1e-5</span><span class="p">},</span>
+    <span class="s2">&quot;plume_3d&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;atol&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="s2">&quot;rtol&quot;</span><span class="p">:</span> <span class="mf">1e-5</span><span class="p">},</span>
+    <span class="s2">&quot;timeseries_step0&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;atol&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="s2">&quot;rtol&quot;</span><span class="p">:</span> <span class="mf">1e-5</span><span class="p">},</span>
+    <span class="s2">&quot;timeseries_step2&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;atol&quot;</span><span class="p">:</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="s2">&quot;rtol&quot;</span><span class="p">:</span> <span class="mf">1e-5</span><span class="p">},</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_reference</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save grid, conc, and flx arrays to references/{name}.npz.&quot;&quot;&quot;</span>
+    <span class="n">REF_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="n">grid</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="n">REF_DIR</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.npz&quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="o">=</span><span class="n">Z</span><span class="p">,</span> <span class="n">conc</span><span class="o">=</span><span class="n">conc</span><span class="p">,</span> <span class="n">flx</span><span class="o">=</span><span class="n">flx</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_reference</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load reference .npz, raising FileNotFoundError if missing.&quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">REF_DIR</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.npz&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Reference file not found: </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Run &#39;pytest --update-references -m regression&#39; to generate it.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_compare</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span><span class="p">,</span> <span class="n">update_refs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save-and-skip or load-and-assert against reference data.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">update_refs</span><span class="p">:</span>
+        <span class="n">_save_reference</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">conc</span><span class="p">,</span> <span class="n">flx</span><span class="p">)</span>
+        <span class="n">pytest</span><span class="o">.</span><span class="n">skip</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reference updated: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">ref</span> <span class="o">=</span> <span class="n">_load_reference</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">conc</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">ref</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: conc shape mismatch </span><span class="si">{</span><span class="n">conc</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> vs </span><span class="si">{</span><span class="n">ref</span><span class="p">[</span><span class="s1">&#39;conc&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">flx</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">ref</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+    <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: flx shape mismatch </span><span class="si">{</span><span class="n">flx</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> vs </span><span class="si">{</span><span class="n">ref</span><span class="p">[</span><span class="s1">&#39;flx&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="n">tols</span> <span class="o">=</span> <span class="n">SCENARIOS</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span>
+        <span class="n">conc</span><span class="p">,</span>
+        <span class="n">ref</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">],</span>
+        <span class="n">atol</span><span class="o">=</span><span class="n">tols</span><span class="p">[</span><span class="s2">&quot;atol&quot;</span><span class="p">],</span>
+        <span class="n">rtol</span><span class="o">=</span><span class="n">tols</span><span class="p">[</span><span class="s2">&quot;rtol&quot;</span><span class="p">],</span>
+        <span class="n">err_msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: conc regression&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_allclose</span><span class="p">(</span>
+        <span class="n">flx</span><span class="p">,</span>
+        <span class="n">ref</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span>
+        <span class="n">atol</span><span class="o">=</span><span class="n">tols</span><span class="p">[</span><span class="s2">&quot;atol&quot;</span><span class="p">],</span>
+        <span class="n">rtol</span><span class="o">=</span><span class="n">tols</span><span class="p">[</span><span class="s2">&quot;rtol&quot;</span><span class="p">],</span>
+        <span class="n">err_msg</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: flx regression&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="test_regression_single_footprint">
+<a class="viewcode-back" href="../../tests.html#tests.test_regression.test_regression_single_footprint">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_regression_single_footprint</span><span class="p">(</span><span class="n">single_run_result</span><span class="p">,</span> <span class="n">update_references</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">single_run_result</span>
+    <span class="n">_compare</span><span class="p">(</span><span class="s2">&quot;single_footprint&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">update_references</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_regression_source_area">
+<a class="viewcode-back" href="../../tests.html#tests.test_regression.test_regression_source_area">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_regression_source_area</span><span class="p">(</span><span class="n">source_area_result_session</span><span class="p">,</span> <span class="n">update_references</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">source_area_result_session</span>
+    <span class="n">_compare</span><span class="p">(</span><span class="s2">&quot;source_area&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">update_references</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_regression_plume_3d">
+<a class="viewcode-back" href="../../tests.html#tests.test_regression.test_regression_plume_3d">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_regression_plume_3d</span><span class="p">(</span><span class="n">plume_3d_result_session</span><span class="p">,</span> <span class="n">update_references</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">plume_3d_result_session</span>
+    <span class="n">_compare</span><span class="p">(</span><span class="s2">&quot;plume_3d&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">update_references</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_regression_timeseries_step0">
+<a class="viewcode-back" href="../../tests.html#tests.test_regression.test_regression_timeseries_step0">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_regression_timeseries_step0</span><span class="p">(</span><span class="n">timeseries_results_session</span><span class="p">,</span> <span class="n">update_references</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">timeseries_results_session</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">_compare</span><span class="p">(</span><span class="s2">&quot;timeseries_step0&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">update_references</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="test_regression_timeseries_step2">
+<a class="viewcode-back" href="../../tests.html#tests.test_regression.test_regression_timeseries_step2">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">test_regression_timeseries_step2</span><span class="p">(</span><span class="n">timeseries_results_session</span><span class="p">,</span> <span class="n">update_references</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">timeseries_results_session</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">_compare</span><span class="p">(</span><span class="s2">&quot;timeseries_step2&quot;</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;grid&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;conc&quot;</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s2">&quot;flx&quot;</span><span class="p">],</span> <span class="n">update_references</span><span class="p">)</span></div>
+
+</pre></div>
+
+          </div>
+              <div class="related bottom">
+                &nbsp;
+  <nav id="rellinks">
+    <ul>
+    </ul>
+  </nav>
+              </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &#169;2025, Mark Schlutow, Ray Chew, Mathias Göckede.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.1.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
