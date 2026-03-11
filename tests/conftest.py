@@ -1,7 +1,24 @@
+import multiprocessing
 import os
 
 import numpy as np
 import pytest
+
+multiprocessing.set_start_method("forkserver", force=True)
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--update-references",
+        action="store_true",
+        default=False,
+        help="Regenerate regression reference files instead of comparing.",
+    )
+
+
+@pytest.fixture
+def update_references(request):
+    return request.config.getoption("--update-references")
 
 from bldfm.config_parser import parse_config_dict
 from bldfm.interface import run_bldfm_single, run_bldfm_timeseries, run_bldfm_multitower
