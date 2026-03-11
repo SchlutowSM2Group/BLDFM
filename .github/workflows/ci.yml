@@ -20,7 +20,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.10"
 
       - name: Install Black
         run: pip install black
@@ -38,7 +38,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.10"
 
       - name: Install abl-tk (private dependency)
         run: pip install git+https://x-access-token:${{ secrets.ABL_TK_PAT }}@github.com/SchlutowSM2Group/abl-tk.git
@@ -65,7 +65,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.10"
 
       - name: Install abl-tk (private dependency)
         run: pip install git+https://x-access-token:${{ secrets.ABL_TK_PAT }}@github.com/SchlutowSM2Group/abl-tk.git
