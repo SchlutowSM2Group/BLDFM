@@ -5,7 +5,6 @@ import pytest
 pytestmark = pytest.mark.unit
 from bldfm.synthetic import generate_synthetic_timeseries, generate_towers_grid
 
-
 # --- generate_synthetic_timeseries ---
 
 
