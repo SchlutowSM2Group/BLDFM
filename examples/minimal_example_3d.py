@@ -18,7 +18,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from bldfm import initialize, load_config, run_bldfm_single
-from bldfm.plotting import plot_vertical_slice
+from abltk.plotting import plot_vertical_slice
 from bldfm import config as runtime_config
 
 config_path = Path(__file__).parent / "configs" / "minimal_3d.yaml"

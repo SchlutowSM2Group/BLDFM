@@ -5,7 +5,7 @@ from numpy.fft import fftshift, ifftshift, fftfreq
 from .fft_manager import fft2, ifft2, get_fft_manager
 from numba import set_num_threads
 
-from .utils import get_logger
+from abltk.logging import get_logger
 from .utils import parallelize
 from bldfm import config
 

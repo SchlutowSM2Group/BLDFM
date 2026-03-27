@@ -35,6 +35,9 @@ venv/
 *.swp
 .idea/
 
+# Test artifacts
+_test.nc
+
 # Generated output
 plots/
 /output/*

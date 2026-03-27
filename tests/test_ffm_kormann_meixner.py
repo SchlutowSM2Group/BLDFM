@@ -18,7 +18,6 @@ from bldfm.ffm_kormann_meixner import (
     von_karman,
 )
 
-
 # ---------------------------------------------------------------------------
 # Stability function tests (private helpers)
 # ---------------------------------------------------------------------------

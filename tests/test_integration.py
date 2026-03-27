@@ -150,7 +150,7 @@ def test_convergence_trend():
     for res, err in zip(resolutions, errors):
         print(f"  modes={res['modes']} nz={res['nz']} rmse={err:.6e}")
 
-    from bldfm.plotting import plot_convergence
+    from abltk.plotting import plot_convergence
 
     grid_spacings = np.array([domain[0] / r["modes"][0] for r in resolutions])
     ax = plot_convergence(

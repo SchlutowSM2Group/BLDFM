@@ -23,8 +23,8 @@ from bldfm.config_parser import (
     SolverConfig,
 )
 from bldfm.ffm_kormann_meixner import estimateFootprint as FKM
-from bldfm.plotting import plot_footprint_comparison
-from bldfm.utils import get_logger
+from abltk.plotting import plot_footprint_comparison
+from abltk.logging import get_logger
 
 logger = get_logger("comparison_footprint_unstable")
 

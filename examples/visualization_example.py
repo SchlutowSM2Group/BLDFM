@@ -30,12 +30,14 @@ if __name__ == "__main__":
 
     # ---- 1. Map overlay (requires contextily) ----
     try:
-        from bldfm import plot_footprint_on_map
+        from abltk.plotting.footprint import plot_footprint_on_map
 
         ax = plot_footprint_on_map(
             result["flx"],
             result["grid"],
-            config,
+            ref_lat=config.domain.ref_lat,
+            ref_lon=config.domain.ref_lon,
+            towers=config.towers,
             tower=config.towers[0],
             contour_pcts=[0.5, 0.8],
             title="Footprint on map tiles",
@@ -50,12 +52,14 @@ if __name__ == "__main__":
 
     # ---- 2. Land cover overlay (requires owslib) ----
     try:
-        from bldfm import plot_footprint_on_map
+        from abltk.plotting.footprint import plot_footprint_on_map
 
         ax = plot_footprint_on_map(
             result["flx"],
             result["grid"],
-            config,
+            ref_lat=config.domain.ref_lat,
+            ref_lon=config.domain.ref_lon,
+            towers=config.towers,
             tower=config.towers[0],
             contour_pcts=[0.5, 0.8],
             land_cover=True,
@@ -71,7 +75,7 @@ if __name__ == "__main__":
 
     # ---- 3. Wind rose (requires windrose) ----
     try:
-        from bldfm import plot_wind_rose
+        from abltk.plotting.meteorology import plot_wind_rose
 
         met_ts = generate_synthetic_timeseries(n_timesteps=100, seed=42)
         ax = plot_wind_rose(
@@ -89,7 +93,7 @@ if __name__ == "__main__":
 
     # ---- 4. Interactive plot (requires plotly) ----
     try:
-        from bldfm import plot_footprint_interactive
+        from abltk.plotting.interactive import plot_footprint_interactive
 
         fig = plot_footprint_interactive(
             result["flx"],

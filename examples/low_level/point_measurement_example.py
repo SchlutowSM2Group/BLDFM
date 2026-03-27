@@ -5,7 +5,8 @@ Example module demonstrating point measurements.
 import matplotlib.pyplot as plt
 
 from bldfm.pbl_model import vertical_profiles
-from bldfm.utils import ideal_source, get_logger, point_measurement
+from bldfm.utils import ideal_source, point_measurement
+from abltk.logging import get_logger
 from bldfm.solver import steady_state_transport_solver
 
 logger = get_logger("point_measurement_example")

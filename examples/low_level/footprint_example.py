@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from bldfm.pbl_model import vertical_profiles
-from bldfm.utils import ideal_source, get_logger
+from bldfm.utils import ideal_source
+from abltk.logging import get_logger
 from bldfm.solver import steady_state_transport_solver
 
 logger = get_logger("Minimal footprint_example")

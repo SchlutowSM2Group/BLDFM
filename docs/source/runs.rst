@@ -3,6 +3,12 @@
 Example scripts and workflows
 =============================
 
+The example scripts give you **full control** over plotting: figure layout,
+colormaps, contour levels, overlays, and output format.  The CLI command
+``bldfm run config.yaml --plot`` generates quick default plots (concentration +
+flux/footprint with tower markers) for rapid inspection; use these scripts when
+you need publication-quality figures or custom workflows.
+
 BLDFM ships with instructional examples organised in three tiers of
 increasing complexity.  All plot output is saved to ``plots/`` in the
 repository root (create with ``mkdir -p plots`` if needed).
